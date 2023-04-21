@@ -32,6 +32,7 @@ map<string, TokenType> str2tok = {
 void Lexer::addKeywordId(string keyword, unsigned int id)
 {
     rvIdMap[keyword] = id;
+    debug(1) << "Add keyword: " << keyword << " with id: " << id << endl;
 }
 
 void Lexer::addTokenType(TokenType type, string regExp)
@@ -39,6 +40,7 @@ void Lexer::addTokenType(TokenType type, string regExp)
     Regexp2FA reg2FA(regExp);
     FiniteAutomaton nfa = reg2FA.convert();
     faMap[type].push_back(nfa);
+    debug(1) << "Add token type: " << tok2str[type] << " with regExp: " << regExp << endl;
 }
 
 void Lexer::tokenize(string codeSeg)
@@ -189,12 +191,10 @@ void Lexer::readLexerDef(string fileName)
     auto patternIt = find(tokens.begin(), tokens.end(), "PATTERN");
     if (patternIt != tokens.end())
     {
-        auto ptnStart = find(patternIt, tokens.end(), "{");
-        auto ptnEnd = find(patternIt, tokens.end(), "}");
+        auto ptnStart = find(patternIt, tokens.end(), "${");
+        auto ptnEnd = find(patternIt, tokens.end(), "$}");
         for (auto it = ptnStart + 1; it != ptnEnd; it += 2)
         {
-            if (startWith(*it, "//"))
-                continue;
             if (str2tok.find(*it) != str2tok.end())
             {
                 addTokenType(str2tok[*it], *(it + 1));
@@ -210,17 +210,12 @@ void Lexer::readLexerDef(string fileName)
     auto reservedIt = find(tokens.begin(), tokens.end(), "RESERVED");
     if (reservedIt != tokens.end())
     {
-        auto rvStart = find(reservedIt, tokens.end(), "{");
-        auto rvEnd = find(reservedIt, tokens.end(), "}");
+        auto rvStart = find(reservedIt, tokens.end(), "${");
+        auto rvEnd = find(reservedIt, tokens.end(), "$}");
         int id = 0;
-        for (auto it = rvStart + 1; it != rvEnd;)
+        for (auto it = rvStart + 1; it != rvEnd; it++)
         {
-            if (startWith(*it, "//"))
-                continue;
             addKeywordId(*it, id++);
-            it++;
-            if (it != rvEnd)
-                it++;
         }
     }
 }

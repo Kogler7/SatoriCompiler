@@ -18,8 +18,8 @@ void lexerMain()
 	Lexer lexer;
 	lexer.readLexerDef("./assets/lexer.def");
 	// lexer.readCodeFile("./assets/code.cpp");
-	// lexer.readCodeFile("./assets/error.cpp");
-	lexer.readCodeFile("./assets/test.cpp");
+	lexer.readCodeFile("./assets/error.cpp");
+	// lexer.readCodeFile("./assets/lexer.cpp");
 	lexer.tokenize();
 	lexer.printTokens();
 }
@@ -52,7 +52,7 @@ void lexerTest()
 	lexer.printTokens();
 }
 
-void nfaTest() // 实验性质的测试函数
+void nfaTest() // test for regexp2FA
 {
 	string raw = "";
 	cin >> raw;
