@@ -9,6 +9,7 @@
  */
 
 #include "test.h"
+#include "lexer.h"
 #include "regexp.h"
 
 set<string> keywords = {
@@ -25,8 +26,7 @@ set<string> separators = {
 
 void lexerMain()
 {
-	Lexer lexer;
-	lexer.readLexerDef("./assets/lexer.def");
+	Lexer lexer("./assets/cpp.lex");
 	// lexer.readCodeFile("./assets/code.cpp");
 	lexer.readCodeFile("./assets/error.cpp");
 	// lexer.readCodeFile("./assets/test.cpp");
@@ -46,18 +46,24 @@ void lexerTest()
 	{
 		lexer.addKeywordId(sep, id++);
 	}
-	lexer.addTokenType(BLANK, "[\\t\\n\\r\\f\\v ]+");
-	lexer.addTokenType(IGNORE, "\"([\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]|\\\\\")*\"");
-	lexer.addTokenType(IGNORE, "/\\\*([\\x0a-\\x0d\\x20-\\x29\\x2b-\\x7e]*|\\*[\\x0a-\\x0d\\x20-\\x2e\\x30-\\x7e]*)*\\*/");
-	lexer.addTokenType(IDENTIFIER, "[a-zA-Z_][a-zA-Z0-9_]*");
-	lexer.addTokenType(SEPARATOR, "[\\+\\-\\*\\\\%=\\(\\){}\\[\\]<>;,.\\|&^!]");
-	lexer.addTokenType(SEPARATOR, ">=|<=|!=|==|\\+\\+|\\-\\-|\\|\\||&&|\\*=|/=|\\+=|\\-=|%=|<<|>>");
-	lexer.addTokenType(STRING, "\"([\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]|\\\")*\"");
-	lexer.addTokenType(MACRO, "#[a-zA-Z][a-zA-Z0-9]*");
-	lexer.addTokenType(INCLUDE, "\"[a-zA-Z0-9_.]+\"|<[a-zA-Z0-9_.]+>");
-	lexer.addTokenType(INTEGER, "(\\-|\\+|\\e)[0-9]+");
-	lexer.addTokenType(REAL, "(\\-|\\+|\\e)[0-9]+\\.[0-9]+");
-	lexer.addTokenType(CHARACTER, "\'[\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]*\'");
+	lexer.addTokenType("BLANK", "[\\t\\n\\r\\f\\v ]+");
+	lexer.addTokenType("IGNORE", "\"([\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]|\\\\\")*\"");
+	lexer.addTokenType("IGNORE", "/\\\*([\\x0a-\\x0d\\x20-\\x29\\x2b-\\x7e]*|\\*[\\x0a-\\x0d\\x20-\\x2e\\x30-\\x7e]*)*\\*/");
+	lexer.addTokenType("IDENTIFIER", "[a-zA-Z_][a-zA-Z0-9_]*");
+	lexer.addTokenType("SEPARATOR", "[\\+\\-\\*\\\\%=\\(\\){}\\[\\]<>;,.\\|&^!]");
+	lexer.addTokenType("SEPARATOR", ">=|<=|!=|==|\\+\\+|\\-\\-|\\|\\||&&|\\*=|/=|\\+=|\\-=|%=|<<|>>");
+	lexer.addTokenType("STRING", "\"([\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]|\\\")*\"");
+	lexer.addTokenType("MACRO", "#[a-zA-Z][a-zA-Z0-9]*");
+	lexer.addTokenType("INCLUDE", "\"[a-zA-Z0-9_.]+\"|<[a-zA-Z0-9_.]+>");
+	lexer.addTokenType("INTEGER", "(\\-|\\+|\\e)[0-9]+");
+	lexer.addTokenType("REAL", "(\\-|\\+|\\e)[0-9]+\\.[0-9]+");
+	lexer.addTokenType("CHARACTER", "\'[\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]*\'");
+
+	lexer.addIgnoredType("BLANK");
+	lexer.addIgnoredType("IGNORE");
+	lexer.addReservedType("IDENTIFIER");
+	lexer.addReservedType("SEPARATOR");
+
 	lexer.tokenize("int main() { int a = 1; int b = 2; int c = a + b; return 0; }");
 	lexer.printTokens();
 }

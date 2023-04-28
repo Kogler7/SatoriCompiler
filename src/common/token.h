@@ -12,19 +12,7 @@
 #include <string>
 
 using namespace std;
-
-extern enum TokenType {
-    BLANK,
-    IGNORE,
-    MACRO,
-    INCLUDE,
-    IDENTIFIER,
-    STRING,
-    CHARACTER,
-    REAL,
-    INTEGER,
-    SEPARATOR,
-};
+typedef unsigned int TokenType;
 
 /**
  * @brief Token
