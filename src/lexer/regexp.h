@@ -1,3 +1,13 @@
+/**
+ * @file regexp.h
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Regular Expression to Finite Automaton
+ * @date 2023-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #pragma once
 #include <stack>
 #include <string>

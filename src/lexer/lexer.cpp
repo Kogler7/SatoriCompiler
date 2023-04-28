@@ -1,3 +1,13 @@
+/**
+ * @file lexer.cpp
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Lexical Analysis
+ * @date 2023-04-22
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "lexer.h"
 #include "nfa.h"
 #include "regexp.h"
@@ -83,20 +93,21 @@ void Lexer::tokenize(string codeSeg)
                 if (rvIdMap.find(matchedToken) != rvIdMap.end())
                 {
                     // 如果是保留字，就把它的种别码作为词法单元的种别码
-                    tokens.push_back(make_pair(matchedType, to_string(rvIdMap[matchedToken])));
+                    tokens.push_back(
+                        token(matchedType, matchedToken, true, rvIdMap[matchedToken]));
                 }
                 else
                 {
                     // 否则就把它的字符串作为词法单元的种别码
-                    tokens.push_back(make_pair(matchedType, matchedToken));
+                    tokens.push_back(
+                        token(matchedType, matchedToken));
                 }
-                literals.push_back(matchedToken); // 加入字面量序列，以变查看
             }
             else if (matchedType != IGNORE && matchedType != BLANK)
             {
                 // 忽略空白和注释，其他的都作为词法单元
-                tokens.push_back(make_pair(matchedType, matchedToken));
-                literals.push_back(matchedToken); // 加入字面量序列，以变查看
+                tokens.push_back(
+                    token(matchedType, matchedToken));
             }
             vCode = matchedView;
             debug(0) << "Tokenize accepted: " << matchedToken << endl;
@@ -114,10 +125,10 @@ void Lexer::tokenize(string codeSeg)
 
 void Lexer::printToken(int idx)
 {
-    pair<TokenType, string> token = tokens[idx];
-    cout << "(" << setw(10) << right << tok2str[token.first] << ", ";
-    cout << setw(16) << left << token.second << ")";
-    cout << " : " << literals[idx];
+    token tok = tokens[idx];
+    cout << "(" << setw(10) << right << tok2str[tok.type] << ", ";
+    cout << setw(3) << left << int(tok.reserved ? tok.rvId : -1) << ")";
+    cout << " : " << tok.value;
     cout << endl;
 }
 

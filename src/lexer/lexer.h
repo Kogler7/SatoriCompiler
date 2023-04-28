@@ -1,21 +1,19 @@
+/**
+ * @file lexer.h
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Lexical Analysis
+ * @date 2023-04-22
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #pragma once
 #include <map>
 #include <string>
 #include <vector>
 #include "nfa.h"
-
-extern enum TokenType {
-    BLANK,
-    IGNORE,
-    MACRO,
-    INCLUDE,
-    IDENTIFIER,
-    STRING,
-    CHARACTER,
-    REAL,
-    INTEGER,
-    SEPARATOR,
-};
+#include "../common/token.h"
 
 extern map<TokenType, string> tok2str;
 
@@ -25,8 +23,7 @@ class Lexer
 {
     map<string, unsigned int> rvIdMap;             // 保留字种别码对照表
     map<TokenType, vector<FiniteAutomaton>> faMap; // 状态自动机对照表
-    vector<pair<TokenType, string>> tokens;        // 词法单元序列
-    vector<string> literals;                       // 字符串字面量序列
+    vector<token> tokens;                          // 词法单元序列
     string code;                                   // 代码文本
     void printToken(int idx);
 

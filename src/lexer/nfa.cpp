@@ -1,3 +1,13 @@
+/**
+ * @file nfa.cpp
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Non-deterministic Finite Automaton
+ * @date 2023-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "nfa.h"
 #include "lexdef.h"
 #include "../utils/log.h"

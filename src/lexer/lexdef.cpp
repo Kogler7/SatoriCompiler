@@ -1,3 +1,13 @@
+/**
+ * @file lexdef.cpp
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Lexical Definition Parser
+ * @date 2023-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "lexdef.h"
 
 set<char> leftOp = {

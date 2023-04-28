@@ -2,6 +2,16 @@
 #include <set>
 #include <vector>
 #include <string>
+/**
+ * @file nfa.h
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Non-deterministic Finite Automaton
+ * @date 2023-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <unordered_map>
 #include "viewer.h"
 

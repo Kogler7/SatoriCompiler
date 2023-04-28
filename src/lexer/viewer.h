@@ -1,3 +1,13 @@
+/**
+ * @file viewer.cpp
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Lightweight String Viewer
+ * @date 2023-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #pragma once
 #include <string>
 #include <vector>

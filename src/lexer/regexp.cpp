@@ -1,3 +1,13 @@
+/**
+ * @file regexp.cpp
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Regular Expression to Finite Automaton
+ * @date 2023-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "regexp.h"
 #include "../utils/log.h"
 #include "lexdef.h"

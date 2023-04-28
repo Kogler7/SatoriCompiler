@@ -1,3 +1,13 @@
+/**
+ * @file test.cpp
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Test
+ * @date 2023-04-22
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "test.h"
 #include "regexp.h"
 
@@ -18,8 +28,8 @@ void lexerMain()
 	Lexer lexer;
 	lexer.readLexerDef("./assets/lexer.def");
 	// lexer.readCodeFile("./assets/code.cpp");
-	// lexer.readCodeFile("./assets/error.cpp");
-	lexer.readCodeFile("./assets/test.cpp");
+	lexer.readCodeFile("./assets/error.cpp");
+	// lexer.readCodeFile("./assets/test.cpp");
 	lexer.tokenize();
 	lexer.printTokens();
 }
