@@ -9,13 +9,18 @@
  */
 
 #include "../lexer/lexer.h"
+#include "parser.h"
 
 using namespace std;
 
-void test()
+void parserMain()
 {
-    Lexer cppLexer("cpp.lex");
-    cppLexer.readCodeFile("test.c");
-    cppLexer.tokenize();
-    cppLexer.printTokens();
+    // Lexer cppLexer("./assets/cpp.lex");
+    // cppLexer.readCodeFile("./assets/error.cpp");
+    // cppLexer.tokenize();
+    // cppLexer.printTokens();
+    Lexer ebnfLexer("./assets/ebnf.lex");
+    ebnfLexer.readSrcFile("./assets/syntax.ebnf");
+    ebnfLexer.tokenize();
+    ebnfLexer.printTokens();
 }

@@ -40,7 +40,7 @@ public:
     void addTokenType(string typeName, string regExp);
     void addIgnoredType(string typeName);
     void addReservedType(string typeName);
-    void readCodeFile(string filename);
+    void readSrcFile(string filename);
     void readLexerDef(string filename);
     void tokenize(string codeSeg = "");
     void printTokens();

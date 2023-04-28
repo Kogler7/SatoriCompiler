@@ -149,7 +149,7 @@ void Lexer::clear()
     tokens.clear();
 }
 
-void Lexer::readCodeFile(string fileName)
+void Lexer::readSrcFile(string fileName)
 {
     ifstream ifs(fileName);
     string _code((istreambuf_iterator<char>(ifs)),

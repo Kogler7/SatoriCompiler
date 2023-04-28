@@ -2,7 +2,7 @@ Stmt        = `if` Exp `then` Stmt [`else` Stmt]
                 | `while` Exp `do` Stmt
                 | `begin` Block `end`
                 | StmtItem ;
-Block       = Stmt{`;`Stmt} ;
+Block       = Stmt { `;` Stmt } ;
 StmtItem    = LValue `=` Exp ;
 Exp         = ExpItem AddItem ;
 AddItem     = AddOp ExpItem AddItem | \e ;

@@ -9,12 +9,14 @@
  */
 
 #include "lexer/test.h"
+#include "parser/parser.h"
 
 int main()
 {
 	// lexerTest();
 	// nfaTest();
-	lexerMain();
+	// lexerMain();
+	parserMain();
 	
 	// system("pause");
 	return 0;
