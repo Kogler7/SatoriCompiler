@@ -3,9 +3,9 @@
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Lightweight String Viewer
  * @date 2023-04-22
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #pragma once
@@ -25,8 +25,8 @@ class viewer
 	int pos = 0;
 
 public:
-	viewer(string str) : str(str) {}
-	void operator=(viewer &v)
+	viewer(string &str) : str(str) {}
+	void operator=(viewer v)
 	{
 		str = v.str;
 		pos = v.pos;

@@ -12,18 +12,6 @@
 #include "lexer.h"
 #include "regexp.h"
 
-set<string> keywords = {
-	"auto", "break", "case", "char", "const", "continue", "default",
-	"do", "double", "else", "enum", "extern", "float", "for", "goto",
-	"if", "int", "long", "register", "return", "short", "signed",
-	"sizeof", "static", "struct", "switch", "typedef", "union",
-	"unsigned", "void", "volatile", "while"};
-
-set<string> separators = {
-	"(", ")", "[", "]", "{", "}", ",", ";", ":", ".",
-	"&", "*", "+", "-", "~", "!", "/", "%", "<", ">",
-	"^", "|", "=", "?", "#", "\\", "\"", "\`"};
-
 void lexerMain()
 {
 	Lexer lexer("./assets/cpp.lex");
@@ -38,14 +26,6 @@ void lexerTest()
 {
 	Lexer lexer;
 	int id = 0;
-	for (auto &keyword : keywords)
-	{
-		lexer.addKeywordId(keyword, id++);
-	}
-	for (auto &sep : separators)
-	{
-		lexer.addKeywordId(sep, id++);
-	}
 	lexer.addTokenType("BLANK", "[\\t\\n\\r\\f\\v ]+");
 	lexer.addTokenType("IGNORE", "\"([\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]|\\\\\")*\"");
 	lexer.addTokenType("IGNORE", "/\\\*([\\x0a-\\x0d\\x20-\\x29\\x2b-\\x7e]*|\\*[\\x0a-\\x0d\\x20-\\x2e\\x30-\\x7e]*)*\\*/");
@@ -61,8 +41,6 @@ void lexerTest()
 
 	lexer.addIgnoredType("BLANK");
 	lexer.addIgnoredType("IGNORE");
-	lexer.addReservedType("IDENTIFIER");
-	lexer.addReservedType("SEPARATOR");
 
 	lexer.tokenize("int main() { int a = 1; int b = 2; int c = a + b; return 0; }");
 	lexer.printTokens();

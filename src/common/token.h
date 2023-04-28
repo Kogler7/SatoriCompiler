@@ -21,7 +21,6 @@ struct token
 {
     TokenType type;
     string value;
-    bool reserved;
-    unsigned int rvId;
-    token(TokenType type, string value, bool reserved = false, unsigned int rvId = 0) : type(type), value(value), reserved(reserved), rvId(rvId) {}
+    token() : type(0), value("") {}
+    token(TokenType type, string value) : type(type), value(value) {}
 };

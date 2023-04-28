@@ -1,12 +1,15 @@
 PATTERN ${
-    ^BLANK      \s+
-    ^IGNORE     //[^\r\n]*
-    EPSILON     \\e
+    BLANK      \s+
+    COMMENT    //[^\r\n]*
+    EPSILON    \\e
+    CONSTANT   REAL|INTEGER|STRING
+    IDENTIFIER IDENTIFIER
     NON_TERM    [\a_][\w]*
     TERMINAL    `[^`]*`
-    *SEPARATOR  [=\(\){}\[\];\|]
+    SEPARATOR  [=\(\){}\[\];\|]
 $}
 
-RESERVED ${
-    =   (   )   {   }   [   ]   ;   |
+IGNORE ${
+    BLANK
+    COMMENT
 $}

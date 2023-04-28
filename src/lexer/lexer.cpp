@@ -17,12 +17,6 @@
 
 #define _find(x, y) (x.find(y) != x.end())
 
-void Lexer::addKeywordId(string keyword, unsigned int id)
-{
-    rvIdMap[keyword] = id;
-    debug(1) << "Add keyword: " << keyword << " with id: " << id << endl;
-}
-
 void Lexer::addTokenType(string typeName, string regExp)
 {
     TokenType type;
@@ -47,13 +41,6 @@ void Lexer::addIgnoredType(string typeName)
     TokenType type = str2typ[typeName];
     ignoredTypes.insert(type);
     debug(1) << "Add ignored type: " << types[type] << endl;
-}
-
-void Lexer::addReservedType(string typeName)
-{
-    TokenType type = str2typ[typeName];
-    reservedTypes.insert(type);
-    debug(1) << "Add reserved type: " << types[type] << endl;
 }
 
 void Lexer::tokenize(string codeSeg)
@@ -90,23 +77,7 @@ void Lexer::tokenize(string codeSeg)
         }
         if (matched)
         {
-            if (_find(reservedTypes, matchedType))
-            {
-                // 默认只认为标识符和分隔符是保留字，拥有种别码
-                if (rvIdMap.find(matchedToken) != rvIdMap.end())
-                {
-                    // 如果是保留字，就把它的种别码作为词法单元的种别码
-                    tokens.push_back(
-                        token(matchedType, matchedToken, true, rvIdMap[matchedToken]));
-                }
-                else
-                {
-                    // 否则就把它的字符串作为词法单元的种别码
-                    tokens.push_back(
-                        token(matchedType, matchedToken));
-                }
-            }
-            else if (!_find(ignoredTypes, matchedType))
+            if (!_find(ignoredTypes, matchedType))
             {
                 // 忽略空白和注释，其他的都作为词法单元
                 tokens.push_back(
@@ -130,8 +101,7 @@ void Lexer::printToken(int idx)
 {
     token tok = tokens[idx];
     cout << "(" << setw(10) << right << types[tok.type] << ", ";
-    cout << setw(3) << left << int(tok.reserved ? tok.rvId : -1) << ")";
-    cout << " : " << tok.value;
+    cout << setw(12) << left << tok.value << ")";
     cout << endl;
 }
 
@@ -209,34 +179,18 @@ void Lexer::readLexerDef(string fileName)
         auto ptnEnd = find(patternIt, tokens.end(), "$}");
         for (auto it = ptnStart + 1; it != ptnEnd; it += 2)
         {
-            if ((*it)[0] == '^')
-            {
-                // 如果是以^开头的，就把^去掉，然后把剩下的字符串作为忽略字
-                string rv = it->substr(1);
-                addTokenType(rv, *(it + 1));
-                addIgnoredType(rv);
-            }
-            else if ((*it)[0] == '*')
-            {
-                // 如果是以*开头的，就把*去掉，然后把剩下的字符串作为保留字
-                string rv = it->substr(1);
-                addTokenType(rv, *(it + 1));
-                addReservedType(rv);
-            }
-            else
-                addTokenType(*it, *(it + 1));
+            addTokenType(*it, *(it + 1));
         }
     }
-    // 解析RESERVED
-    auto reservedIt = find(tokens.begin(), tokens.end(), "RESERVED");
-    if (reservedIt != tokens.end())
+    // 解析IGNORE
+    auto ignoreIt = find(tokens.begin(), tokens.end(), "IGNORE");
+    if (ignoreIt != tokens.end())
     {
-        auto rvStart = find(reservedIt, tokens.end(), "${");
-        auto rvEnd = find(reservedIt, tokens.end(), "$}");
-        int id = 0;
-        for (auto it = rvStart + 1; it != rvEnd; it++)
+        auto ignStart = find(ignoreIt, tokens.end(), "${");
+        auto ignEnd = find(ignoreIt, tokens.end(), "$}");
+        for (auto it = ignStart + 1; it != ignEnd; it++)
         {
-            addKeywordId(*it, id++);
+            addIgnoredType(*it);
         }
     }
 }
