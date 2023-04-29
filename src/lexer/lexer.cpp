@@ -77,13 +77,15 @@ void Lexer::tokenize(string codeSeg)
         }
         if (matched)
         {
+            vCode = matchedView;
             if (!_find(ignoredTypes, matchedType))
             {
                 // 忽略空白和注释，其他的都作为词法单元
+                int line, col;
+                tie(line, col) = vCode.getCurLineCol();
                 tokens.push_back(
-                    token(matchedType, matchedToken));
+                    token(matchedType, matchedToken, line, col));
             }
-            vCode = matchedView;
             debug(0) << "Tokenize accepted: " << matchedToken << endl;
         }
         else

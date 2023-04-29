@@ -10,6 +10,7 @@
 
 #include "../lexer/lexer.h"
 #include "parser.h"
+#include "opg/ebnf.h"
 
 using namespace std;
 
@@ -20,7 +21,16 @@ void parserMain()
     // cppLexer.tokenize();
     // cppLexer.printTokens();
     Lexer ebnfLexer("./assets/ebnf.lex");
-    ebnfLexer.readSrcFile("./assets/syntax.ebnf");
+    ebnfLexer.readSrcFile("./assets/test.ebnf");
     ebnfLexer.tokenize();
     ebnfLexer.printTokens();
+    EBNFParser ebnfParser(ebnfLexer.getTokens(), ebnfLexer.getTypes());
+    ebnfParser.parseRules();
+    ebnfParser.printRules();
+    ebnfParser.printTerminals();
+    ebnfParser.printNonTerms();
+    ebnfParser.calcFirst();
+    ebnfParser.calcFollow();
+    ebnfParser.printFirst();
+    ebnfParser.printFollow();
 }

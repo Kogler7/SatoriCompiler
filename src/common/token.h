@@ -21,6 +21,8 @@ struct token
 {
     TokenType type;
     string value;
-    token() : type(0), value("") {}
-    token(TokenType type, string value) : type(type), value(value) {}
+    int line;
+    int col;
+    token() : type(0), value(""), line(0), col(0) {}
+    token(TokenType type, string value, int line, int col) : type(type), value(value), line(line), col(col) {}
 };

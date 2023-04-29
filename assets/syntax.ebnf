@@ -1,15 +1,15 @@
-Stmt        = `if` Exp `then` Stmt [`else` Stmt]
-                | `while` Exp `do` Stmt
-                | `begin` Block `end`
-                | StmtItem ;
-Block       = Stmt { `;` Stmt } ;
-StmtItem    = LValue `=` Exp ;
-Exp         = ExpItem AddItem ;
-AddItem     = AddOp ExpItem AddItem | \e ;
-ExpItem     = Factor MulItem ;
-MulItem     = MulOp Factor MulItem | \e ;
-Factor      =  `(`Exp`)` | Num ;
-AddOp       = `+` | `-` ;
-MulOp       = `*` | `/` ;
-LValue      = IDENTIFIER ;
-Num         = REAL | INTEGER ;
+Stmt*       ::=     `if` Exp `then` Stmt [`else` Stmt]
+                    | `while` Exp `do` Stmt
+                    | `begin` Block `end`
+                    | StmtItem ;
+Block       ::=     Stmt { `;` Stmt } ;
+StmtItem    ::=     LValue `=` Exp ;
+Exp         ::=     ExpItem AddItem ;
+AddItem     ::=     AddOp ExpItem AddItem | \e ;
+ExpItem     ::=     Factor MulItem ;
+MulItem     ::=     MulOp Factor MulItem | \e ;
+Factor      ::=      `(`Exp`)` | Num ;
+AddOp       ::=     `+` | `-` ;
+MulOp       ::=     `*` | `/` ;
+LValue      ::=     `i` ;
+Num         ::=     `i` ;

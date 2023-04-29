@@ -39,6 +39,8 @@ public:
     void readSrcFile(string filename);
     void readLexerDef(string filename);
     void tokenize(string codeSeg = "");
+    vector<token> getTokens() { return tokens; }
+    vector<string> getTypes() { return types; }
     void printTokens();
     void clear();
 };

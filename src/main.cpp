@@ -15,8 +15,8 @@ int main()
 {
 	// lexerTest();
 	// nfaTest();
-	lexerMain();
-	// parserMain();
+	// lexerMain();
+	parserMain();
 	
 	// system("pause");
 	return 0;
