@@ -1,8 +1,8 @@
 /**
- * @file ebnf.h
+ * @file gram.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief EBNF Parser
- * @date 2023-04-27
+ * @brief Grammar
+ * @date 2023-04-29
  *
  * @copyright Copyright (c) 2023
  *
@@ -13,37 +13,31 @@
 #include <vector>
 #include <string>
 
-#include "../../utils/log.h"
-#include "../../common/token.h"
+#define EPSILON "@" // 用于表示空串
+#define SYM_END "#" // 用于表示输入串结束
+
+using namespace std;
 
 typedef string term;
 
-class EBNFParser
+class Grammar
 {
-    vector<token> tokens;
-    vector<string> tokTypes;
+public:
     term startTerm;
-    int termType;
-    int startType;
-    int nonTermType;
-    int epsilonType;
     set<term> terminals;
-    set<term> non_terms;
+    set<term> nonTerms;
     map<term, set<vector<term>>> rules;
     map<term, set<term>> first;
     map<term, set<term>> follow;
 
-public:
-    EBNFParser(vector<token> ebnf_tokens, vector<string> tok_types);
-    term getStart() { return startTerm; }
-    void parseRules();
+    Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules);
     void printRules();
+    void printTerminals();
+    void printNonTerms();
     set<term> calcFirstOf(term t);
     set<term> calcFollowOf(term t);
     void calcFirst();
     void calcFollow();
     void printFirst();
     void printFollow();
-    void printTerminals();
-    void printNonTerms();
 };

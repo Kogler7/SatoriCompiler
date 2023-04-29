@@ -38,7 +38,7 @@ public:
     void addIgnoredType(string typeName);
     void readSrcFile(string filename);
     void readLexerDef(string filename);
-    void tokenize(string codeSeg = "");
+    pair<vector<token>, vector<string>> tokenize(string codeSeg = "");
     vector<token> getTokens() { return tokens; }
     vector<string> getTypes() { return types; }
     void printTokens();

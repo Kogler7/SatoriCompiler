@@ -43,7 +43,7 @@ void Lexer::addIgnoredType(string typeName)
     debug(1) << "Add ignored type: " << types[type] << endl;
 }
 
-void Lexer::tokenize(string codeSeg)
+pair<vector<token>, vector<string>> Lexer::tokenize(string codeSeg)
 {
     if (codeSeg != "")
         this->code = codeSeg;
@@ -97,6 +97,7 @@ void Lexer::tokenize(string codeSeg)
             vCode.skipToNextLine();
         }
     }
+    return make_pair(tokens, types);
 }
 
 void Lexer::printToken(int idx)
