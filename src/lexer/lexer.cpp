@@ -128,6 +128,7 @@ void Lexer::readSrcFile(string fileName)
     string _code((istreambuf_iterator<char>(ifs)),
                  (istreambuf_iterator<char>()));
     code = _code;
+    ifs.close();
     info << "Code: " << endl;
     cout << code << endl;
 }

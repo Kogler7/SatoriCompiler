@@ -31,6 +31,8 @@ public:
     map<term, set<term>> follow;
 
     Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules);
+    Grammar() {}
+    void operator=(const Grammar &g);
     void printRules();
     void printTerminals();
     void printNonTerms();

@@ -8,7 +8,7 @@
  *
  */
 
-#include "tok_view.h"
+#include "../tok_view.h"
 
 using namespace std;
 

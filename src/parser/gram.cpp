@@ -23,6 +23,14 @@ Grammar::Grammar(term start, set<term> terms, set<term> non_terms, map<term, set
     this->rules = rules;
 }
 
+void Grammar::operator=(const Grammar &g)
+{
+    startTerm = g.startTerm;
+    terminals = g.terminals;
+    nonTerms = g.nonTerms;
+    rules = g.rules;
+}
+
 void Grammar::printRules()
 {
     info << "EBNFParser: Rules:" << endl;
