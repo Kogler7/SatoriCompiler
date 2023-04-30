@@ -41,5 +41,5 @@ public:
 	string getTmpReg() { return tmpReg; }
 	string getPostfix() { return postfix; }
 	FiniteAutomaton getNFA() { return nfa; }
-	FiniteAutomaton convert();
+	FiniteAutomaton parse();
 };

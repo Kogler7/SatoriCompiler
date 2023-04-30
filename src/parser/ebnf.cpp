@@ -17,19 +17,18 @@
 #include "utils/log.h"
 
 typedef string term;
-typedef int tok_type;
 
-vector<token>::iterator findType(vector<token> &vec, vector<token>::iterator begin, int type)
-{
-    for (auto it = begin; it != vec.end(); it++)
-    {
-        if (it->type == type)
-        {
-            return it;
-        }
-    }
-    return vec.end();
-}
+// vector<token>::iterator findType(vector<token> &vec, vector<token>::iterator begin, int type)
+// {
+//     for (auto it = begin; it != vec.end(); it++)
+//     {
+//         if (it->type == type)
+//         {
+//             return it;
+//         }
+//     }
+//     return vec.end();
+// }
 
 string lrtri(string str)
 {
@@ -51,34 +50,10 @@ Grammar EBNFParser::parse(string grammarPath)
     map<term, set<vector<term>>> rules;
     map<term, set<term>> first;
     map<term, set<term>> follow;
-    tok_type termType;
-    tok_type startType;
-    tok_type nonTermType;
-    tok_type epsilonType;
-    for (int i = 0; i < tokTypes.size(); i++)
-    {
-        if (tokTypes[i] == "TERMINAL")
-        {
-            termType = i;
-        }
-        else if (tokTypes[i] == "NON_TERM")
-        {
-            nonTermType = i;
-        }
-        else if (tokTypes[i] == "EPSILON")
-        {
-            epsilonType = i;
-        }
-        else if (tokTypes[i] == "START")
-        {
-            startType = i;
-        }
-    }
-    if (termType == -1 || nonTermType == -1)
-    {
-        error << "EBNFParser: No TERMINAL or NON_TERM type found!" << endl;
-        throw runtime_error("EBNFParser: No TERMINAL or NON_TERM type found!");
-    }
+    token_type termType = tokTypes["TERMINAL"];
+    token_type startType = tokTypes["START"];
+    token_type nonTermType = tokTypes["NON_TERM"];
+    token_type epsilonType = tokTypes["EPSILON"];
     for (int i = 0; i < tokens.size(); i++)
     {
         if (tokens[i].type == termType)

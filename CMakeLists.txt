@@ -22,7 +22,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-add_definitions(-w)
+add_definitions(-w) # 关闭警告
 
 if(CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET SatoriCompiler PROPERTY CXX_STANDARD 20)

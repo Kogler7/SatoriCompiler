@@ -39,7 +39,7 @@ bool RDPParser::parseSymbol(TokenViewer &tokens, term t)
     return true;
 }
 
-bool RDPParser::parse(vector<token> &tokens, vector<TokenType> &tok_types)
+bool RDPParser::parse(vector<token> &tokens, map<string, token_type> &tok_types)
 {
     info << "RDPParser: Parsing..." << endl;
     // TokenViewer tokens(tokens);

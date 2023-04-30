@@ -10,19 +10,25 @@
 
 #pragma once
 #include <string>
+#include <memory>
 
 using namespace std;
-typedef unsigned int TokenType;
+
+typedef shared_ptr<string> token_type;
+
+#define type_less owner_less<token_type>
+#define make_type(x) make_shared<string>(x)
+
+using namespace std;
 
 /**
  * @brief Token
  */
 struct token
 {
-    TokenType type;
+    token_type type;
     string value;
     int line;
     int col;
-    token() : type(0), value(""), line(0), col(0) {}
-    token(TokenType type, string value, int line, int col) : type(type), value(value), line(line), col(col) {}
+    token(token_type type, string value, int line, int col) : type(type), value(value), line(line), col(col) {}
 };

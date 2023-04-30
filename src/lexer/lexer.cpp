@@ -19,31 +19,35 @@
 
 void Lexer::addTokenType(string typeName, string regExp)
 {
-    TokenType type;
-    if (_find(str2typ, typeName))
+    token_type type;
+    if (_find(types, typeName))
     {
-        type = str2typ[typeName];
+        type = types[typeName];
     }
     else
     {
-        types.push_back(typeName);
-        type = types.size() - 1;
-        str2typ[typeName] = type;
+        type = make_type(typeName);
+        types[typeName] = type;
     }
-    RegexpParser reg2FA(regExp);
-    FiniteAutomaton nfa = reg2FA.convert();
+    RegexpParser regParser(regExp);
+    FiniteAutomaton nfa = regParser.parse();
     faMap[type].push_back(nfa);
-    debug(1) << "Add token type: " << types[type] << " with regExp: " << regExp << endl;
+    debug(1) << "Add token type: " << type << " with regExp: " << regExp << endl;
 }
 
 void Lexer::addIgnoredType(string typeName)
 {
-    TokenType type = str2typ[typeName];
-    ignoredTypes.insert(type);
-    debug(1) << "Add ignored type: " << types[type] << endl;
+    if (_find(types, typeName))
+    {
+        token_type type = types[typeName];
+        ignoredTypes.insert(type);
+        debug(1) << "Add ignored type: " << type << endl;
+        return;
+    }
+    error << "Type " << typeName << " not found!" << endl;
 }
 
-pair<vector<token>, vector<string>> Lexer::tokenize(string codeSeg)
+pair<vector<token>, map<string, token_type>> Lexer::tokenize(string codeSeg)
 {
     if (codeSeg != "")
         this->code = codeSeg;
@@ -53,7 +57,7 @@ pair<vector<token>, vector<string>> Lexer::tokenize(string codeSeg)
     {
         bool matched = false;
         string matchedToken;
-        TokenType matchedType;
+        token_type matchedType;
         viewer matchedView = vCode;
         for (auto tokFa : faMap) // 按序遍历所有的状态自动机
         {
@@ -103,7 +107,7 @@ pair<vector<token>, vector<string>> Lexer::tokenize(string codeSeg)
 void Lexer::printToken(int idx)
 {
     token tok = tokens[idx];
-    cout << "(" << setw(10) << right << types[tok.type] << ", ";
+    cout << "(" << setw(10) << right << tok.type << ", ";
     cout << setw(12) << left << tok.value << ")";
     cout << endl;
 }

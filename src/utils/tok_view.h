@@ -10,6 +10,7 @@
 
 #include "common/token.h"
 #include "vector"
+#include "log.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ public:
     {
         if (i < 0 || i >= tokens.size())
         {
-            return token();
+            error << "TokenViewer: index out of range" << endl;
         }
         return tokens[i];
     }

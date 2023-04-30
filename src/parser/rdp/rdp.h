@@ -19,5 +19,5 @@ class RDPParser
 public:
     RDPParser(Grammar &grammar);
     bool parseSymbol(TokenViewer &tokens, term t);
-    bool parse(vector<token> &tokens, vector<TokenType> &tok_types);
+    bool parse(vector<token> &tokens, map<string, token_type> &tok_types);
 };

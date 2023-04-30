@@ -16,7 +16,7 @@ class EBNFParser
 {
     Lexer ebnfLexer;
     vector<token> tokens;
-    vector<string> tokTypes;
+    map<string, token_type> tokTypes;
 
 public:
     EBNFParser(string ebnfLexPath);

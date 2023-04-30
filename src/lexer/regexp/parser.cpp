@@ -39,7 +39,7 @@ string RegexpParser::getStackDesc()
 	return desc;
 }
 
-FiniteAutomaton RegexpParser::convert()
+FiniteAutomaton RegexpParser::parse()
 {
 	regexpPreproc();
 	tmpReg2postfix();
