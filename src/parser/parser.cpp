@@ -21,9 +21,8 @@ void parserMain()
     // cppLexer.tokenize();
     // cppLexer.printTokens();
     EBNFParser ebnfParser("./assets/ebnf.lex");
-    Lexer &ebnfLexer = ebnfParser.getLexer();
-    ebnfLexer.printTokens();
     Grammar G = ebnfParser.parse("./assets/gram.ebnf");
+    ebnfParser.getLexer().printTokens();
     G.printRules();
     G.printTerminals();
     G.printNonTerms();

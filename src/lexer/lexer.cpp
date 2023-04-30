@@ -107,7 +107,7 @@ pair<vector<token>, map<string, token_type>> Lexer::tokenize(string codeSeg)
 void Lexer::printToken(int idx)
 {
     token tok = tokens[idx];
-    cout << "(" << setw(10) << right << tok.type << ", ";
+    cout << "(" << setw(10) << right << *tok.type << ", ";
     cout << setw(12) << left << tok.value << ")";
     cout << endl;
 }
