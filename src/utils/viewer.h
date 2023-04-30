@@ -1,5 +1,5 @@
 /**
- * @file viewer.cpp
+ * @file viewer.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Lightweight String Viewer
  * @date 2023-04-22

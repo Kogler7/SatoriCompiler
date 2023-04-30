@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 #include "nfa.h"
-#include "../common/token.h"
+#include "common/token.h"
 
 using namespace std;
 typedef unsigned int TokenType;

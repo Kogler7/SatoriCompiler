@@ -14,7 +14,7 @@
 #include <string>
 
 #include "ebnf.h"
-#include "../utils/log.h"
+#include "utils/log.h"
 
 typedef string term;
 typedef int tok_type;

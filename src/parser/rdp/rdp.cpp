@@ -9,7 +9,7 @@
  */
 
 #include "rdp.h"
-#include "../../utils/log.h"
+#include "utils/log.h"
 #include <fstream>
 
 RDPParser::RDPParser(Grammar &grammar)

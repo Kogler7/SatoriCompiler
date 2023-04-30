@@ -9,8 +9,8 @@
  */
 
 #include "../gram.h"
-#include "../../common/token.h"
-#include "../tok_view.h"
+#include "common/token.h"
+#include "utils/tok_view.h"
 
 class RDPParser
 {

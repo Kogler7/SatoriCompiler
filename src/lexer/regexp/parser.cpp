@@ -1,5 +1,5 @@
 /**
- * @file regexp.cpp
+ * @file regexp/parser.cpp
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Regular Expression to Finite Automaton
  * @date 2023-04-22
@@ -8,13 +8,13 @@
  * 
  */
 
-#include "regexp.h"
-#include "../utils/log.h"
-#include "lexdef.h"
+#include "parser.h"
+#include "utils/log.h"
+#include "define.h"
 
 #define _find(x, y) (x.find(y) != x.end())
 
-string Regexp2FA::getStackDesc()
+string RegexpParser::getStackDesc()
 {
 	stack<sub_nfa> tmpStack = nfaStack;
 	vector<sub_nfa> tmpVec;
@@ -39,7 +39,7 @@ string Regexp2FA::getStackDesc()
 	return desc;
 }
 
-FiniteAutomaton Regexp2FA::convert()
+FiniteAutomaton RegexpParser::convert()
 {
 	regexpPreproc();
 	tmpReg2postfix();
@@ -47,7 +47,7 @@ FiniteAutomaton Regexp2FA::convert()
 	return nfa;
 }
 
-void Regexp2FA::parseSet(string setExp)
+void RegexpParser::parseSet(string setExp)
 {
 	debug(0) << "parse set: " << setExp << endl;
 	viewer tmpView(setExp);
@@ -158,7 +158,7 @@ void Regexp2FA::parseSet(string setExp)
 	setStates.push_back(ed);
 }
 
-void Regexp2FA::opSelect()
+void RegexpParser::opSelect()
 {
 	// (st1, ed1) (st2, ed2) | => (nst, ned)
 	sub_nfa sub2 = nfaStack.top();
@@ -180,7 +180,7 @@ void Regexp2FA::opSelect()
 	nfaStack.push(make_pair(nst, ned));
 }
 
-void Regexp2FA::opStar()
+void RegexpParser::opStar()
 {
 	// (st, ed) * => (nst, ned)
 	sub_nfa sub = nfaStack.top();
@@ -197,7 +197,7 @@ void Regexp2FA::opStar()
 	nfaStack.push(make_pair(nst, ned));
 }
 
-void Regexp2FA::opPlus()
+void RegexpParser::opPlus()
 {
 	// (st, ed) + => (nst, ned)
 	sub_nfa sub = nfaStack.top();
@@ -213,7 +213,7 @@ void Regexp2FA::opPlus()
 	nfaStack.push(make_pair(nst, ned));
 }
 
-void Regexp2FA::opQues()
+void RegexpParser::opQues()
 {
 	// (st, ed) ? => (nst, ned)
 	sub_nfa sub = nfaStack.top();
@@ -229,7 +229,7 @@ void Regexp2FA::opQues()
 	nfaStack.push(make_pair(nst, ned));
 }
 
-void Regexp2FA::opConcat()
+void RegexpParser::opConcat()
 {
 	// (st1, ed1) (st2, ed2) ~ => (st1, ed2)
 	sub_nfa sub2 = nfaStack.top();
@@ -245,7 +245,7 @@ void Regexp2FA::opConcat()
 	nfaStack.push(make_pair(st1, ed2));
 }
 
-void Regexp2FA::regexpPreproc()
+void RegexpParser::regexpPreproc()
 {
 	info << "regexpPreproc: " << exp2str(rawReg) << endl;
 	viewer rawView(rawReg);
@@ -313,7 +313,7 @@ void Regexp2FA::regexpPreproc()
 	}
 }
 
-void Regexp2FA::tmpReg2postfix()
+void RegexpParser::tmpReg2postfix()
 {
 	info << "tmpReg2postfix: " << exp2str(tmpReg) << endl;
 	stack<char> opStack;
@@ -369,7 +369,7 @@ void Regexp2FA::tmpReg2postfix()
 	}
 }
 
-void Regexp2FA::postfix2FA()
+void RegexpParser::postfix2FA()
 {
 	info << "postfix2FA: " << exp2str(postfix) << endl;
 	int setIdx = 0;

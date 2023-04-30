@@ -8,9 +8,9 @@
  *
  */
 
-#include "../common/token.h"
+#include "common/token.h"
 #include "gram.h"
-#include "../lexer/lexer.h"
+#include "lexer/lexer.h"
 
 class EBNFParser
 {

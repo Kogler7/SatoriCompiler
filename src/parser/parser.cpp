@@ -8,7 +8,7 @@
  *
  */
 
-#include "../lexer/lexer.h"
+#include "lexer/lexer.h"
 #include "parser.h"
 #include "ebnf.h"
 

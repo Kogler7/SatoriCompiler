@@ -1,14 +1,14 @@
 /**
- * @file lexdef.cpp
+ * @file define.cpp
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Lexical Definition Parser
+ * @brief Regular Expression Definition Parser
  * @date 2023-04-22
  * 
  * @copyright Copyright (c) 2023
  * 
  */
 
-#include "lexdef.h"
+#include "define.h"
 
 set<char> leftOp = {
     STAR,

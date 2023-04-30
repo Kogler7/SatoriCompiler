@@ -9,10 +9,10 @@
  */
 
 #include "nfa.h"
-#include "lexdef.h"
-#include "../utils/log.h"
+#include "regexp/define.h"
+#include "utils/log.h"
 
-void FiniteAutomaton::setStartState(int id)
+void FiniteAutomaton::setStartState(state_id id)
 {
 	startState = id;
 }
@@ -26,7 +26,7 @@ void FiniteAutomaton::setStartState(int id)
  * @return true		匹配成功
  * @return false	匹配失败
  */
-bool FiniteAutomaton::accepts(viewer &view, string &result, int start)
+bool FiniteAutomaton::accepts(viewer &view, string &result, state_id start)
 {
 	if (start == -1) // 未指定起始状态，使用默认起始状态
 		start = startState;
@@ -45,7 +45,7 @@ bool FiniteAutomaton::accepts(viewer &view, string &result, int start)
 		viewer tmpView = subView; // 保存当前视图，用于回溯
 		if (available.find(c) != available.end())
 		{
-			set<int> nextSet = available[c];
+			set<state_id> nextSet = available[c];
 			for (auto i : nextSet)
 			{
 				string nxtRes;
@@ -71,7 +71,7 @@ bool FiniteAutomaton::accepts(viewer &view, string &result, int start)
 		{
 			subView.skip(-1); // EPSILON转移不消耗字符，视图回退一位
 			tmpView = subView;
-			set<int> nextSet = available[EPSILON];
+			set<state_id> nextSet = available[EPSILON];
 			for (auto i : nextSet)
 			{
 				string nxtRes;
@@ -100,7 +100,7 @@ bool FiniteAutomaton::accepts(viewer &view, string &result, int start)
 	return false;
 }
 
-void FiniteAutomaton::setState(int id, bool isFinal)
+void FiniteAutomaton::setState(state_id id, bool isFinal)
 {
 	states[id].isFinal = isFinal;
 }
@@ -128,11 +128,11 @@ void FiniteAutomaton::print()
 	info << "Transitions:" << endl;
 	for (const auto &transition : transitions)
 	{
-		int from = transition.first;
+		state_id from = transition.first;
 		for (const auto &symbol : transition.second)
 		{
 			char c = symbol.first;
-			const set<int> &to = symbol.second;
+			const set<state_id> &to = symbol.second;
 			for (const auto &t : to)
 			{
 				cout << "    " << from << " --" << char2str(c) << "(" << int(c) << ")--> " << t << endl;
@@ -141,15 +141,15 @@ void FiniteAutomaton::print()
 	}
 }
 
-int FiniteAutomaton::addState(bool isFinal)
+state_id FiniteAutomaton::addState(bool isFinal)
 {
-	int id = states.size();
+	state_id id = states.size();
 	states.push_back(State(id, isFinal));
 	debug(1) << "add state: " << id << endl;
 	return id;
 }
 
-void FiniteAutomaton::addTransition(int from, int to, char symbol)
+void FiniteAutomaton::addTransition(state_id from, state_id to, char symbol)
 {
 	debug(1) << "add transition: " << from << " --" << char2str(symbol) << "--> " << to << endl;
 	transitions[from][symbol].insert(to);

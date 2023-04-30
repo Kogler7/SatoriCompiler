@@ -1,7 +1,7 @@
 /**
- * @file lexdef.h
+ * @file define.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Lexical Definition Parser
+ * @brief Regular Expression Definition Parser
  * @date 2023-04-22
  * 
  * @copyright Copyright (c) 2023
@@ -12,7 +12,7 @@
 #include <map>
 #include <set>
 #include <string>
-#include "viewer.h"
+#include "utils/viewer.h"
 
 using namespace std;
 

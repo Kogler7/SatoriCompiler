@@ -8,7 +8,7 @@
  *
  */
 
-#include "../../common/token.h"
+#include "common/token.h"
 #include "vector"
 
 using namespace std;

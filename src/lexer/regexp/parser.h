@@ -1,5 +1,5 @@
 /**
- * @file regexp.h
+ * @file parser.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Regular Expression to Finite Automaton
  * @date 2023-04-22
@@ -12,9 +12,9 @@
 #include <stack>
 #include <string>
 #include <vector>
-#include "nfa.h"
+#include "lexer/nfa.h"
 
-class Regexp2FA
+class RegexpParser
 {
 	string rawReg;
 	string tmpReg;
@@ -32,7 +32,7 @@ class Regexp2FA
 	void opConcat();
 
 public:
-	Regexp2FA(string regexp) : rawReg(regexp) {}
+	RegexpParser(string regexp) : rawReg(regexp) {}
 	void regexpPreproc();
 	void tmpReg2postfix();
 	void postfix2FA();

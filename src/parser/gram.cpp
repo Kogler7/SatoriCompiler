@@ -9,7 +9,7 @@
  */
 
 #include "gram.h"
-#include "../utils/log.h"
+#include "utils/log.h"
 
 #define _find(x, y) (x.find(y) != x.end())
 

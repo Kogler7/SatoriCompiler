@@ -10,7 +10,7 @@
 
 #include "test.h"
 #include "lexer.h"
-#include "regexp.h"
+#include "regexp/parser.h"
 
 void lexerMain()
 {
@@ -51,7 +51,7 @@ void nfaTest() // 实验性质的测试函数
 	string raw = "";
 	cin >> raw;
 	cout << "input raw: " << raw << endl;
-	Regexp2FA convertor = Regexp2FA(raw);
+	RegexpParser convertor = RegexpParser(raw);
 	convertor.regexpPreproc();
 	convertor.tmpReg2postfix();
 	convertor.postfix2FA();

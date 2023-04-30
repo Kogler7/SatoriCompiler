@@ -10,10 +10,10 @@
 
 #include "lexer.h"
 #include "nfa.h"
-#include "regexp.h"
+#include "regexp/parser.h"
 #include <fstream>
 #include <sstream>
-#include "../utils/log.h"
+#include "utils/log.h"
 
 #define _find(x, y) (x.find(y) != x.end())
 
@@ -30,7 +30,7 @@ void Lexer::addTokenType(string typeName, string regExp)
         type = types.size() - 1;
         str2typ[typeName] = type;
     }
-    Regexp2FA reg2FA(regExp);
+    RegexpParser reg2FA(regExp);
     FiniteAutomaton nfa = reg2FA.convert();
     faMap[type].push_back(nfa);
     debug(1) << "Add token type: " << types[type] << " with regExp: " << regExp << endl;
