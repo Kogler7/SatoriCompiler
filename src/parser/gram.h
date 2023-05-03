@@ -32,17 +32,25 @@ public:
     map<term, set<vector<term>>> rules;
     map<term, set<term>> first;
     map<term, set<term>> follow;
+    map<term, map<vector<term>, set<term>>> select;
+    map<term, map<term, vector<term>>> predict;
 
     Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules, map<token_type, term> tok2term);
     Grammar() {}
     void operator=(const Grammar &g);
+    void eliminateLeftRecursion();
+    void extractLeftCommonFactor();
+    bool isLL1Grammar();
+    set<term> calcFirstOf(term t);
+    set<term> calcFollowOf(term t);
+    set<term> calcSelectOf(term t, vector<term> rule);
+    void calcFirst();
+    void calcFollow();
+    void calcSelect();
     void printRules();
     void printTerminals();
     void printNonTerms();
-    set<term> calcFirstOf(term t);
-    set<term> calcFollowOf(term t);
-    void calcFirst();
-    void calcFollow();
     void printFirst();
     void printFollow();
+    void printSelect();
 };

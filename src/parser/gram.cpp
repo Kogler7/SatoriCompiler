@@ -32,21 +32,121 @@ void Grammar::operator=(const Grammar &g)
     rules = g.rules;
 }
 
-void Grammar::printRules()
+void Grammar::eliminateLeftRecursion() // 消除左递归
 {
-    info << "Grammar: Rules:" << endl;
-    for (auto it = rules.begin(); it != rules.end(); it++)
+    info << "Grammar: Eliminating Left Recursion" << endl;
+    for (auto &A : nonTerms)
     {
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
+        debug(0) << "Processing Non-Terminal " << A << endl;
+        // 对于每个产生式A->α|β
+        for (auto alpha : rules[A])
         {
-            cout << it->first << " ::= ";
-            for (auto it3 = it2->begin(); it3 != it2->end(); it3++)
+            debug(1) << "Processing Production " << A << "->";
+            for (auto &s : alpha)
             {
-                cout << *it3 << " ";
+                debugU(1) << s << " ";
             }
-            cout << endl;
+            debug(1) << endl;
+            if (alpha[0] == A) // 直接左递归
+            {
+                debug(1) << "Direct Left Recursion" << endl;
+                // 新建一个非终结符A'，将A'->βA'加入产生式
+                term newNonTerm = A + "'";
+                nonTerms.insert(newNonTerm);
+                rules[newNonTerm].insert(alpha);
+                // 将A->α|β改为A->αA'|ε
+                rules[A].erase(alpha);
+                alpha.erase(alpha.begin());
+                alpha.push_back(newNonTerm);
+                rules[A].insert(alpha);
+            }
+            else if (_find(nonTerms, alpha[0])) // 间接左递归
+            {
+                debug(1) << "Indirect Left Recursion" << endl;
+                // 新建一个非终结符A'，将A'->βA'加入产生式
+                term newNonTerm = A + "'";
+                nonTerms.insert(newNonTerm);
+                rules[newNonTerm].insert(alpha);
+                // 将A->α|β改为A->αA'
+                rules[A].erase(alpha);
+                alpha.push_back(newNonTerm);
+                rules[A].insert(alpha);
+            }
         }
     }
+}
+
+void Grammar::extractLeftCommonFactor()
+{
+    info << "Grammar: Extracting Left Common Factor" << endl;
+    for (auto &A : nonTerms)
+    {
+        debug(0) << "Processing Non-Terminal " << A << endl;
+        // 对于每个产生式A->α|β
+        for (auto alpha : rules[A])
+        {
+            debug(1) << "Processing Production " << A << "->";
+            for (auto &s : alpha)
+            {
+                debugU(1) << s << " ";
+            }
+            debug(1) << endl;
+            // 对于每个产生式A->α|β
+            for (auto beta : rules[A])
+            {
+                if (alpha == beta)
+                    continue;
+                debug(2) << "Processing Production " << A << "->";
+                for (auto &s : beta)
+                {
+                    debugU(2) << s << " ";
+                }
+                debug(2) << endl;
+                // 找到最长公共前缀
+                int i = 0;
+                while (i < alpha.size() && i < beta.size() && alpha[i] == beta[i])
+                    i++;
+                if (i == 0)
+                    continue;
+                debug(2) << "Longest Common Prefix: ";
+                for (int j = 0; j < i; j++)
+                {
+                    debugU(2) << alpha[j] << " ";
+                }
+                debug(2) << endl;
+                // 新建一个非终结符A'，将A'->βA'加入产生式
+                term newNonTerm = A + "'";
+                nonTerms.insert(newNonTerm);
+                rules[newNonTerm].insert(beta);
+                // 将A->α|β改为A->αA'
+                rules[A].erase(beta);
+                beta.erase(beta.begin(), beta.begin() + i);
+                beta.insert(beta.begin(), newNonTerm);
+                rules[A].insert(beta);
+            }
+        }
+    }
+}
+
+bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法
+{
+    info << "Grammar: Checking LL(1)" << endl;
+    // 判断是否有冲突
+    for (auto &A : nonTerms)
+    {
+        set<term> selectSet;
+        for (auto &alpha : rules[A])
+        {
+            selectSet.insert(select[A][alpha].begin(), select[A][alpha].end());
+        }
+        if (selectSet.size() != rules[A].size())
+        {
+            error << "Grammar: Not LL(1)" << endl;
+            return false;
+        }
+    }
+    info << "Grammar: LL(1)" << endl;
+    return true;
 }
 
 set<term> Grammar::calcFirstOf(term t)
@@ -187,6 +287,47 @@ set<term> Grammar::calcFollowOf(term t)
     return follow[t];
 }
 
+set<term> Grammar::calcSelectOf(term t, vector<term> rule)
+{
+    debug(0) << "Calculating Select(" << t << " -> ";
+    for (auto &it : rule)
+    {
+        debug(0) << it << " ";
+    }
+    debug(0) << ")" << endl;
+    set<term> resSelect;
+    set<term> resFirst;
+    resFirst = calcFirstOf(rule[0]);
+    set<term> tmpFirst = resFirst;
+    tmpFirst.erase(EPSILON);
+    resSelect.insert(tmpFirst.begin(), tmpFirst.end());
+    for (auto &f : tmpFirst)
+    {
+        debug(1) << "Select(" << t << " -> ";
+        for (auto &it : rule)
+        {
+            debug(1) << it << " ";
+        }
+        debug(1) << ") <- {" << f << "}" << endl;
+    }
+    if (_find(resFirst, EPSILON))
+    {
+        // First(A) 含有epsilon
+        set<term> resFollow = calcFollowOf(t);
+        resSelect.insert(resFollow.begin(), resFollow.end());
+        for (auto &f : resFollow)
+        {
+            debug(1) << "Select(" << t << " -> ";
+            for (auto &it : rule)
+            {
+                debug(1) << it << " ";
+            }
+            debug(1) << ") <- {" << f << "}" << endl;
+        }
+    }
+    return resSelect;
+}
+
 void Grammar::calcFirst()
 {
     info << "Calculating First..." << endl;
@@ -202,6 +343,18 @@ void Grammar::calcFollow()
     for (auto &it : nonTerms)
     {
         calcFollowOf(it);
+    }
+}
+
+void Grammar::calcSelect()
+{
+    info << "Calculating Select..." << endl;
+    for (auto &rule : rules)
+    {
+        for (auto &right : rule.second)
+        {
+            select[rule.first][right] = calcSelectOf(rule.first, right);
+        }
     }
 }
 
@@ -230,6 +383,45 @@ void Grammar::printFollow()
             cout << *it2 << " ";
         }
         cout << endl;
+    }
+}
+
+void Grammar::printSelect()
+{
+    info << "Select:" << endl;
+    for (auto it = rules.begin(); it != rules.end(); it++)
+    {
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
+        {
+            cout << it->first << " ::= ";
+            for (auto it3 = it2->begin(); it3 != it2->end(); it3++)
+            {
+                cout << *it3 << " ";
+            }
+            cout << " : ";
+            for (auto it3 = select[it->first][*it2].begin(); it3 != select[it->first][*it2].end(); it3++)
+            {
+                cout << *it3 << " ";
+            }
+            cout << endl;
+        }
+    }
+}
+
+void Grammar::printRules()
+{
+    info << "Grammar: Rules:" << endl;
+    for (auto it = rules.begin(); it != rules.end(); it++)
+    {
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
+        {
+            cout << it->first << " ::= ";
+            for (auto it3 = it2->begin(); it3 != it2->end(); it3++)
+            {
+                cout << *it3 << " ";
+            }
+            cout << endl;
+        }
     }
 }
 

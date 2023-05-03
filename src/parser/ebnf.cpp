@@ -408,7 +408,7 @@ Grammar EBNFParser::parse(string grammarPath)
     ebnfLexer.printTokens();
     // 解析开始符号
     auto startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
-    // const term startTerm = (startIt - 1)->value;
+    grammar.startTerm = (startIt - 1)->value;
     // info << "EBNFParser: Start symbol is " << startTerm << endl;
     tokens.erase(startIt);
     // 解析EBNF定义的文法
