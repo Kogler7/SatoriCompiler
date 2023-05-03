@@ -3,9 +3,9 @@
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Level-based Log
  * @date 2023-04-22
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #include <iostream>
@@ -22,4 +22,8 @@
 #define DEBUG_LEVEL -1
 #define debug(level)          \
 	if (level <= DEBUG_LEVEL) \
-	std::cout << _blue("    <" #level ">: ")
+	std::cout << _blue("  <" #level ">: ")
+
+#define debugU(level)         \
+	if (level <= DEBUG_LEVEL) \
+	std::cout

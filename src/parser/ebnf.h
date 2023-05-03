@@ -21,9 +21,10 @@ class EBNFParser
     Grammar grammar;
     void tokenizeSyntax(string grammarPath);
     vector<production> segmentProduct(production product);
-    vector<production> generateProducts(token_iter start, token_iter end);
-    void generateRules(vector<production> &products);
-    void generateMappings(vector<production> &products);
+    vector<production> geneStxProducts(token_iter start, token_iter end);
+    vector<production> geneMapProducts(token_iter start, token_iter end);
+    void addRules(vector<production> &products);
+    void addMappings(vector<production> &products);
 
 public:
     EBNFParser(string ebnfLexPath);

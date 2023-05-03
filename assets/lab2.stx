@@ -6,12 +6,10 @@ GRAMMAR ${
     Block       ::=     Stmt { `;` Stmt } ;
     StmtItem    ::=     $LValue `=` Exp ;
     Exp         ::=     ExpItem AddItem ;
-    AddItem     ::=     AddOp ExpItem AddItem | \e ;
+    AddItem     ::=     (`+` | `-`) ExpItem AddItem | \e ;
     ExpItem     ::=     Factor MulItem ;
-    MulItem     ::=     MulOp Factor MulItem | \e ;
-    Factor      ::=      `(`Exp`)` | $Num ;
-    AddOp       ::=     `+` | `-` ;
-    MulOp       ::=     `*` | `/` ;
+    MulItem     ::=     (`*` | `/`) Factor MulItem | \e ;
+    Factor      ::=     `(`Exp`)` | $Num ;
 $}
 
 MAPPING ${

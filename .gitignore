@@ -11,5 +11,7 @@ CTestTestfile.cmake
 _deps
 
 build/
+.vs/
 .vscode/
 .VSCodeCounter/
+*.zip

@@ -34,7 +34,7 @@ void Grammar::operator=(const Grammar &g)
 
 void Grammar::printRules()
 {
-    info << "EBNFParser: Rules:" << endl;
+    info << "Grammar: Rules:" << endl;
     for (auto it = rules.begin(); it != rules.end(); it++)
     {
         for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
