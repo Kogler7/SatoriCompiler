@@ -13,6 +13,8 @@
 #include <vector>
 #include <string>
 
+#include "common/token.h"
+
 #define EPSILON "@" // 用于表示空串
 #define SYM_END "#" // 用于表示输入串结束
 
@@ -26,11 +28,12 @@ public:
     term startTerm;
     set<term> terminals;
     set<term> nonTerms;
+    map<token_type, term> tok2term;
     map<term, set<vector<term>>> rules;
     map<term, set<term>> first;
     map<term, set<term>> follow;
 
-    Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules);
+    Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules, map<token_type, term> tok2term);
     Grammar() {}
     void operator=(const Grammar &g);
     void printRules();

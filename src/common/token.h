@@ -9,17 +9,22 @@
  */
 
 #pragma once
+#include <map>
 #include <string>
 #include <memory>
 
 using namespace std;
 
 typedef shared_ptr<string> token_type;
+#define token_iter vector<token>::iterator
 
 #define type_less owner_less<token_type>
-#define make_type(x) make_shared<string>(x)
+#define make_tok_type(x) make_shared<string>(x)
+#define find_tok_type(x) (tokTypeMap.find(x) != tokTypeMap.end())
+#define set_tok_type(x, y) tokTypeMap[x] = y
+#define get_tok_type(x) tokTypeMap[x]
 
-using namespace std;
+extern map<string, token_type> tokTypeMap;
 
 /**
  * @brief Token
@@ -30,5 +35,6 @@ struct token
     string value;
     int line;
     int col;
+    token(token_type type, string value) : type(type), value(value), line(0), col(0) {}
     token(token_type type, string value, int line, int col) : type(type), value(value), line(line), col(col) {}
 };

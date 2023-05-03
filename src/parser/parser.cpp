@@ -20,8 +20,8 @@ void parserMain()
     // cppLexer.readCodeFile("./assets/error.cpp");
     // cppLexer.tokenize();
     // cppLexer.printTokens();
-    EBNFParser ebnfParser("./assets/ebnf.lex");
-    Grammar G = ebnfParser.parse("./assets/gram.ebnf");
+    EBNFParser ebnfParser("./assets/syntax.lex");
+    Grammar G = ebnfParser.parse("./assets/lab2.stx");
     ebnfParser.getLexer().printTokens();
     G.printRules();
     G.printTerminals();

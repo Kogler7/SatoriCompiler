@@ -12,11 +12,18 @@
 #include "gram.h"
 #include "lexer/lexer.h"
 
+typedef pair<term, vector<token>> production;
+
 class EBNFParser
 {
     Lexer ebnfLexer;
     vector<token> tokens;
-    map<string, token_type> tokTypes;
+    Grammar grammar;
+    void tokenizeSyntax(string grammarPath);
+    vector<production> segmentProduct(production product);
+    vector<production> generateProducts(token_iter start, token_iter end);
+    void generateRules(vector<production> &products);
+    void generateMappings(vector<production> &products);
 
 public:
     EBNFParser(string ebnfLexPath);

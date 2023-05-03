@@ -96,7 +96,7 @@ void RegexpParser::parseSet(string setExp)
 				else
 				{
 					error << "invalid character in set: (int)" << int(t) << endl;
-					throw runtime_error("invalid character in set");
+					exit(1);
 				}
 			}
 			view.skip(2);
@@ -145,7 +145,7 @@ void RegexpParser::parseSet(string setExp)
 			else
 			{
 				error << "invalid character in set: (int)" << int(c) << endl;
-				throw runtime_error("invalid character in set");
+				exit(1);
 			}
 		}
 	}
@@ -502,6 +502,6 @@ void RegexpParser::postfix2FA()
 	else
 	{
 		error << "postfix2FA: Failed" << endl;
-		throw runtime_error("postfix2FA: Failed");
+		exit(1);
 	}
 }

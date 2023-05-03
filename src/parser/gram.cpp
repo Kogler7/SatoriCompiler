@@ -15,12 +15,13 @@
 
 #define DEBUG_LEVEL 1
 
-Grammar::Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules)
+Grammar::Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules, map<token_type, term> tok2term)
 {
     startTerm = start;
     terminals = terms;
     nonTerms = non_terms;
     this->rules = rules;
+    this->tok2term = tok2term;
 }
 
 void Grammar::operator=(const Grammar &g)

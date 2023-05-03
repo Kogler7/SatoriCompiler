@@ -15,6 +15,6 @@ GRAMMAR ${
 $}
 
 MAPPING ${
-    $LValue      -->     @IDENTIFIER ;
-    $Num         -->     @REAL | @INTEGER ;
+    $LValue     -->     @IDENTIFIER ;
+    $Num        -->     @REAL | @INTEGER ;
 $}

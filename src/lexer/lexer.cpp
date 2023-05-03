@@ -20,14 +20,14 @@
 void Lexer::addTokenType(string typeName, string regExp)
 {
     token_type type;
-    if (_find(types, typeName))
+    if (find_tok_type(typeName))
     {
-        type = types[typeName];
+        type = get_tok_type(typeName);
     }
     else
     {
-        type = make_type(typeName);
-        types[typeName] = type;
+        type = make_tok_type(typeName);
+        set_tok_type(typeName, type);
     }
     RegexpParser regParser(regExp);
     FiniteAutomaton nfa = regParser.parse();
@@ -37,9 +37,9 @@ void Lexer::addTokenType(string typeName, string regExp)
 
 void Lexer::addIgnoredType(string typeName)
 {
-    if (_find(types, typeName))
+    if (find_tok_type(typeName))
     {
-        token_type type = types[typeName];
+        token_type type = get_tok_type(typeName);
         ignoredTypes.insert(type);
         debug(1) << "Add ignored type: " << type << endl;
         return;
@@ -47,7 +47,7 @@ void Lexer::addIgnoredType(string typeName)
     error << "Type " << typeName << " not found!" << endl;
 }
 
-pair<vector<token>, map<string, token_type>> Lexer::tokenize(string codeSeg)
+vector<token> Lexer::tokenize(string codeSeg)
 {
     if (codeSeg != "")
         this->code = codeSeg;
@@ -101,13 +101,13 @@ pair<vector<token>, map<string, token_type>> Lexer::tokenize(string codeSeg)
             vCode.skipToNextLine();
         }
     }
-    return make_pair(tokens, types);
+    return tokens;
 }
 
 void Lexer::printToken(int idx)
 {
     token tok = tokens[idx];
-    cout << "(" << setw(10) << right << *tok.type << ", ";
+    cout << "(" << setw(12) << right << *tok.type << ", ";
     cout << setw(12) << left << tok.value << ")";
     cout << endl;
 }
