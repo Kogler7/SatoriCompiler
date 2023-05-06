@@ -129,8 +129,9 @@ void Lexer::clear()
 void Lexer::readSrcFile(string fileName)
 {
     ifstream ifs(fileName);
-    string _code((istreambuf_iterator<char>(ifs)),
-                 (istreambuf_iterator<char>()));
+    string _code(
+        (istreambuf_iterator<char>(ifs)),
+        (istreambuf_iterator<char>()));
     code = _code;
     ifs.close();
     info << "Code: " << endl;

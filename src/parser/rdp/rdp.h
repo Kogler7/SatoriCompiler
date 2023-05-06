@@ -8,7 +8,7 @@
  *
  */
 
-#include "../gram.h"
+#include "common/gram.h"
 #include "common/token.h"
 #include "utils/tok_view.h"
 

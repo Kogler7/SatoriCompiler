@@ -8,6 +8,8 @@ project("SatoriCompiler")
 file(GLOB_RECURSE SRC_FILES
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/src/*.h"
+    "${PROJECT_SOURCE_DIR}/test/*.cpp"
+    "${PROJECT_SOURCE_DIR}/test/*.h"
 )
 
 if (MSVC)
@@ -16,6 +18,7 @@ if (MSVC)
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/test)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # 将源代码添加到此项目的可执行文件。

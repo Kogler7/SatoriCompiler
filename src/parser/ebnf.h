@@ -9,7 +9,7 @@
  */
 
 #include "common/token.h"
-#include "gram.h"
+#include "common/gram.h"
 #include "lexer/lexer.h"
 
 typedef pair<term, vector<token>> production;

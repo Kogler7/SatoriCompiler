@@ -435,6 +435,7 @@ void Grammar::printTerminals()
     }
     cout << "}" << endl;
 }
+
 void Grammar::printNonTerms()
 {
     info << "Non-terminals:" << endl;
