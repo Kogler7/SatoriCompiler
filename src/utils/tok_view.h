@@ -28,10 +28,7 @@ public:
     }
     token operator[](int i)
     {
-        if (i < 0 || i >= tokens.size())
-        {
-            error << "TokenViewer: index out of range" << endl;
-        }
+        assert(i >= 0 && i < tokens.size());
         return tokens[i];
     }
     int size()

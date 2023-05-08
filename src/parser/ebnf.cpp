@@ -17,12 +17,11 @@
 #include "ebnf.h"
 #include "utils/log.h"
 
-#define _is_term_type(t) (t == termType || t == mulTermType || t == nonTermType)
 #define DEBUG_LEVEL 0
 
-typedef string term;
-
 using namespace std;
+
+typedef string term;
 
 token_iter findType(vector<token> &tokens, token_type type, token_iter start)
 {
@@ -125,20 +124,17 @@ vector<production> EBNFParser::segmentProduct(production product)
             // 如果是分组符，则需要递归拆分
             term endDeli = getEndSep(deliBeginIt->value);
             auto deliEndIt = findSep(right, endDeli, deliBeginIt);
-            if (deliEndIt == right.end())
-            {
-                error << "EBNFParser: EBNF syntax error: Expected " << endDeli << ", got EOF";
-                cout << " at <" << right.back().line << ", " << right.back().col << ">" << endl;
-                exit(1);
-            }
+            assert(
+                deliEndIt != right.end(),
+                format(
+                    "EBNFParser: EBNF syntax error: Expected $, got EOF at <$, $>",
+                    endDeli, right.back().line, right.back().col));
             nextIt = findType(right, get_tok_type("DELIMITER"), deliEndIt + 1);
-            if (nextIt != right.end() && nextIt->value != "|")
-            {
-                // 如果分组后面有非选择符的分隔符，则报错（不支持多种分隔符排列组合）
-                error << "EBNFParser: EBNF syntax error: Expected |, got " << nextIt->value;
-                cout << " at <" << nextIt->line << ", " << nextIt->col << ">" << endl;
-                exit(1);
-            }
+            assert( // 如果分组后面有非选择符的分隔符，则报错（不支持多种分隔符排列组合）
+                nextIt == right.end() || nextIt->value == "|",
+                format(
+                    "EBNFParser: EBNF syntax error: Expected |, got $ at <$, $>",
+                    nextIt->value, nextIt->line, nextIt->col));
             vector<production> subProducts;
             subProducts = segmentProduct(make_pair(left, vector<token>(deliBeginIt + 1, deliEndIt)));
             vector<token> head = vector<token>(lastIt, deliBeginIt);
@@ -230,20 +226,18 @@ vector<production> EBNFParser::geneStxProducts(token_iter start, token_iter end)
     vector<production> rawProducts;
     for (auto it = start; it != end; it++)
     {
-        if (it->type != nonTermType)
-        {
-            error << "EBNFParser: EBNF syntax error: Expected non-terminal, got " << it->value;
-            cout << " at <" << it->line << ", " << it->col << ">" << endl;
-            exit(1);
-        }
+        assert(
+            it->type == nonTermType,
+            format(
+                "EBNFParser: EBNF syntax error: Expected non-terminal, got $ at <$, $>.",
+                it->value, it->line, it->col));
         term left = it->value;
         it++;
-        if (it->type != grammarDef)
-        {
-            error << "EBNFParser: EBNF syntax error: Expected ::=, got " << it->value;
-            cout << " at <" << it->line << ", " << it->col << ">" << endl;
-            exit(1);
-        }
+        assert(
+            it->type == grammarDef,
+            format(
+                "EBNFParser: EBNF syntax error: Expected ::=, got $ at <$, $>.",
+                it->value, it->line, it->col));
         it++;
         token_iter sepIt = findType(tokens, sepType, it);
         vector<token> right;
@@ -274,9 +268,9 @@ vector<production> EBNFParser::geneStxProducts(token_iter start, token_iter end)
         debug(0) << pro.first << " -> ";
         for (auto &tok : pro.second)
         {
-            debugU(0) << tok.value << " ";
+            debug_u(0) << tok.value << " ";
         }
-        debugU(0) << endl;
+        debug_u(0) << endl;
     }
     return products;
 }
@@ -292,20 +286,18 @@ vector<production> EBNFParser::geneMapProducts(token_iter start, token_iter end)
     vector<production> rawProducts;
     for (auto it = start; it != end; it++)
     {
-        if (it->type != mulTermType)
-        {
-            error << "EBNFParser: MAPPING syntax error: Expected mul-terminal, got " << it->value;
-            cout << " at <" << it->line << ", " << it->col << ">" << endl;
-            exit(1);
-        }
+        assert(
+            it->type == mulTermType,
+            format(
+                "EBNFParser: MAPPING syntax error: Expected mul-terminal, got $ at <$, $>.",
+                it->value, it->line, it->col));
         term left = it->value;
         it++;
-        if (it->type != mappingDef)
-        {
-            error << "EBNFParser: MAPPING syntax error: Expected ->, got " << it->value;
-            cout << " at <" << it->line << ", " << it->col << ">" << endl;
-            exit(1);
-        }
+        assert(
+            it->type == mappingDef,
+            format(
+                "EBNFParser: MAPPING syntax error: Expected ->, got $ at <$, $>.",
+                it->value, it->line, it->col));
         it++;
         token_iter sepIt = findType(tokens, sepType, it);
         vector<token> right;
@@ -328,9 +320,9 @@ vector<production> EBNFParser::geneMapProducts(token_iter start, token_iter end)
         debug(0) << pro.first << " -> ";
         for (auto &tok : pro.second)
         {
-            debugU(0) << tok.value << " ";
+            debug_u(0) << tok.value << " ";
         }
-        debugU(0) << endl;
+        debug_u(0) << endl;
     }
     return products;
 }
@@ -375,29 +367,24 @@ void EBNFParser::addMappings(vector<production> &products)
     {
         term left = pro.first;
         vector<token> &right = pro.second;
-        if (right.size() != 1)
+        assert(
+            right.size() == 1,
+            format(
+                "EBNFParser: Mapping syntax error: Expected only one token-type term, got $ at <$, $>.",
+                right.size(), right[0].line, right[0].col));
+        assert(
+            right[0].type == tokType,
+            format(
+                "EBNFParser: Mapping syntax error: Expected token type, got $ at <$, $>.",
+                right[0].value, right[0].line, right[0].col));
+        term tokTerm = right[0].value;
+        tokTerm = tokTerm.substr(1);
+        if (!find_tok_type(tokTerm))
         {
-            error << "EBNFParser: Mapping syntax error: Expected only one token-type term, got " << right.size();
-            cout << " at <" << right[0].line << ", " << right[0].col << ">" << endl;
-            exit(1);
+            warn << "EBNFParser: Mapping syntax warn: Undefined token type " << tokTerm << endl;
+            set_tok_type(tokTerm, make_tok_type(tokTerm));
         }
-        else if (right[0].type != tokType)
-        {
-            error << "EBNFParser: Mapping syntax error: Expected token type, got " << right[0].value;
-            cout << " at <" << right[0].line << ", " << right[0].col << ">" << endl;
-            exit(1);
-        }
-        else
-        {
-            term tokTerm = right[0].value;
-            tokTerm = tokTerm.substr(1);
-            if (!find_tok_type(tokTerm))
-            {
-                warn << "EBNFParser: Mapping syntax warn: Undefined token type " << tokTerm << endl;
-                set_tok_type(tokTerm, make_tok_type(tokTerm));
-            }
-            tok2term[get_tok_type(tokTerm)] = left;
-        }
+        tok2term[get_tok_type(tokTerm)] = left;
     }
 }
 
@@ -408,9 +395,13 @@ Grammar EBNFParser::parse(string grammarPath)
     ebnfLexer.printTokens();
     // 解析开始符号
     auto startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
+    assert(startIt != tokens.end(), "EBNFParser: No start symbol defined.");
     grammar.startTerm = (startIt - 1)->value;
-    // info << "EBNFParser: Start symbol is " << startTerm << endl;
     tokens.erase(startIt);
+    startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
+    assert(startIt == tokens.end(), "EBNFParser: Multiple start symbols defined.");
+    info << "EBNFParser: Start symbol is " << grammar.startTerm << endl;
+
     // 解析EBNF定义的文法
     auto grammarIt = findType(tokens, get_tok_type("GRAMMAR"), tokens.begin());
     auto blkStart = findType(tokens, get_tok_type("BLOCK_SRT"), grammarIt);

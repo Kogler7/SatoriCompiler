@@ -8,7 +8,7 @@
  *
  */
 
-#define TEST_UNIT astTest
+#define TEST_UNIT parserTest
 
 #ifndef TEST_UNIT
 
@@ -22,11 +22,9 @@ int main()
 #include "test.h"
 #include "utils/log.h"
 
-#define STR(x) #x
-
 int main()
 {
-    info << "Testing " << STR(TEST_UNIT) << "..." << std::endl;
+    info << "Testing ..." << std::endl;
     TEST_UNIT();
     return 0;
 }

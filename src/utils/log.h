@@ -8,6 +8,11 @@
  *
  */
 
+#pragma once
+
+#include <string>
+#include <queue>
+#include <sstream>
 #include <iostream>
 
 #define _red(x) "\033[31m" << x << "\033[0m"
@@ -20,10 +25,70 @@
 #define error std::cout << _red("[error] ")
 
 #define DEBUG_LEVEL -1
+
 #define debug(level)          \
 	if (level <= DEBUG_LEVEL) \
-	std::cout << _blue("  <" #level ">: ")
+	std::cout << _blue("   [" #level "] ")
 
-#define debugU(level)         \
+#define debug_u(level)         \
 	if (level <= DEBUG_LEVEL) \
 	std::cout
+
+class StrFormatter
+{
+	std::stringstream ss;
+	std::queue<std::string> segs;
+
+public:
+	StrFormatter(std::string s)
+	{
+		std::stringstream ss(s);
+		std::string seg;
+		while (std::getline(ss, seg, '$'))
+			segs.push(seg);
+	}
+
+	StrFormatter(const char *s) : StrFormatter(std::string(s)) {}
+
+	template <typename T>
+	StrFormatter &operator,(const T &t)
+	{
+		if (segs.empty())
+			return *this;
+		ss << segs.front();
+		segs.pop();
+		ss << t;
+		return *this;
+	}
+
+	std::string str()
+	{
+		while (!segs.empty())
+		{
+			ss << segs.front();
+			segs.pop();
+		}
+		return ss.str();
+	}
+};
+
+#define format(fmt, ...) ((StrFormatter(fmt), ##__VA_ARGS__).str())
+
+inline void print_ln()
+{
+}
+inline void print_ln(std::string s)
+{
+	std::cout << s << std::endl;
+}
+
+#define assert(x, msg)                                    \
+	if (!(x))                                             \
+	{                                                     \
+		error << "Assertion \"" << #x << "\" FAILED at "; \
+		std::cout << "\033[4m";                           \
+		std::cout << __FILE__ << ":" << __LINE__;         \
+		std::cout << "\033[0m" << std::endl;              \
+		print_ln(msg);                                    \
+		exit(1);                                          \
+	}

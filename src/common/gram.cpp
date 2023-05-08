@@ -44,7 +44,7 @@ void Grammar::eliminateLeftRecursion() // 消除左递归
             debug(1) << "Processing Production " << A << "->";
             for (auto &s : alpha)
             {
-                debugU(1) << s << " ";
+                debug_u(1) << s << " ";
             }
             debug(1) << endl;
             if (alpha[0] == A) // 直接左递归
@@ -81,39 +81,20 @@ void Grammar::extractLeftCommonFactor()
     info << "Grammar: Extracting Left Common Factor" << endl;
     for (auto &A : nonTerms)
     {
-        debug(0) << "Processing Non-Terminal " << A << endl;
         // 对于每个产生式A->α|β
         for (auto alpha : rules[A])
         {
-            debug(1) << "Processing Production " << A << "->";
-            for (auto &s : alpha)
-            {
-                debugU(1) << s << " ";
-            }
-            debug(1) << endl;
             // 对于每个产生式A->α|β
             for (auto beta : rules[A])
             {
                 if (alpha == beta)
                     continue;
-                debug(2) << "Processing Production " << A << "->";
-                for (auto &s : beta)
-                {
-                    debugU(2) << s << " ";
-                }
-                debug(2) << endl;
                 // 找到最长公共前缀
                 int i = 0;
                 while (i < alpha.size() && i < beta.size() && alpha[i] == beta[i])
                     i++;
                 if (i == 0)
                     continue;
-                debug(2) << "Longest Common Prefix: ";
-                for (int j = 0; j < i; j++)
-                {
-                    debugU(2) << alpha[j] << " ";
-                }
-                debug(2) << endl;
                 // 新建一个非终结符A'，将A'->βA'加入产生式
                 term newNonTerm = A + "'";
                 nonTerms.insert(newNonTerm);
@@ -141,7 +122,7 @@ bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法
         }
         if (selectSet.size() != rules[A].size())
         {
-            error << "Grammar: Not LL(1)" << endl;
+            warn << "<Grammar> Not LL(1)" << endl;
             return false;
         }
     }
