@@ -54,7 +54,7 @@ void AbstractSyntaxTreeNode::traverse(func_t f) const
     f(*this);
     foreach (
         [=](ast_node &ref)
-        { ref.traverseChilds(f); })
+        { ref.traverse(f); })
         ;
 }
 

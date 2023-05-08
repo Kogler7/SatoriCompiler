@@ -34,6 +34,13 @@ enum node_type
     TERMINAL
 };
 
+struct ast_node_data
+{
+    node_type type;
+    string symbol;
+    size_t line, col;
+};
+
 class AbstractSyntaxTreeNode : ast_childs
 {
 public:

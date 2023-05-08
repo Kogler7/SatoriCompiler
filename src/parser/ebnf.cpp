@@ -234,11 +234,12 @@ vector<production> EBNFParser::geneStxProducts(token_iter start, token_iter end)
         term left = it->value;
         it++;
         assert(
-            it->type == grammarDef,
+            it != end && it->type == grammarDef,
             format(
                 "EBNFParser: EBNF syntax error: Expected ::=, got $ at <$, $>.",
                 it->value, it->line, it->col));
         it++;
+        assert(it != end);
         token_iter sepIt = findType(tokens, sepType, it);
         vector<token> right;
         for (auto it2 = it; it2 != sepIt; it2++)
@@ -397,11 +398,10 @@ Grammar EBNFParser::parse(string grammarPath)
     auto startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
     assert(startIt != tokens.end(), "EBNFParser: No start symbol defined.");
     grammar.startTerm = (startIt - 1)->value;
-    tokens.erase(startIt);
+    startIt = tokens.erase(startIt);
     startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
     assert(startIt == tokens.end(), "EBNFParser: Multiple start symbols defined.");
     info << "EBNFParser: Start symbol is " << grammar.startTerm << endl;
-
     // 解析EBNF定义的文法
     auto grammarIt = findType(tokens, get_tok_type("GRAMMAR"), tokens.begin());
     auto blkStart = findType(tokens, get_tok_type("BLOCK_SRT"), grammarIt);

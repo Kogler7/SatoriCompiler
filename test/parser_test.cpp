@@ -17,6 +17,8 @@ void parserTest()
     EBNFParser ebnfParser("./assets/syntax.lex");
     Grammar G = ebnfParser.parse("./assets/lab2.stx");
     G.printRules();
+    G.extractLeftCommonFactor();
+    G.printRules();
     G.printTerminals();
     G.printNonTerms();
     G.calcFirst();
