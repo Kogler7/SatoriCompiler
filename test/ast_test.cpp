@@ -47,5 +47,6 @@ void astTest()
     *ndIdent1 << ast_node::createNode(TERMINAL, "a", 0, 0);
     *ndIdent2 << ast_node::createNode(TERMINAL, "b", 0, 0);
     *ndBody << ast_node::createNode(TERMINAL, "}", 0, 0);
-    tree->dump();
+    ndBody->print();
+    tree->print();
 }

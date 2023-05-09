@@ -10,13 +10,9 @@
 
 #pragma once
 
-#include <map>
-#include <set>
-#include <vector>
 #include <string>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
+#include "utils/tree.h"
+#include "utils/log.h"
 
 using namespace std;
 
@@ -41,30 +37,29 @@ struct ast_node_data
     size_t line, col;
 };
 
-class AbstractSyntaxTreeNode : ast_childs
+class AbstractSyntaxTreeNode : public AbstractTreeNode<ast_node_data>
 {
 public:
-    ast_node *parent;
-    node_type type;
-    string symbol;
-    size_t line, col;
-    
+    AbstractSyntaxTreeNode(ast_node_data data) : AbstractTreeNode<ast_node_data>(data) {}
     AbstractSyntaxTreeNode(node_type typ, string sym, size_t ln, size_t co);
 
     static ast_node_ptr createNode(node_type type, const string &symbol, size_t line, size_t col);
-    vector<ast_node>::reference operator[](size_t index);
-    ast_node &operator<<(const ast_node_ptr node);
-    size_t size() const;
 
-    template <typename func_t>
-    void foreach (func_t f) const;
+    ast_node &operator[](size_t index)
+    {
+        // return static_cast<ast_node &>(this->get(index));
+        return static_cast<ast_node &>(AbstractTreeNode<ast_node_data>::get(index));
+    }
+    ast_node &operator<<(const ast_node_ptr node)
+    {
+        return static_cast<ast_node &>(AbstractTreeNode<ast_node_data>::set(node));
+        // return static_cast<ast_node &>(this->set(node));
+    }
 
-    template <typename func_t>
-    void traverse(func_t f) const;
+    string desc() const override;
 
-    template <typename func_t>
-    void traverse(func_t f, int &level, int &index);
-
-    void dump();
-    void dumpSave(const string &file);
+    void print()
+    {
+        AbstractTreeNode<ast_node_data>::print();
+    }
 };

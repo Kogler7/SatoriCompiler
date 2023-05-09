@@ -16,7 +16,9 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <algorithm>
+#include "utils/log.h"
 
 using namespace std;
 
@@ -39,30 +41,144 @@ public:
     tree_node<data_t> *parent;
     data_t data;
 
-    AbstractTreeNode(data_t data);
+    AbstractTreeNode(data_t data) : data(data), parent(nullptr) {}
 
-    static tree_node_ptr<data_t> createNode(data_t data);
-    tree_childs<data_t>::reference operator[](size_t index);
-    tree_node<data_t> &operator<<(const tree_node_ptr<data_t> node);
-    size_t size() const;
+    static tree_node_ptr<data_t> createNode(data_t data)
+    {
+        return make_shared<tree_node<data_t>>(data);
+    }
 
-    virtual string desc() const;
+    tree_node<data_t> &get(size_t index)
+    {
+        const auto &child = this->at(index);
+        return static_cast<tree_node<data_t> &>(*child);
+    }
+    tree_node<data_t> &set(const tree_node_ptr<data_t> node)
+    {
+        this->push_back(node);
+        this->back()->parent = this;
+        return static_cast<tree_node<data_t> &>(*this);
+    }
+    size_t size() const
+    {
+        return tree_childs<data_t>::size();
+    }
+
+    virtual string desc() const
+    {
+        return "";
+    }
 
     template <typename func_t>
-    void foreach(func_t f) const;
+    void foreach (func_t f) const
+    {
+        auto nodeF = [=](tree_childs<data_t>::const_reference ref)
+        {
+            f(*ref);
+        };
+        for_each(tree_childs<data_t>::begin(), tree_childs<data_t>::end(), nodeF);
+    }
 
     template <typename func_t>
-    void traverse(func_t f) const;
+    void traverse(func_t f) const
+    {
+        f(*this);
+        foreach (
+            [=](tree_node<data_t> &ref)
+            { ref.traverse(f); })
+            ;
+    }
 
     template <typename func_t>
-    void traverse(func_t f, int &level, int &index);
+    void traverse(func_t f, int &level, int &index)
+    {
+        tree_node<data_t> &self = *this;
+        f(self);
+        level++;
+        int tmpIdx = index++;
+        index = 0;
+        foreach (
+            [&](tree_node<data_t> &ref)
+            {
+                ref.traverse(f, level, index);
+                index++;
+            })
+            ;
+        level--;
+        index = tmpIdx;
+    }
 
     template <typename func_t>
-    void postorder(func_t f) const;
+    void postorder(func_t f) const
+    {
+        foreach (
+            [=](tree_node<data_t> &ref)
+            { ref.postorder(f); })
+            ;
+        f(*this);
+    }
 
     template <typename func_t>
-    void postorder(func_t f, int &level, int &index);
+    void postorder(func_t f, int &level, int &index)
+    {
+        tree_node<data_t> &self = *this;
+        level++;
+        int tmpIdx = index++;
+        index = 0;
+        foreach (
+            [&](tree_node<data_t> &ref)
+            {
+                ref.postorder(f, level, index);
+                index++;
+            })
+            ;
+        level--;
+        index = tmpIdx;
+        f(self);
+    }
 
-    string dump();
-    void print();
+    string dump()
+    {
+        stringstream ss;
+        vector<bool> visible;
+        int level = 0;
+        int index = 0;
+        traverse(
+            [&](tree_node<data_t> &node)
+            {
+                if (visible.size() <= level)
+                    visible.push_back(true);
+                if (level > 0 && index == node.parent->size() - 1)
+                    visible[level - 1] = false;
+                auto getHead = [=](int level) -> string
+                {
+                    int i = 0;
+                    string ret;
+                    while (i < level - 1)
+                    {
+                        if (visible[i])
+                            ret += "|  ";
+                        else
+                            ret += "   ";
+                        i++;
+                    }
+                    if (level > 0)
+                        ret += "|--";
+                    return ret;
+                };
+                ss << getHead(level);
+                ss << node.desc();
+                ss << endl;
+                if (level > 0)
+                    for (int i = level; i < visible.size(); i++)
+                        visible[i] = true;
+            },
+            level, index);
+        return ss.str();
+    }
+
+    void print()
+    {
+        cout << this->dump();
+    }
 };
