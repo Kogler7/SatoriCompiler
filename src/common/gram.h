@@ -15,6 +15,7 @@
 
 #include "common/token.h"
 #include "utils/tree.h"
+#include "algorithm"
 
 #define EPSILON "@" // 用于表示空串
 #define SYM_END "#" // 用于表示输入串结束
@@ -59,6 +60,7 @@ public:
 class TermTreeNode;
 typedef TermTreeNode tt_node;
 typedef shared_ptr<TermTreeNode> tt_node_ptr;
+typedef vector<tt_node_ptr> tt_childs;
 
 struct tt_node_data
 {
@@ -106,6 +108,26 @@ public:
     tt_node_ptr get_child_ptr(size_t index) const
     {
         return static_pointer_cast<TermTreeNode>(AbstractTreeNode<tt_node_data>::get_child_ptr(index));
+    }
+
+    template <typename func_t>
+    void foreach (func_t f) const
+    {
+        auto nodeF = [=](tree_childs<tt_node_data>::const_reference ref)
+        {
+            f(static_cast<TermTreeNode &>(*(ref)));
+        };
+        for_each(this->begin(), this->end(), nodeF);
+    }
+
+    template <typename func_t>
+    void postorder(func_t f) const
+    {
+        foreach (
+            [=](tt_node &ref)
+            { ref.postorder(f); })
+            ;
+        f(*this);
     }
 
     string desc() const override

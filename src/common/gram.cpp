@@ -103,24 +103,51 @@ void Grammar::extractLeftCommonFactor()
                     cur = cur->get_child_ptr(index);
                 }
             }
-            (*cur) << tt_node::createNode("#");
+            (*cur) << tt_node::createNode("#", alphaIt, 0);
         }
         termTrees[A]->print();
     }
     // 递归遍历TermTree，修正规则集合
-    // for (auto &tree : termTrees)
-    // {
-    //     const term &left = tree.first;
-    //     tt_node_ptr &root = tree.second;
-    //     root->postorder(
-    //         [&](tt_node &node)
-    //         {
-    //             if (node.size() > 1)
-    //             {
-    //                 // 有公共前缀
-    //             }
-    //         });
-    // }
+    info << "Grammar: Fixing Rules" << endl;
+    size_t cnt = 0;
+    for (auto &tree : termTrees)
+    {
+        const term &left = tree.first;
+        tt_node_ptr &root = tree.second;
+        root->postorder(
+            [&](tt_node node)
+            {
+                if (node.size() > 1 && node.data.index != 0)
+                {
+                    // 有公共前缀
+                    info << "Grammar: Fixing Rule " << left << "->" << node.data.symbol;
+                    cout << " " << node.data.index << endl;
+                    assert(node.data.ruleIt != rules[left].end());
+                    vector<term> curRule = *(node.data.ruleIt);
+                    vector<term> prefix;
+                    prefix.insert(prefix.end(), curRule.begin(), curRule.begin() + node.data.index + 1);
+                    term newNonTerm = left + "^" + to_string(++cnt);
+                    nonTerms.insert(newNonTerm);
+                    prefix.push_back(newNonTerm);
+                    rules[left].insert(prefix);
+                    node.foreach (
+                        [&](tt_node child)
+                        {
+                            // 对于每个子节点，将其所代表的子产生式加入新的规则
+                            vector<term> suffix;
+                            if (child.data.symbol != "#")
+                            {
+                                suffix.insert(
+                                    suffix.end(),
+                                    child.data.ruleIt->begin() + child.data.index,
+                                    child.data.ruleIt->end());
+                            }
+                            rules[newNonTerm].insert(suffix);
+                            rules[left].erase(child.data.ruleIt);
+                        });
+                }
+            });
+    }
 }
 
 bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法

@@ -1,0 +1,22 @@
+GRAMMAR ${
+    Program*    ::=     StmtList ;
+    StmtList    ::=     Stmt { `;` Stmt } ;
+    Stmt        ::=     `if` Exp `then` Stmt [`else` Stmt]
+                    | `while` Exp `do` Stmt
+                    | `begin` Block `end`
+                    | StmtItem ;
+    Block       ::=     StmtList ;
+    StmtItem    ::=     $LValue `=` Exp ;
+    Exp         ::=     ExpItem AddItem ;
+    AddItem     ::=     (`+` | `-`) ExpItem AddItem | \e ;
+    ExpItem     ::=     Factor MulItem ;
+    MulItem     ::=     (`*` | `/`) Factor MulItem | \e ;
+    Factor      ::=     `(`Exp`)` | $Num | FuncCall ;
+    FuncCall    ::=     $FuncName `(` [Exp { `,` Exp }] `)` ;
+$}
+
+MAPPING {
+    $LValue     -->     @IDENTIFIER ;
+    $Num        -->     @REAL | @INTEGER ;
+    $FuncName   -->     @IDENTIFIER ;
+$}
