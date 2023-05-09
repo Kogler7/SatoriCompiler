@@ -22,6 +22,16 @@ ast_node_ptr AbstractSyntaxTreeNode::createNode(node_type type, const string &sy
     return make_shared<ast_node>(type, symbol, line, col);
 }
 
+ast_node &AbstractSyntaxTreeNode::operator[](size_t index)
+{
+    return static_cast<ast_node &>(AbstractTreeNode<ast_node_data>::operator[](index));
+}
+
+ast_node &AbstractSyntaxTreeNode::operator<<(const ast_node_ptr node)
+{
+    return static_cast<ast_node &>(AbstractTreeNode<ast_node_data>::operator<<(node));
+}
+
 string AbstractSyntaxTreeNode::desc() const
 {
     stringstream ss;

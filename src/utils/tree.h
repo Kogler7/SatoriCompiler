@@ -18,7 +18,6 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include "utils/log.h"
 
 using namespace std;
 
@@ -48,12 +47,12 @@ public:
         return make_shared<tree_node<data_t>>(data);
     }
 
-    tree_node<data_t> &get(size_t index)
+    tree_node<data_t> &operator[](size_t index)
     {
         const auto &child = this->at(index);
         return static_cast<tree_node<data_t> &>(*child);
     }
-    tree_node<data_t> &set(const tree_node_ptr<data_t> node)
+    tree_node<data_t> &operator<<(const tree_node_ptr<data_t> node)
     {
         this->push_back(node);
         this->back()->parent = this;

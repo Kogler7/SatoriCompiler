@@ -8,7 +8,6 @@
  *
  */
 
-#include "test.h"
 #include "common/ast.h"
 
 void astTest()

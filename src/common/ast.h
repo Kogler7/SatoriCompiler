@@ -45,21 +45,8 @@ public:
 
     static ast_node_ptr createNode(node_type type, const string &symbol, size_t line, size_t col);
 
-    ast_node &operator[](size_t index)
-    {
-        // return static_cast<ast_node &>(this->get(index));
-        return static_cast<ast_node &>(AbstractTreeNode<ast_node_data>::get(index));
-    }
-    ast_node &operator<<(const ast_node_ptr node)
-    {
-        return static_cast<ast_node &>(AbstractTreeNode<ast_node_data>::set(node));
-        // return static_cast<ast_node &>(this->set(node));
-    }
+    ast_node &operator[](size_t index);
+    ast_node &operator<<(const ast_node_ptr node);
 
     string desc() const override;
-
-    void print()
-    {
-        AbstractTreeNode<ast_node_data>::print();
-    }
 };
