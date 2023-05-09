@@ -79,34 +79,48 @@ void Grammar::eliminateLeftRecursion() // 消除左递归
 void Grammar::extractLeftCommonFactor()
 {
     info << "Grammar: Extracting Left Common Factor" << endl;
+    // 将规则按照左部分组，分别构造TermTree
+    map<term, tt_node_ptr> termTrees;
     for (auto &A : nonTerms)
     {
-        // 对于每个产生式A->α|β
-        for (auto alpha : rules[A])
+        termTrees[A] = tt_node::createNode(A);
+        for (auto alphaIt = rules[A].begin(); alphaIt != rules[A].end(); alphaIt++)
         {
-            // 对于每个产生式A->α|β
-            for (auto beta : rules[A])
+            auto &alpha = *alphaIt;
+            tt_node_ptr cur = termTrees[A];
+            for (size_t i = 0; i < alpha.size(); i++)
             {
-                if (alpha == beta)
-                    continue;
-                // 找到最长公共前缀
-                int i = 0;
-                while (i < alpha.size() && i < beta.size() && alpha[i] == beta[i])
-                    i++;
-                if (i == 0)
-                    continue;
-                // 新建一个非终结符A'，将A'->βA'加入产生式
-                term newNonTerm = A + "'";
-                nonTerms.insert(newNonTerm);
-                rules[newNonTerm].insert(beta);
-                // 将A->α|β改为A->αA'
-                rules[A].erase(beta);
-                beta.erase(beta.begin(), beta.begin() + i);
-                beta.insert(beta.begin(), newNonTerm);
-                rules[A].insert(beta);
+                auto &sym = alpha[i];
+                size_t index = cur->find(sym);
+                if (index == -1)
+                {
+                    tt_node_ptr new_node = tt_node::createNode(sym, alphaIt, i);
+                    (*cur) << new_node;
+                    cur = new_node;
+                }
+                else
+                {
+                    cur = cur->get_child_ptr(index);
+                }
             }
+            (*cur) << tt_node::createNode("#");
         }
+        termTrees[A]->print();
     }
+    // 递归遍历TermTree，修正规则集合
+    // for (auto &tree : termTrees)
+    // {
+    //     const term &left = tree.first;
+    //     tt_node_ptr &root = tree.second;
+    //     root->postorder(
+    //         [&](tt_node &node)
+    //         {
+    //             if (node.size() > 1)
+    //             {
+    //                 // 有公共前缀
+    //             }
+    //         });
+    // }
 }
 
 bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法

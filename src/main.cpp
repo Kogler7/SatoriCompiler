@@ -8,7 +8,7 @@
  *
  */
 
-#define TEST_UNIT astTest
+#define TEST_UNIT parserTest
 
 #ifndef TEST_UNIT
 

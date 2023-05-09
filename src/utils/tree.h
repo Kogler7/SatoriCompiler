@@ -34,7 +34,7 @@ template <typename data_t>
 using tree_childs = vector<tree_node_ptr<data_t>>;
 
 template <typename data_t>
-class AbstractTreeNode : tree_childs<data_t>
+class AbstractTreeNode : public tree_childs<data_t>
 {
 public:
     tree_node<data_t> *parent;
@@ -47,17 +47,41 @@ public:
         return make_shared<tree_node<data_t>>(data);
     }
 
+    size_t find(data_t data) const
+    {
+        auto it = find_if(
+            tree_childs<data_t>::begin(), tree_childs<data_t>::end(),
+            [=](tree_node_ptr<data_t> node)
+            { return node->data == data; });
+        return it == tree_childs<data_t>::end() ? -1 : it - tree_childs<data_t>::begin();
+    }
+
+    template <typename func_t>
+    size_t find(func_t cmp) const
+    {
+        auto it = find_if(tree_childs<data_t>::begin(), tree_childs<data_t>::end(), cmp);
+        return it == tree_childs<data_t>::end() ? -1 : it - tree_childs<data_t>::begin();
+    }
+
     tree_node<data_t> &operator[](size_t index)
     {
         const auto &child = this->at(index);
         return static_cast<tree_node<data_t> &>(*child);
     }
+
+    tree_node_ptr<data_t> get_child_ptr(size_t index) const
+    {
+        tree_node_ptr<data_t> child = this->at(index);
+        return child;
+    }
+
     tree_node<data_t> &operator<<(const tree_node_ptr<data_t> node)
     {
         this->push_back(node);
         this->back()->parent = this;
         return static_cast<tree_node<data_t> &>(*this);
     }
+
     size_t size() const
     {
         return tree_childs<data_t>::size();
