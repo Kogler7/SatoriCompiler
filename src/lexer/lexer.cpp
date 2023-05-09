@@ -104,7 +104,7 @@ vector<token> Lexer::tokenize(string codeSeg)
     return tokens;
 }
 
-void Lexer::printToken(int idx)
+void Lexer::printToken(vector<token> tokens, int idx)
 {
     token tok = tokens[idx];
     cout << "(" << setw(12) << right << *tok.type << ", ";
@@ -117,7 +117,16 @@ void Lexer::printTokens()
     info << "Tokens: " << endl;
     for (int i = 0; i < tokens.size(); i++)
     {
-        printToken(i);
+        printToken(tokens, i);
+    }
+}
+
+void Lexer::printTokens(vector<token> tokens)
+{
+    info << "Tokens: " << endl;
+    for (int i = 0; i < tokens.size(); i++)
+    {
+        printToken(tokens, i);
     }
 }
 

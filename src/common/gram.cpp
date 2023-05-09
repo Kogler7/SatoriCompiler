@@ -19,6 +19,7 @@ Grammar::Grammar(term start, set<term> terms, set<term> non_terms, vector<produc
 {
     startTerm = start;
     terminals = terms;
+    terminals.insert(SYM_END); // SYM_END 用于表示输入串结束
     nonTerms = non_terms;
     this->products = products;
     this->rules = rules;
@@ -474,8 +475,7 @@ void Grammar::printFirstP()
             "$ -> $ : $\n",
             it->first,
             vec2str(it->second),
-            set2str(firstP[*it])
-        );
+            set2str(firstP[*it]));
     }
 }
 
@@ -488,8 +488,7 @@ void Grammar::printSelect()
             "$ -> $ : $\n",
             it->first,
             vec2str(it->second),
-            set2str(select[*it])
-        );
+            set2str(select[*it]));
     }
 }
 
@@ -530,4 +529,38 @@ void Grammar::printNonTerms()
         cout << *it << ", ";
     }
     cout << "}" << endl;
+}
+
+vector<token> Grammar::transferTokens(vector<token> tokens)
+{
+    info << "Transferring tokens..." << endl;
+    vector<token> res;
+    for (auto &t : tokens)
+    {
+        if (_find(terminals, t.value))
+        {
+            debug(0) << "terminals: " << t.value << endl;
+            res.push_back(token(
+                make_shared<term>(t.value),
+                t.value,
+                t.line,
+                t.col));
+        }
+        else if (_find(tok2term, t.type))
+        {
+            debug(0) << "tok2term: " << t.value << endl;
+            res.push_back(
+                token(
+                    make_shared<term>(tok2term[t.type]),
+                    t.value,
+                    t.line,
+                    t.col));
+        }
+        else
+        {
+            res.push_back(t);
+            warn << "Grammar::transferTokens: Unknown token: " << t.value << endl;
+        }
+    }
+    return res;
 }

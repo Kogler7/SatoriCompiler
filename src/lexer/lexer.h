@@ -23,7 +23,7 @@ class Lexer
     map<token_type, vector<FiniteAutomaton>, type_less> faMap; // 状态自动机对照表
     vector<token> tokens;                                      // 词法单元序列
     string code;                                               // 代码文本
-    void printToken(int idx);
+    void printToken(vector<token> tokens, int idx);
 
 public:
     Lexer() {}
@@ -38,5 +38,6 @@ public:
     vector<token> tokenize(string codeSeg = "");
     vector<token> getTokens() { return tokens; }
     void printTokens();
+    void printTokens(vector<token> tokens);
     void clear();
 };

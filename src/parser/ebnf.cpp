@@ -397,6 +397,7 @@ void EBNFParser::addMappings(vector<tok_production> &products)
                 right[0].value, right[0].line, right[0].col));
         term tokTerm = right[0].value;
         tokTerm = tokTerm.substr(1);
+        grammar.terminals.insert(left);
         if (!find_tok_type(tokTerm))
         {
             warn << "EBNFParser: Mapping syntax warn: Undefined token type " << tokTerm << endl;

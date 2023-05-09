@@ -13,6 +13,11 @@
 class PredictiveTableAnalyzer
 {
 public:
+    Grammar grammar;
     map<term, map<term, vector<term>>> predict;
+
+    PredictiveTableAnalyzer(Grammar g) : grammar(g) {}
     void calcPredictTable();
+    void printPredictTable();
+    bool analyze(vector<token> input);
 };

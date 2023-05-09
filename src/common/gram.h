@@ -8,6 +8,8 @@
  *
  */
 
+#pragma once
+
 #include <map>
 #include <set>
 #include <vector>
@@ -40,7 +42,7 @@ public:
     map<production, set<term>> select;
 
     Grammar(term start, set<term> terms, set<term> non_terms, vector<production> products, map<term, set<vector<term>>> rules, map<token_type, term> tok2term);
-    Grammar() {}
+    Grammar() { terminals.insert(SYM_END); }
     void operator=(const Grammar &g);
     void eliminateLeftRecursion();
     void extractLeftCommonFactor();
@@ -59,6 +61,7 @@ public:
     void printFollow();
     void printFirstP();
     void printSelect();
+    vector<token> transferTokens(vector<token> tokens);
 };
 
 class TermTreeNode;
