@@ -15,8 +15,8 @@
 void parserTest()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar G = ebnfParser.parse("./assets/lab3.stx");
-    // Grammar G = ebnfParser.parse("./assets/rlcf.stx");
+    // Grammar G = ebnfParser.parse("./assets/lab3.stx");
+    Grammar G = ebnfParser.parse("./assets/select.stx");
     G.printRules();
     G.extractLeftCommonFactor();
     G.printRules();
@@ -24,6 +24,10 @@ void parserTest()
     G.printNonTerms();
     G.calcFirst();
     G.calcFollow();
+    G.calcSelect();
     G.printFirst();
     G.printFollow();
+    G.printFirstP();
+    G.printSelect();
+    cout << G.isLL1Grammar() << endl;
 }

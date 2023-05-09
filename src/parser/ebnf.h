@@ -12,7 +12,7 @@
 #include "common/gram.h"
 #include "lexer/lexer.h"
 
-typedef pair<term, vector<token>> production;
+typedef pair<term, vector<token>> tok_production;
 
 class EBNFParser
 {
@@ -20,11 +20,11 @@ class EBNFParser
     vector<token> tokens;
     Grammar grammar;
     void tokenizeSyntax(string grammarPath);
-    vector<production> segmentProduct(production product);
-    vector<production> geneStxProducts(token_iter start, token_iter end);
-    vector<production> geneMapProducts(token_iter start, token_iter end);
-    void addRules(vector<production> &products);
-    void addMappings(vector<production> &products);
+    vector<tok_production> segmentProduct(tok_production product);
+    vector<tok_production> geneStxProducts(token_iter start, token_iter end);
+    vector<tok_production> geneMapProducts(token_iter start, token_iter end);
+    void addRules(vector<tok_production> &products);
+    void addMappings(vector<tok_production> &products);
 
 public:
     EBNFParser(string ebnfLexPath);

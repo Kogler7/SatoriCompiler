@@ -30,7 +30,7 @@
 	if (level <= DEBUG_LEVEL) \
 	std::cout << _blue("   [" #level "] ")
 
-#define debug_u(level)         \
+#define debug_u(level)        \
 	if (level <= DEBUG_LEVEL) \
 	std::cout
 
@@ -92,3 +92,21 @@ inline void print_ln(std::string s)
 		print_ln(msg);                                    \
 		exit(1);                                          \
 	}
+
+template <typename T>
+std::string container2str(T s, std::string sep = ", ", std::string lr = "{}")
+{
+	std::stringstream ss;
+	ss << lr[0];
+	for (auto it = s.begin(); it != s.end(); it++)
+	{
+		if (it != s.begin())
+			ss << sep;
+		ss << *it;
+	}
+	ss << lr[1];
+	return ss.str();
+}
+
+#define set2str(s) container2str(s, ", ", "{}")
+#define vec2str(s) container2str(s, ", ", "[]")

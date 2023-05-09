@@ -23,6 +23,7 @@
 using namespace std;
 
 typedef string term;
+typedef pair<term, vector<term>> production;
 
 class Grammar
 {
@@ -31,13 +32,14 @@ public:
     set<term> terminals;
     set<term> nonTerms;
     map<token_type, term> tok2term;
+    vector<production> products;
     map<term, set<vector<term>>> rules;
     map<term, set<term>> first;
     map<term, set<term>> follow;
-    map<term, map<vector<term>, set<term>>> select;
-    map<term, map<term, vector<term>>> predict;
+    map<production, set<term>> firstP;
+    map<production, set<term>> select;
 
-    Grammar(term start, set<term> terms, set<term> non_terms, map<term, set<vector<term>>> rules, map<token_type, term> tok2term);
+    Grammar(term start, set<term> terms, set<term> non_terms, vector<production> products, map<term, set<vector<term>>> rules, map<token_type, term> tok2term);
     Grammar() {}
     void operator=(const Grammar &g);
     void eliminateLeftRecursion();
@@ -45,7 +47,8 @@ public:
     bool isLL1Grammar();
     set<term> calcFirstOf(term t);
     set<term> calcFollowOf(term t);
-    set<term> calcSelectOf(term t, vector<term> rule);
+    set<term> calcFirstOf(production product);
+    set<term> calcSelectOf(production product);
     void calcFirst();
     void calcFollow();
     void calcSelect();
@@ -54,6 +57,7 @@ public:
     void printNonTerms();
     void printFirst();
     void printFollow();
+    void printFirstP();
     void printSelect();
 };
 
