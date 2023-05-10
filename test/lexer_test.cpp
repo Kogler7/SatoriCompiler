@@ -14,7 +14,7 @@
 void lexerTest()
 {
     Lexer lexer("./assets/cpp.lex");
-    // lexer.readCodeFile("./assets/code.cpp");
+    // lexer.readSrcFile("./assets/code.cpp");
     lexer.readSrcFile("./assets/error.cpp");
     // lexer.readCodeFile("./assets/test.cpp");
     lexer.tokenize();
