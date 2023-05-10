@@ -20,10 +20,10 @@ using namespace std;
 class Lexer
 {
     set<token_type, type_less> ignoredTypes;
+    vector<token_type> typeOrder;                              // 词法单元类型顺序
     map<token_type, vector<FiniteAutomaton>, type_less> faMap; // 状态自动机对照表
     vector<token> tokens;                                      // 词法单元序列
     string code;                                               // 代码文本
-    void printToken(vector<token> tokens, int idx);
 
 public:
     Lexer() {}

@@ -44,29 +44,18 @@ void PredictiveTableAnalyzer::calcPredictTable()
 void PredictiveTableAnalyzer::printPredictTable()
 {
     info << "Predictive Table: " << std::endl;
-
-    // Table border
-    const std::string borderLine(10 + 20 * grammar.terminals.size() + grammar.nonTerms.size(), '-');
-
-    // 表头
-    std::cout << borderLine << std::endl;
-    std::cout << "| " << std::setw(8) << std::left << "Non-Term"
-              << " |";
+    tb_head << "Non-Term";
     for (auto t : grammar.terminals)
     {
         if (t != EPSILON)
         {
-            std::cout << " " << std::setw(18) << std::left << t << " |";
+            tb_cont << t;
+            set_cur_col(AL_MID);
         }
     }
-    std::cout << std::endl;
-    std::cout << borderLine << std::endl;
-
-    // 行
     for (auto nonTerm : grammar.nonTerms)
     {
-        std::cout << "| " << std::setw(8) << std::left << nonTerm << " |";
-
+        set_row;
         for (auto terminal : grammar.terminals)
         {
             if (terminal != EPSILON)
@@ -75,23 +64,22 @@ void PredictiveTableAnalyzer::printPredictTable()
                 if (it != predict[nonTerm].end())
                 {
                     std::string production = nonTerm + " -> " + vec2str(it->second);
-                    std::cout << " " << std::setw(18) << std::left << production << " |";
+                    tb_cont << production;
                 }
                 else
                 {
-                    std::cout << " " << std::setw(18) << std::left << " "
-                              << " |";
+                    tb_cont << "";
                 }
             }
         }
-        std::cout << std::endl;
-        std::cout << borderLine << std::endl;
+        tb_line;
     }
+    cout << tb_view << std::endl;
 }
 
-void printStack(stack<term> s)
+string descStack(stack<term> s)
 {
-    std::cout << setw(30) << std::left;
+    stringstream ss;
     vector<term> v;
     while (!s.empty())
     {
@@ -99,17 +87,18 @@ void printStack(stack<term> s)
         s.pop();
     }
     reverse(v.begin(), v.end());
-    cout << vec2str(v);
+    ss << vec2str(v);
+    return ss.str();
 }
 
-void printVecFrom(vector<token> v, int i)
+string descVecFrom(vector<token> v, int i)
 {
     stringstream ss;
     for (int j = i; j < v.size(); j++)
     {
         ss << v[j].value << " ";
     }
-    cout << ss.str();
+    return ss.str();
 }
 
 bool PredictiveTableAnalyzer::analyze(vector<token> input)
@@ -119,23 +108,19 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
     s.push(SYM_END);
     s.push(grammar.startTerm);
     int i = 0;
+    tb_head << "Stack" << "Input" << "Action";
+    set_col << AL_LFT << AL_RGT << AL_RGT;
     while (!s.empty() && s.top() != SYM_END && i < input.size())
     {
-        std::cout << setw(8) << std::left;
-        printStack(s);
-        std::cout << " | ";
-        std::cout << setw(60) << std::right;
-        printVecFrom(input, i);
+        string actionDesc;
         assert(_find(grammar.terminals, *(input[i].type)));
         if (s.top() == *(input[i].type))
         {
             s.pop();
             i++;
-            cout << setw(4) << right << " $ ";
             stringstream ss;
             ss << "match " << input[i - 1].value;
-            cout << setw(40) << right << ss.str();
-            cout << endl;
+            actionDesc = ss.str();
         }
         else if (_find(grammar.nonTerms, s.top()))
         {
@@ -147,11 +132,9 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
                 {
                     s.push(*it1);
                 }
-                cout << setw(4) << right << " $ ";
                 stringstream ss;
                 ss << it->first << "->" << vec2str(it->second);
-                cout << setw(40) << right << ss.str();
-                cout << endl;
+                actionDesc = ss.str();
             }
             else
             {
@@ -166,12 +149,9 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
                   << "Unexpected token: " << input[i].type << std::endl;
             return false;
         }
+        set_row << descStack(s) << descVecFrom(input, i) << actionDesc;
     }
-    std::cout << setw(8) << std::left;
-    printStack(s);
-    std::cout << " | ";
-    std::cout << setw(60) << std::right;
-    printVecFrom(input, i);
-    std::cout << std::endl;
+    set_row << descStack(s) << descVecFrom(input, i) << "accept";
+    info << "Analyze finished." << std::endl << tb_view;
     return true;
 }

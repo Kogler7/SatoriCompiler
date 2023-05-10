@@ -31,6 +31,7 @@ void Lexer::addTokenType(string typeName, string regExp)
     }
     RegexpParser regParser(regExp);
     FiniteAutomaton nfa = regParser.parse();
+    typeOrder.push_back(type);
     faMap[type].push_back(nfa);
     debug(1) << "Add token type: " << type << " with regExp: " << regExp << endl;
 }
@@ -59,9 +60,10 @@ vector<token> Lexer::tokenize(string codeSeg)
         string matchedToken;
         token_type matchedType;
         viewer matchedView = vCode;
-        for (auto tokFa : faMap) // 按序遍历所有的状态自动机
+        for (auto typ : typeOrder) // 按序遍历所有的状态自动机
         {
-            for (auto nfa : tokFa.second)
+            const auto &faVec = faMap[typ];
+            for (auto nfa : faVec)
             {
                 viewer vTmp = vCode;
                 string matchResult;
@@ -70,7 +72,7 @@ vector<token> Lexer::tokenize(string codeSeg)
                     if (matchResult.length() > matchedToken.length()) // 同类型的自动机取匹配的最长词法单元
                     {
                         matchedToken = matchResult;
-                        matchedType = tokFa.first;
+                        matchedType = typ;
                         matchedView = vTmp;
                         matched = true;
                     }
@@ -104,30 +106,28 @@ vector<token> Lexer::tokenize(string codeSeg)
     return tokens;
 }
 
-void Lexer::printToken(vector<token> tokens, int idx)
-{
-    token tok = tokens[idx];
-    cout << "(" << setw(12) << right << *tok.type << ", ";
-    cout << setw(12) << left << tok.value << ")";
-    cout << endl;
-}
-
 void Lexer::printTokens()
 {
     info << "Tokens: " << endl;
+    tb_head << "Token Type" << "Token Value";
+    set_col << AL_RGT << AL_LFT;
     for (int i = 0; i < tokens.size(); i++)
     {
-        printToken(tokens, i);
+        set_row << *tokens[i].type << tokens[i].value;
     }
+    cout << tb_view;
 }
 
 void Lexer::printTokens(vector<token> tokens)
 {
     info << "Tokens: " << endl;
+    tb_head << "Token Type" << "Token Value";
+    set_col << AL_RGT << AL_LFT;
     for (int i = 0; i < tokens.size(); i++)
     {
-        printToken(tokens, i);
+        set_row << *tokens[i].type << tokens[i].value;
     }
+    cout << tb_view;
 }
 
 void Lexer::clear()

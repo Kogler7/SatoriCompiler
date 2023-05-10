@@ -1,7 +1,7 @@
 PATTERN ${
     BLANK       \s+
     IDENTIFIER [\a_][\w]*
-    SEPARATOR  [\+\-\*/]
+    SEPARATOR  [\+\-\*/=\(\)]
 $}
 
 IGNORE ${
