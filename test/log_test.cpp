@@ -19,11 +19,12 @@ void logTest()
     // std::cout << format("hello $ world $", std::string("hi"), 123) << std::endl;
     // assert(0 == 1, "assert");
     // assert(0 == 1, format("assert $ $", 1));
-    tb_head << "head1" << "head2" << "head3";
-    set_col << AL_LFT << AL_RGT << AL_MID;
-    set_row << "roaw1" << "rosefsefw3";
-    set_row << "s" << "rsefow2" << "ef";
+    tb_head | "head1" | "head2" | "head3";
+    set_col | AL_LFT | AL_RGT | AL_MID;
+    set_row | "roaw1" | TB_GAP | "rosefsefw3";
     tb_line;
-    set_row << "roaw1" << "s" << "rosefsefw3";
+    set_row | LF_TAB | "s";
+    tb_line;
+    set_row | "roaw1" | "s" | "rosefsefw3";
     std::cout << tb_view;
 }

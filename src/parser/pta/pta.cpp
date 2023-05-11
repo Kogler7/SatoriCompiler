@@ -10,6 +10,7 @@
 
 #include "pta.h"
 #include "utils/log.h"
+#include "utils/tok_view.h"
 #include <iomanip>
 #include <stack>
 
@@ -44,12 +45,12 @@ void PredictiveTableAnalyzer::calcPredictTable()
 void PredictiveTableAnalyzer::printPredictTable()
 {
     info << "Predictive Table: " << std::endl;
-    tb_head << "Non-Term";
+    tb_head | "Non-Term";
     for (auto t : grammar.terminals)
     {
         if (t != EPSILON)
         {
-            tb_cont << t;
+            tb_cont | t;
             set_cur_col(AL_MID);
         }
     }
@@ -64,11 +65,11 @@ void PredictiveTableAnalyzer::printPredictTable()
                 if (it != predict[nonTerm].end())
                 {
                     std::string production = nonTerm + " -> " + vec2str(it->second);
-                    tb_cont << production;
+                    tb_cont | production;
                 }
                 else
                 {
-                    tb_cont << "";
+                    tb_cont | "";
                 }
             }
         }
@@ -105,26 +106,28 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
 {
     stack<term> s;
     input.push_back(token(make_shared<term>(SYM_END), SYM_END, 0, 0));
+    TokenViewer viewer(input);
     s.push(SYM_END);
     s.push(grammar.startTerm);
-    int i = 0;
-    tb_head << "Stack" << "Input" << "Action";
-    set_col << AL_LFT << AL_RGT << AL_RGT;
-    while (!s.empty() && s.top() != SYM_END && i < input.size())
+    tb_head | "Stack" | "Input" | "Action";
+    set_col | AL_LFT | AL_RGT | AL_RGT;
+    while (s.top() != SYM_END && !viewer.ends())
     {
+        token &cur = viewer.current();
+        size_t idx = viewer.pos();
         string actionDesc;
-        assert(_find(grammar.terminals, *(input[i].type)));
-        if (s.top() == *(input[i].type))
+        assert(_find(grammar.terminals, *(cur.type)));
+        if (s.top() == *(cur.type))
         {
             s.pop();
-            i++;
+            viewer.advance();
             stringstream ss;
-            ss << "match " << input[i - 1].value;
+            ss << "Matched " << cur.value;
             actionDesc = ss.str();
         }
         else if (_find(grammar.nonTerms, s.top()))
         {
-            auto it = predict[s.top()].find(*(input[i].type));
+            auto it = predict[s.top()].find(*(cur.type));
             if (it != predict[s.top()].end())
             {
                 s.pop();
@@ -138,20 +141,20 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
             }
             else
             {
-                error << "Error: " << input[i].line << ":" << input[i].col << ": "
-                      << "Unexpected token: " << input[i].type << std::endl;
+                error << "Error: " << cur.line << ":" << cur.col << ": "
+                      << "Unexpected token: " << cur.type << std::endl;
                 return false;
             }
         }
         else
         {
-            error << "Error: " << input[i].line << ":" << input[i].col << ": "
-                  << "Unexpected token: " << input[i].type << std::endl;
+            error << "Error: " << cur.line << ":" << cur.col << ": "
+                  << "Unexpected token: " << cur.type << std::endl;
             return false;
         }
-        set_row << descStack(s) << descVecFrom(input, i) << actionDesc;
+        set_row | descStack(s) | descVecFrom(input, idx) | actionDesc;
     }
-    set_row << descStack(s) << descVecFrom(input, i) << "accept";
+    set_row | descStack(s) | descVecFrom(input, viewer.pos()) | "Accepted";
     info << "Analyze finished." << std::endl << tb_view;
     return true;
 }

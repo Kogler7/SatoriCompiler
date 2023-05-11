@@ -50,7 +50,7 @@ FiniteAutomaton RegexpParser::parse()
 void RegexpParser::parseSet(string setExp)
 {
 	debug(0) << "parse set: " << setExp << endl;
-	viewer tmpView(setExp);
+	Viewer tmpView(setExp);
 	// 解析形如[a-zA-Z0-9_]的正则表达式
 	int st = nfa.addState();
 	int ed = nfa.addState(true);
@@ -75,7 +75,7 @@ void RegexpParser::parseSet(string setExp)
 			pExpStr.push_back(c);
 		}
 	}
-	viewer view(pExpStr);
+	Viewer view(pExpStr);
 	set<char> tmpSet;
 	if (reverse)
 	{
@@ -248,7 +248,7 @@ void RegexpParser::opConcat()
 void RegexpParser::regexpPreproc()
 {
 	info << "regexpPreproc: " << exp2str(rawReg) << endl;
-	viewer rawView(rawReg);
+	Viewer rawView(rawReg);
 	string tmpStr;
 	while (!rawView.ends())
 	{
@@ -277,7 +277,7 @@ void RegexpParser::regexpPreproc()
 		}
 	}
 	tmpReg.clear();
-	viewer tmpView(tmpStr);
+	Viewer tmpView(tmpStr);
 	// 为了方便处理，将正则表达式中的所有非操作符字符之间插入连接符
 	while (!tmpView.ends())
 	{

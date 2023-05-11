@@ -16,22 +16,26 @@ using namespace std;
 
 class TokenViewer
 {
-    vector<token> tokens;
-    int index;
+    vector<token> &tokens;
+    size_t index;
 
 public:
-    TokenViewer(vector<token> tokens) : tokens(tokens), index(0) {}
+    TokenViewer(vector<token> &tokens) : tokens(tokens), index(0) {}
     void operator=(TokenViewer &v)
     {
         tokens = v.tokens;
         index = v.index;
     }
-    token operator[](int i)
+    token &operator[](size_t i)
     {
         assert(i >= 0 && i < tokens.size());
         return tokens[i];
     }
-    int size()
+    size_t pos()
+    {
+        return index;
+    }
+    size_t size()
     {
         return tokens.size();
     }
@@ -39,7 +43,7 @@ public:
     {
         return index >= tokens.size();
     }
-    token current()
+    token &current()
     {
         return (*this)[index];
     }

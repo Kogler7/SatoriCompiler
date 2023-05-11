@@ -29,7 +29,7 @@ void nfaTest()
         cout << "input word: ";
         cin >> word;
         cout << "inputted word: " << word << endl;
-        viewer vWord = viewer(word);
+        Viewer vWord = Viewer(word);
         string result;
         bool res = nfa.accepts(vWord, result);
         cout << "match result: " << (res ? "yes" : "no") << endl;

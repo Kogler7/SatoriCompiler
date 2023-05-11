@@ -59,13 +59,13 @@ vector<token> Lexer::tokenize(string codeSeg)
         bool matched = false;
         string matchedToken;
         token_type matchedType;
-        viewer matchedView = vCode;
+        Viewer matchedView = vCode;
         for (auto typ : typeOrder) // 按序遍历所有的状态自动机
         {
             const auto &faVec = faMap[typ];
             for (auto nfa : faVec)
             {
-                viewer vTmp = vCode;
+                Viewer vTmp = vCode;
                 string matchResult;
                 if (nfa.accepts(vTmp, matchResult))
                 {
@@ -109,11 +109,11 @@ vector<token> Lexer::tokenize(string codeSeg)
 void Lexer::printTokens()
 {
     info << "Tokens: " << endl;
-    tb_head << "Token Type" << "Token Value";
-    set_col << AL_RGT << AL_LFT;
+    tb_head | "Token Type" | "Token Value";
+    set_col | AL_RGT | AL_LFT;
     for (int i = 0; i < tokens.size(); i++)
     {
-        set_row << *tokens[i].type << tokens[i].value;
+        set_row | *tokens[i].type | tokens[i].value;
     }
     cout << tb_view;
 }
@@ -121,11 +121,11 @@ void Lexer::printTokens()
 void Lexer::printTokens(vector<token> tokens)
 {
     info << "Tokens: " << endl;
-    tb_head << "Token Type" << "Token Value";
-    set_col << AL_RGT << AL_LFT;
+    tb_head | "Token Type" | "Token Value";
+    set_col | AL_RGT | AL_LFT;
     for (int i = 0; i < tokens.size(); i++)
     {
-        set_row << *tokens[i].type << tokens[i].value;
+        set_row | *tokens[i].type | tokens[i].value;
     }
     cout << tb_view;
 }

@@ -26,7 +26,7 @@ void FiniteAutomaton::setStartState(state_id id)
  * @return true		匹配成功
  * @return false	匹配失败
  */
-bool FiniteAutomaton::accepts(viewer &view, string &result, state_id start)
+bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id start)
 {
 	if (start == -1) // 未指定起始状态，使用默认起始状态
 		start = startState;
@@ -35,21 +35,21 @@ bool FiniteAutomaton::accepts(viewer &view, string &result, state_id start)
 		// cout << "reached final state: " << start << endl;
 		return true;
 	}
-	viewer subView = view; // 保存当前视图，用于回溯
+	Viewer subView = view; // 保存当前视图，用于回溯
 	if (transitions.find(start) != transitions.end())
 	{
 		char c = subView.step(); // 获取当前字符，视图向后移动一位
 		transition_map available = transitions[start];
 		bool resFlag = false;
 		string tmpRes;			  // 保存当前匹配结果
-		viewer tmpView = subView; // 保存当前视图，用于回溯
+		Viewer tmpView = subView; // 保存当前视图，用于回溯
 		if (available.find(c) != available.end())
 		{
 			set<state_id> nextSet = available[c];
 			for (auto i : nextSet)
 			{
 				string nxtRes;
-				viewer vNext = subView;
+				Viewer vNext = subView;
 				if (accepts(vNext, nxtRes, i) && vNext >= tmpView)
 				{
 					resFlag = true;
@@ -75,7 +75,7 @@ bool FiniteAutomaton::accepts(viewer &view, string &result, state_id start)
 			for (auto i : nextSet)
 			{
 				string nxtRes;
-				viewer vNext = subView;
+				Viewer vNext = subView;
 				if (accepts(vNext, nxtRes, i) && vNext >= tmpView)
 				{
 					resFlag = true;

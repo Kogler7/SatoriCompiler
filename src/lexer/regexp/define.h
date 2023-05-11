@@ -75,15 +75,15 @@ extern map<char, char> escape;
 /**
  * @brief 解析转义字符，返回对应的字符
  *
- * @param v viewer
+ * @param v Viewer
  * @return char
  */
-char parseEscape(viewer &v);
+char parseEscape(Viewer &v);
 
 /**
  * @brief 将带有特殊不可见字符的表达式转换为可读的字符串
  *
- * @param v viewer
+ * @param v Viewer
  * @return string
  */
 string exp2str(string exp);

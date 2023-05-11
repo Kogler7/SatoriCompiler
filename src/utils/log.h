@@ -121,12 +121,17 @@ enum t_align
 	AL_RGT,
 };
 
+#define TB_TAB "\t"
+#define LF_TAB "\tl"
+#define MD_TAB "\tm"
+#define RT_TAB "\tr"
+#define TB_GAP ""
+
 class TableRender
 {
-	int rowCur = -1;
-	size_t colCur = 0;
-	size_t rowMax = 0;
-	size_t colMax = 0;
+	int rowCur;
+	size_t colCur;
+	size_t rowMax, colMax;
 	std::vector<size_t> lines;
 	std::vector<std::string> heads;
 	std::vector<std::vector<std::string>> table;
@@ -157,8 +162,8 @@ public:
 	TableRender &nextRow();
 	TableRender &setLine();
 	std::string geneView();
-	TableRender &operator<<(std::string field);
-	TableRender &operator<<(t_align align);
+	TableRender &operator|(std::string field);
+	TableRender &operator|(t_align align);
 };
 
 extern TableRender _table;

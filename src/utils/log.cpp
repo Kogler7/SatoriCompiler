@@ -105,10 +105,8 @@ TableRender &TableRender::setAlign(t_align align)
 
 TableRender &TableRender::curAlign(t_align align)
 {
-    colCur--;
-    assert(colCur < colMax, "Column index out of range.");
-    aligns[colCur] = align;
-    colCur++;
+    assert(colCur <= colMax, "Column index out of range.");
+    aligns[colCur > 0 ? colCur - 1 : 0] = align;
     return *this;
 }
 
@@ -167,9 +165,29 @@ std::string TableRender::geneView()
     ss << geneLine();
     for (size_t i = 0; i < rowMax; i++)
     {
+        size_t tab_widths = 0;
+        t_align tab_align = AL_MID;
         for (size_t j = 0; j < colMax; j++)
         {
-            ss << geneField(table[i][j], widths[j], aligns[j]);
+            std::string s = table[i][j];
+            if (s.starts_with("\t"))
+            {
+                tab_widths += widths[j] + 3;
+                if (s == LF_TAB)
+                    tab_align = AL_LFT;
+                else if (s == MD_TAB)
+                    tab_align = AL_MID;
+                else if (s == RT_TAB)
+                    tab_align = AL_RGT;
+                else
+                    warn << "Table Render: Invalid tab align placeholder " << s << std::endl;
+            }
+            else
+            {
+                ss << geneField(s, widths[j] + tab_widths, tab_widths > 0 ? tab_align : aligns[j]);
+                tab_widths = 0;
+                tab_align = AL_MID;
+            }
         }
         ss << "|" << std::endl;
         if (std::find(lines.begin(), lines.end(), i) != lines.end() && i != rowMax - 1)
@@ -179,7 +197,7 @@ std::string TableRender::geneView()
     return ss.str();
 }
 
-TableRender &TableRender::operator<<(std::string field)
+TableRender &TableRender::operator|(std::string field)
 {
     switch (op)
     {
@@ -196,7 +214,7 @@ TableRender &TableRender::operator<<(std::string field)
     return *this;
 }
 
-TableRender &TableRender::operator<<(t_align align)
+TableRender &TableRender::operator|(t_align align)
 {
     switch (op)
     {

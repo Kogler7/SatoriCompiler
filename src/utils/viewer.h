@@ -19,23 +19,23 @@ using namespace std;
 /**
  * @brief lightweight string viewer
  */
-class viewer
+class Viewer
 {
 	string str;
 	int pos = 0;
 
 public:
-	viewer(string &str) : str(str) {}
-	void operator=(viewer v)
+	Viewer(string &str) : str(str) {}
+	void operator=(Viewer v)
 	{
 		str = v.str;
 		pos = v.pos;
 	}
-	bool operator>(viewer &v)
+	bool operator>(Viewer &v)
 	{
 		return pos > v.pos;
 	}
-	bool operator>=(viewer &v)
+	bool operator>=(Viewer &v)
 	{
 		return pos >= v.pos;
 	}
@@ -90,16 +90,16 @@ public:
 	}
 };
 
-class code_viewer : public viewer
+class code_viewer : public Viewer
 {
 	vector<int> lineNoVec;
 
 public:
-	void operator=(viewer &v)
+	void operator=(Viewer &v)
 	{
-		viewer::operator=(v);
+		Viewer::operator=(v);
 	}
-	code_viewer(string str) : viewer(str)
+	code_viewer(string str) : Viewer(str)
 	{
 		auto pos = str.find('\n');
 		while (pos != string::npos)

@@ -8,7 +8,7 @@
  *
  */
 
-void astTest();
+void cstTest();
 void lexerTest();
 void nfaTest();
 void parserTest();
