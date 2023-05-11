@@ -43,13 +43,7 @@ class StrFormatter
 	std::queue<std::string> segs;
 
 public:
-	StrFormatter(std::string s)
-	{
-		std::stringstream ss(s);
-		std::string seg;
-		while (std::getline(ss, seg, '$'))
-			segs.push(seg);
-	}
+	StrFormatter(std::string s);
 
 	StrFormatter(const char *s) : StrFormatter(std::string(s)) {}
 
@@ -64,15 +58,7 @@ public:
 		return *this;
 	}
 
-	std::string str()
-	{
-		while (!segs.empty())
-		{
-			ss << segs.front();
-			segs.pop();
-		}
-		return ss.str();
-	}
+	std::string str();
 };
 
 #define format(fmt, ...) ((StrFormatter(fmt), ##__VA_ARGS__).str())
@@ -100,19 +86,22 @@ template <typename T>
 std::string container2str(T s, std::string sep = ", ", std::string lr = "{}")
 {
 	std::stringstream ss;
-	ss << lr[0];
+	if (lr.size() > 0)
+		(ss << lr[0]);
 	for (auto it = s.begin(); it != s.end(); it++)
 	{
 		if (it != s.begin())
 			ss << sep;
 		ss << *it;
 	}
-	ss << lr[1];
+	if (lr.size() > 1)
+		(ss << lr[1]);
 	return ss.str();
 }
 
 #define set2str(s) container2str(s, ", ", "{}")
 #define vec2str(s) container2str(s, ", ", "[]")
+#define compact(s) container2str(s, "", "")
 
 enum t_align
 {

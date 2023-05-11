@@ -64,7 +64,7 @@ void PredictiveTableAnalyzer::printPredictTable()
                 auto it = predict[nonTerm].find(terminal);
                 if (it != predict[nonTerm].end())
                 {
-                    std::string production = nonTerm + " -> " + vec2str(it->second);
+                    std::string production = nonTerm + " -> " + compact(it->second);
                     tb_cont | production;
                 }
                 else
@@ -136,7 +136,7 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
                     s.push(*it1);
                 }
                 stringstream ss;
-                ss << it->first << "->" << vec2str(it->second);
+                ss << it->first << "->" << compact(it->second);
                 actionDesc = ss.str();
             }
             else

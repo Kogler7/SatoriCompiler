@@ -8,7 +8,7 @@
  *
  */
 
-#define TEST_UNIT logTest
+#define TEST_UNIT ptaTest
 
 #ifndef TEST_UNIT
 
