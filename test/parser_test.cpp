@@ -22,9 +22,6 @@ void parserTest()
     G.printRules();
     G.printTerminals();
     G.printNonTerms();
-    G.calcFirst();
-    G.calcFollow();
-    G.calcSelect();
     G.printFirst();
     G.printFollow();
     G.printFirstS();

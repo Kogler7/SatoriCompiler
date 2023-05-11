@@ -30,14 +30,9 @@ Grammar::Grammar(symbol start, symset terms, symset nonTerms, vector<product> pr
     this->products = products;
     this->rules = rules;
     this->tok2sym = tok2sym;
-}
-
-void Grammar::operator=(const Grammar &g)
-{
-    symStart = g.symStart;
-    terminals = g.terminals;
-    nonTerms = g.nonTerms;
-    rules = g.rules;
+    calcFirst();
+    calcFollow();
+    calcSelect();
 }
 
 void Grammar::eliminateLeftRecursion() // 消除左递归
@@ -400,7 +395,7 @@ symset Grammar::calcSelectOf(product p)
     debug(0) << "Calculating Select(" << p.first;
     debug_u(0) << " -> " << vec2str(p.second) << ")" << endl;
     symset resSelect;
-    symset resFirst = calcFirstOf(p.second);
+    symset resFirst = firstS[p.second];
     symset tmpFirst = resFirst;
     tmpFirst.erase(EPSILON); // First(A) - {epsilon}
     resSelect.insert(tmpFirst.begin(), tmpFirst.end());
@@ -418,10 +413,11 @@ symset Grammar::calcSelectOf(product p)
 
 void Grammar::calcFirst()
 {
-    info << "Calculating First..." << endl;
-    for (auto &it : nonTerms)
+    info << "Calculating First(S)..." << endl;
+    for (auto &p: products)
     {
-        calcFirstOf(it);
+        calcFirstOf(p.first);
+        calcFirstOf(p.second);
     }
 }
 

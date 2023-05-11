@@ -13,18 +13,20 @@
 
 class StackPredictiveTableParser
 {
-public:
     Grammar grammar;
     cst_tree_ptr tree;
     map<symbol, map<symbol, symstr>> predict;
+    void calcPredictTable();
 
+public:
     StackPredictiveTableParser(Grammar g) : grammar(g)
     {
         tree = cst_tree::createNode(TERMINAL, SYM_END, 0, 0);
+        calcPredictTable();
     }
-    void calcPredictTable();
     void printPredictTable();
     bool parse(vector<token> input);
+    cst_tree_ptr getTree() { return tree; }
 };
 
 typedef StackPredictiveTableParser SPTParser;

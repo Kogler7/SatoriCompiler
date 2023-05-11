@@ -442,5 +442,6 @@ Grammar EBNFParser::parse(string grammarPath)
     assert(blkEnd != tokens.end(), "EBNFParser: Mappings block not ended.");
     products = geneMapProducts(blkStart + 1, blkEnd);
     addMappings(products);
+    grammar = Grammar(grammar);
     return grammar;
 }

@@ -23,16 +23,12 @@ void sptTest()
     G.printRules();
     G.printTerminals();
     G.printNonTerms();
-    G.calcFirst();
-    G.calcFollow();
-    G.calcSelect();
     G.printFirst();
     G.printFollow();
     G.printFirstS();
     G.printSelect();
     cout << G.isLL1Grammar() << endl;
     StackPredictiveTableParser pta(G);
-    pta.calcPredictTable();
     pta.printPredictTable();
     Lexer lexer("./assets/lab3.lex");
     lexer.readSrcFile("./assets/lab3.txt");

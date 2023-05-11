@@ -31,6 +31,14 @@ typedef pair<symbol, symstr> product;
 
 class Grammar
 {
+    symset calcFirstOf(symbol t);
+    symset calcFirstOf(symstr s);
+    symset calcFollowOf(symbol t);
+    symset calcSelectOf(product p);
+    void calcFirst();
+    void calcFollow();
+    void calcSelect();
+
 public:
     symbol symStart;
     symset terminals;
@@ -45,17 +53,21 @@ public:
 
     Grammar(symbol start, symset terms, symset nonTerms, vector<product> products, map<symbol, set<symstr>> rules, map<token_type, symbol> tok2sym);
     Grammar() { terminals.insert(SYM_END); }
-    void operator=(const Grammar &g);
+    Grammar(const Grammar &g)
+    {
+        symStart = g.symStart;
+        terminals = g.terminals;
+        nonTerms = g.nonTerms;
+        tok2sym = g.tok2sym;
+        products = g.products;
+        rules = g.rules;
+        calcFirst();
+        calcFollow();
+        calcSelect();
+    }
     void eliminateLeftRecursion();
     void extractLeftCommonFactor();
     bool isLL1Grammar();
-    symset calcFirstOf(symbol t);
-    symset calcFirstOf(symstr s);
-    symset calcFollowOf(symbol t);
-    symset calcSelectOf(product p);
-    void calcFirst();
-    void calcFollow();
-    void calcSelect();
     void printRules();
     void printTerminals();
     void printNonTerms();
