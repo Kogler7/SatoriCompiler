@@ -9,6 +9,7 @@
  */
 
 #include "utils/log.h"
+#include "utils/table.h"
 #include "test.h"
 
 void logTest()
@@ -25,6 +26,6 @@ void logTest()
     tb_line;
     set_row | LF_TAB | "s";
     tb_line;
-    set_row | "roaw1" | "s" | "rosefsefw3";
+    set_row | "roaw1" | "s" | "row";
     std::cout << tb_view;
 }

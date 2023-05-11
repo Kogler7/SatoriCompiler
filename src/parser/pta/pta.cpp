@@ -10,6 +10,7 @@
 
 #include "pta.h"
 #include "utils/log.h"
+#include "utils/table.h"
 #include "utils/tok_view.h"
 #include <iomanip>
 #include <stack>
@@ -56,7 +57,7 @@ void PredictiveTableAnalyzer::printPredictTable()
     }
     for (auto nonTerm : grammar.nonTerms)
     {
-        set_row;
+        set_row | nonTerm;
         for (auto terminal : grammar.terminals)
         {
             if (terminal != EPSILON)
@@ -69,7 +70,7 @@ void PredictiveTableAnalyzer::printPredictTable()
                 }
                 else
                 {
-                    tb_cont | "";
+                    tb_cont | TB_GAP;
                 }
             }
         }
@@ -78,13 +79,15 @@ void PredictiveTableAnalyzer::printPredictTable()
     cout << tb_view << std::endl;
 }
 
-string descStack(stack<term> s)
+#define top_sym(s) ((s.top())->data.symbol)
+
+string descStack(stack<cst_node_ptr> s)
 {
     stringstream ss;
     vector<term> v;
     while (!s.empty())
     {
-        v.push_back(s.top());
+        v.push_back(top_sym(s));
         s.pop();
     }
     reverse(v.begin(), v.end());
@@ -104,36 +107,48 @@ string descVecFrom(vector<token> v, int i)
 
 bool PredictiveTableAnalyzer::analyze(vector<token> input)
 {
-    stack<term> s;
+    stack<cst_node_ptr> s;
     input.push_back(token(make_shared<term>(SYM_END), SYM_END, 0, 0));
     TokenViewer viewer(input);
-    s.push(SYM_END);
-    s.push(grammar.startTerm);
-    tb_head | "Stack" | "Input" | "Action";
+    s.push(cst_tree::createNode(TERMINAL, SYM_END, 0, 0));
+    cst_node_ptr startNode = cst_tree::createNode(NON_TERM, grammar.startTerm, 0, 0);
+    s.push(startNode);
+    tb_head | "Analyze Stack" | "Remaining Input" | "Action";
     set_col | AL_LFT | AL_RGT | AL_RGT;
-    while (s.top() != SYM_END && !viewer.ends())
+    set_row | descStack(s) | descVecFrom(input, 0) | "Initial";
+    while (top_sym(s) != SYM_END && !viewer.ends())
     {
         token &cur = viewer.current();
         size_t idx = viewer.pos();
         string actionDesc;
-        assert(_find(grammar.terminals, *(cur.type)));
-        if (s.top() == *(cur.type))
+        term curSym = top_sym(s);
+        term curType = *(cur.type);
+        assert(_find(grammar.terminals, curType));
+        if (curSym == curType)
         {
+            cst_node_ptr topNode = s.top();
+            topNode->data.symbol = cur.value;
+            topNode->data.line = cur.line;
+            topNode->data.col = cur.col;
             s.pop();
             viewer.advance();
             stringstream ss;
             ss << "Matched " << cur.value;
             actionDesc = ss.str();
         }
-        else if (_find(grammar.nonTerms, s.top()))
+        else if (_find(grammar.nonTerms, curSym))
         {
-            auto it = predict[s.top()].find(*(cur.type));
-            if (it != predict[s.top()].end())
+            auto it = predict[curSym].find(curType);
+            if (it != predict[curSym].end())
             {
+                cst_node_ptr topNode = s.top();
                 s.pop();
                 for (auto it1 = it->second.rbegin(); it1 != it->second.rend(); it1++)
                 {
-                    s.push(*it1);
+                    node_type type = _find(grammar.terminals, *it1) ? TERMINAL : NON_TERM;
+                    cst_node_ptr newNode = cst_tree::createNode(type, *it1, 0, 0);
+                    *(topNode) << newNode;
+                    s.push(newNode);
                 }
                 stringstream ss;
                 ss << it->first << "->" << compact(it->second);
@@ -141,20 +156,26 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
             }
             else
             {
-                error << "Error: " << cur.line << ":" << cur.col << ": "
-                      << "Unexpected token: " << cur.type << std::endl;
+                error << "PredictiveTableAnalyzer: "
+                      << "Unexpected token: " << cur.value << " at " << cur.line
+                      << ":" << cur.col << ": " << std::endl;
                 return false;
             }
         }
         else
         {
-            error << "Error: " << cur.line << ":" << cur.col << ": "
-                  << "Unexpected token: " << cur.type << std::endl;
+            error << "PredictiveTableAnalyzer: "
+                  << "Unexpected token: " << cur.value << " at " << cur.line
+                  << ":" << cur.col << ": " << std::endl;
             return false;
         }
-        set_row | descStack(s) | descVecFrom(input, idx) | actionDesc;
+        set_row | descStack(s) | descVecFrom(input, viewer.pos()) | actionDesc;
     }
-    set_row | descStack(s) | descVecFrom(input, viewer.pos()) | "Accepted";
-    info << "Analyze finished." << std::endl << tb_view;
+    tb_line;
+    set_row | TB_TAB | MD_TAB | "Accepted";
+    info << "Analyze finished." << std::endl;
+    cout << tb_view;
+    info << "Parse Tree: " << std::endl;
+    startNode->print();
     return true;
 }

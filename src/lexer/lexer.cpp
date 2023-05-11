@@ -14,6 +14,7 @@
 #include <fstream>
 #include <sstream>
 #include "utils/log.h"
+#include "utils/table.h"
 
 #define _find(x, y) (x.find(y) != x.end())
 

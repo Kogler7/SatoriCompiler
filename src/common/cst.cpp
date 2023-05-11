@@ -35,6 +35,14 @@ cst_node &ConcreteSyntaxTreeNode::operator<<(const cst_node_ptr node)
 string ConcreteSyntaxTreeNode::desc() const
 {
     stringstream ss;
-    ss << data.symbol << " at <" << data.line << ":" << data.col << ">";
+    if (data.type == TERMINAL)
+    {
+        ss << '`' << data.symbol << '`';
+        ss << " at <" << data.line << ":" << data.col << ">";
+    }
+    else
+    {
+        ss << data.symbol;
+    }
     return ss.str();
 }
