@@ -11,10 +11,10 @@
 #include "test.h"
 #include "lexer/lexer.h"
 #include "parser/ebnf.h"
-#include "parser/pta/pta.h"
+#include "parser/pat/parser.h"
 #include "utils/log.h"
 
-void ptaTest()
+void patTest()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
     Grammar G = ebnfParser.parse("./assets/lab3.stx");

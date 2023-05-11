@@ -1,14 +1,14 @@
 /**
- * @file pta.cpp
+ * @file pat/parser.cpp
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Predictive Table Analyzer
+ * @brief Predictive Analyzing Table Parser
  * @date 2023-04-27
  *
  * @copyright Copyright (c) 2023
  *
  */
 
-#include "pta.h"
+#include "parser.h"
 #include "utils/log.h"
 #include "utils/table.h"
 #include "utils/tok_view.h"
@@ -132,9 +132,7 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
             topNode->data.col = cur.col;
             s.pop();
             viewer.advance();
-            stringstream ss;
-            ss << "Matched " << cur.value;
-            actionDesc = ss.str();
+            actionDesc = "Matched " + cur.value;
         }
         else if (_find(grammar.nonTerms, curSym))
         {
@@ -143,16 +141,20 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
             {
                 cst_node_ptr topNode = s.top();
                 s.pop();
+                vector<cst_node_ptr> children;
                 for (auto it1 = it->second.rbegin(); it1 != it->second.rend(); it1++)
                 {
                     node_type type = _find(grammar.terminals, *it1) ? TERMINAL : NON_TERM;
                     cst_node_ptr newNode = cst_tree::createNode(type, *it1, 0, 0);
-                    *(topNode) << newNode;
+                    children.push_back(newNode);
                     s.push(newNode);
                 }
-                stringstream ss;
-                ss << it->first << "->" << compact(it->second);
-                actionDesc = ss.str();
+                // 保证树节点的顺序
+                for (auto it1 = children.rbegin(); it1 != children.rend(); it1++)
+                {
+                    *(topNode) << *it1;
+                }
+                actionDesc = it->first + " -> " + compact(it->second);
             }
             else
             {

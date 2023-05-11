@@ -13,4 +13,4 @@ void lexerTest();
 void nfaTest();
 void parserTest();
 void logTest();
-void ptaTest();
+void patTest();

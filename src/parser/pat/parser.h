@@ -1,7 +1,7 @@
 /**
- * @file pta.h
+ * @file pat/parser.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Predictive Table Analyzer
+ * @brief Predictive Analyzing Table Parser
  * @date 2023-04-27
  *
  * @copyright Copyright (c) 2023
