@@ -1,7 +1,7 @@
 /**
- * @file pta_test.cpp
+ * @file spt_test.cpp
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Test Predictive Table Analyzer
+ * @brief Test Stack Predictive Table Parser
  * @date 2023-05-06
  *
  * @copyright Copyright (c) 2023
@@ -11,10 +11,10 @@
 #include "test.h"
 #include "lexer/lexer.h"
 #include "parser/ebnf.h"
-#include "parser/pat/parser.h"
+#include "parser/spt/parser.h"
 #include "utils/log.h"
 
-void patTest()
+void sptTest()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
     Grammar G = ebnfParser.parse("./assets/lab3.stx");
@@ -31,7 +31,7 @@ void patTest()
     G.printFirstP();
     G.printSelect();
     cout << G.isLL1Grammar() << endl;
-    PredictiveTableAnalyzer pta(G);
+    StackPredictiveTableParser pta(G);
     pta.calcPredictTable();
     pta.printPredictTable();
     Lexer lexer("./assets/lab3.lex");
@@ -40,5 +40,5 @@ void patTest()
     lexer.printTokens();
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);
-    info << "result: \n" << pta.analyze(tokens);
+    info << "result: \n" << pta.parse(tokens);
 }

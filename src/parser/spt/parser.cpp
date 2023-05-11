@@ -1,7 +1,7 @@
 /**
- * @file pat/parser.cpp
+ * @file spt/parser.cpp
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Predictive Analyzing Table Parser
+ * @brief Stack-based Parsing with Predictive Table
  * @date 2023-04-27
  *
  * @copyright Copyright (c) 2023
@@ -19,7 +19,7 @@ using namespace std;
 
 #define _find(s, t) (s.find(t) != s.end())
 
-void PredictiveTableAnalyzer::calcPredictTable()
+void StackPredictiveTableParser::calcPredictTable()
 {
     for (auto pdt : grammar.products)
     {
@@ -43,7 +43,7 @@ void PredictiveTableAnalyzer::calcPredictTable()
     }
 }
 
-void PredictiveTableAnalyzer::printPredictTable()
+void StackPredictiveTableParser::printPredictTable()
 {
     info << "Predictive Table: " << std::endl;
     tb_head | "Non-Term";
@@ -105,7 +105,7 @@ string descVecFrom(vector<token> v, int i)
     return ss.str();
 }
 
-bool PredictiveTableAnalyzer::analyze(vector<token> input)
+bool StackPredictiveTableParser::parse(vector<token> input)
 {
     stack<cst_node_ptr> s;
     input.push_back(token(make_shared<term>(SYM_END), SYM_END, 0, 0));
@@ -158,7 +158,7 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
             }
             else
             {
-                error << "PredictiveTableAnalyzer: "
+                error << "StackPredictiveTableParser: "
                       << "Unexpected token: " << cur.value << " at " << cur.line
                       << ":" << cur.col << ": " << std::endl;
                 return false;
@@ -166,7 +166,7 @@ bool PredictiveTableAnalyzer::analyze(vector<token> input)
         }
         else
         {
-            error << "PredictiveTableAnalyzer: "
+            error << "StackPredictiveTableParser: "
                   << "Unexpected token: " << cur.value << " at " << cur.line
                   << ":" << cur.col << ": " << std::endl;
             return false;

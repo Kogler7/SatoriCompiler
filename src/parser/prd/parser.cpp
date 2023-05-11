@@ -1,7 +1,7 @@
 /**
  * @file prd/parser.cpp
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Predictive Recursive Descent Parser
+ * @brief Predictive Recursive Descent Parsing
  * @date 2023-04-22
  *
  * @copyright Copyright (c) 2023
@@ -14,7 +14,7 @@
 #define _find(s, t) (s.find(t) != s.end())
 #define _cur_tok(v) *(v.current().type)
 
-bool RecursiveDescentParser::parseNonTerm(TokenViewer &viewer, term t)
+bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, term t)
 {
     for (auto &right : grammar.rules[t])
     {
@@ -45,7 +45,7 @@ bool RecursiveDescentParser::parseNonTerm(TokenViewer &viewer, term t)
                         // 终结符
                         if (_cur_tok(tmpViewer) != *symIt)
                         {
-                            error << "RecursiveDescentParser: parseNonTerm: terminal not match."
+                            error << "PRDParser: parseNonTerm: terminal not match."
                                   << format(" Expected: $, got: $.", *symIt, _cur_tok(tmpViewer));
                             return false; // 预测失败
                         }
@@ -55,7 +55,7 @@ bool RecursiveDescentParser::parseNonTerm(TokenViewer &viewer, term t)
                         // 非终结符
                         if (!parseNonTerm(tmpViewer, *symIt))
                         {
-                            error << "RecursiveDescentParser: parseNonTerm: non-terminal not match."
+                            error << "PRDParser: parseNonTerm: non-terminal not match."
                                   << format(" Expected: $, got: $.", *symIt, _cur_tok(tmpViewer));
                             return false; // 预测失败
                         }
@@ -66,21 +66,21 @@ bool RecursiveDescentParser::parseNonTerm(TokenViewer &viewer, term t)
             }
         }
     }
-    error << "RecursiveDescentParser: parseNonTerm: no production matched.";
+    error << "PRDParser: parseNonTerm: no production matched.";
     return false;
 }
 
-bool RecursiveDescentParser::parse(vector<token> &input)
+bool PredictiveRecursiveDescentParser::parse(vector<token> &input)
 {
     TokenViewer viewer(input);
     if (parseNonTerm(viewer, grammar.startTerm))
     {
-        info << "RecursiveDescentParser: parse: success.";
+        info << "PRDParser: parse succeed.";
         return true;
     }
     else
     {
-        error << "RecursiveDescentParser: parse: failed.";
+        error << "PRDParser: parse failed.";
         return false;
     }
 }
