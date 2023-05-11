@@ -10,25 +10,31 @@
 
 #include "gram.h"
 #include "utils/log.h"
+#include "utils/table.h"
+
+typedef string symbol;
+typedef set<symbol> symset;
+typedef vector<symbol> symstr;
+typedef pair<symbol, symstr> product;
 
 #define _find(x, y) (x.find(y) != x.end())
 
 #define DEBUG_LEVEL 1
 
-Grammar::Grammar(term start, set<term> terms, set<term> non_terms, vector<production> products, map<term, set<vector<term>>> rules, map<token_type, term> tok2term)
+Grammar::Grammar(symbol start, symset terms, symset nonTerms, vector<product> products, map<symbol, set<symstr>> rules, map<token_type, symbol> tok2sym)
 {
-    startTerm = start;
+    symStart = start;
     terminals = terms;
     terminals.insert(SYM_END); // SYM_END 用于表示输入串结束
-    nonTerms = non_terms;
+    nonTerms = nonTerms;
     this->products = products;
     this->rules = rules;
-    this->tok2term = tok2term;
+    this->tok2sym = tok2sym;
 }
 
 void Grammar::operator=(const Grammar &g)
 {
-    startTerm = g.startTerm;
+    symStart = g.symStart;
     terminals = g.terminals;
     nonTerms = g.nonTerms;
     rules = g.rules;
@@ -53,7 +59,7 @@ void Grammar::eliminateLeftRecursion() // 消除左递归
             {
                 debug(1) << "Direct Left Recursion" << endl;
                 // 新建一个非终结符A'，将A'->βA'加入产生式
-                term newNonTerm = A + "'";
+                symbol newNonTerm = A + "'";
                 nonTerms.insert(newNonTerm);
                 rules[newNonTerm].insert(alpha);
                 // 将A->α|β改为A->αA'|ε
@@ -66,7 +72,7 @@ void Grammar::eliminateLeftRecursion() // 消除左递归
             {
                 debug(1) << "Indirect Left Recursion" << endl;
                 // 新建一个非终结符A'，将A'->βA'加入产生式
-                term newNonTerm = A + "'";
+                symbol newNonTerm = A + "'";
                 nonTerms.insert(newNonTerm);
                 rules[newNonTerm].insert(alpha);
                 // 将A->α|β改为A->αA'
@@ -82,7 +88,7 @@ void Grammar::extractLeftCommonFactor()
 {
     info << "Grammar: Extracting Left Common Factor" << endl;
     // 将规则按照左部分组，分别构造TermTree
-    map<term, tt_node_ptr> termTrees;
+    map<symbol, tt_node_ptr> termTrees;
     for (auto &A : nonTerms)
     {
         termTrees[A] = tt_node::createNode(A);
@@ -114,7 +120,7 @@ void Grammar::extractLeftCommonFactor()
     size_t cnt = 0;
     for (auto &tree : termTrees)
     {
-        const term &left = tree.first;
+        const symbol &left = tree.first;
         tt_node_ptr &root = tree.second;
         root->postorder(
             [&](tt_node node)
@@ -125,10 +131,10 @@ void Grammar::extractLeftCommonFactor()
                     info << "Grammar: Fixing Rule " << left << "->" << node.data.symbol;
                     cout << " " << node.data.index << endl;
                     assert(node.data.ruleIt != rules[left].end());
-                    vector<term> curRule = *(node.data.ruleIt);
-                    vector<term> prefix;
+                    symstr curRule = *(node.data.ruleIt);
+                    symstr prefix;
                     prefix.insert(prefix.end(), curRule.begin(), curRule.begin() + node.data.index + 1);
-                    term newNonTerm = left + "^" + to_string(++cnt);
+                    symbol newNonTerm = left + "^" + to_string(++cnt);
                     nonTerms.insert(newNonTerm);
                     prefix.push_back(newNonTerm);
                     rules[left].insert(prefix);
@@ -136,7 +142,7 @@ void Grammar::extractLeftCommonFactor()
                         [&](tt_node child)
                         {
                             // 对于每个子节点，将其所代表的子产生式加入新的规则
-                            vector<term> suffix;
+                            symstr suffix;
                             if (child.data.symbol != "#")
                             {
                                 suffix.insert(
@@ -162,13 +168,13 @@ bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法
         // 对于每个产生式A->α
         for (auto &alpha : rules[A])
         {
-            production pA(A, alpha);
+            product pA(A, alpha);
             debug(1) << format("Processing Production $->$", A, vec2str(alpha)) << endl;
             // 计算Select集
-            set<term> selectA = select[pA];
+            symset selectA = select[pA];
             debug(1) << format("Select($->$) = $", A, vec2str(alpha), set2str(selectA)) << endl;
             // 检查是否有空产生式
-            bool aHasEpsilon = _find(firstP[pA], EPSILON);
+            bool aHasEpsilon = _find(firstS[alpha], EPSILON);
             // 检查是否有多个产生式的Select集相交
             for (auto &B : nonTerms)
             {
@@ -176,9 +182,9 @@ bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法
                     continue;
                 for (auto &beta : rules[B])
                 {
-                    set<term> resSet;
-                    production pB(B, beta);
-                    bool bHasEpsilon = _find(firstP[pB], EPSILON);
+                    symset resSet;
+                    product pB(B, beta);
+                    bool bHasEpsilon = _find(firstS[beta], EPSILON);
                     if (aHasEpsilon && bHasEpsilon)
                     {
                         debug(1) << format(
@@ -186,7 +192,7 @@ bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法
                             A, vec2str(alpha), B, vec2str(beta));
                         return false;
                     }
-                    set<term> selectB = select[pB];
+                    symset selectB = select[pB];
                     set_intersection(
                         selectA.begin(),
                         selectA.end(),
@@ -206,7 +212,7 @@ bool Grammar::isLL1Grammar() // 判断是否为LL(1)文法
     }
 }
 
-set<term> Grammar::calcFirstOf(term t)
+symset Grammar::calcFirstOf(symbol t)
 {
     debug(0) << "Calculating First(" << t << ")" << endl;
     if (first[t].size() > 0)
@@ -239,8 +245,8 @@ set<term> Grammar::calcFirstOf(term t)
                 }
                 else
                 {
-                    set<term> resFirst = calcFirstOf(symbol);
-                    set<term> tmpFirst = resFirst;
+                    symset resFirst = calcFirstOf(symbol);
+                    symset tmpFirst = resFirst;
                     tmpFirst.erase(EPSILON);
                     first[t].insert(tmpFirst.begin(), tmpFirst.end());
                     for (auto &f : tmpFirst)
@@ -265,34 +271,33 @@ set<term> Grammar::calcFirstOf(term t)
     return first[t];
 }
 
-set<term> Grammar::calcFirstOf(production product)
+symset Grammar::calcFirstOf(symstr s)
 {
-    debug(0) << format("Calculating First($->$)", product.first, vec2str(product.second)) << endl;
-    if (firstP[product].size() > 0)
+    debug(0) << format("Calculating First($)", vec2str(s)) << endl;
+    if (firstS[s].size() > 0)
     {
         debug(1) << format(
-            "First($->$) has been calculated before.\n",
-            product.first,
-            vec2str(product.second));
-        return firstP[product]; // 已经计算过
+            "First($) has been calculated before.\n",
+            vec2str(s));
+        return firstS[s]; // 已经计算过
     }
-    set<term> resFirst;
+    symset resFirst;
     bool allHaveEpsilon = true;
-    for (auto &symbol : product.second)
+    for (auto &symbol : s)
     {
         if (_find(terminals, symbol))
         {
             // 终结符，直接加入first集
             resFirst.insert(symbol);
-            debug(1) << "First(" << product.first << ") <- {" << symbol << "}" << endl;
+            debug(1) << "First(" << vec2str(s) << ") <- {" << symbol << "}" << endl;
             allHaveEpsilon = false;
             break; // 终结符后面的符号不再计算
         }
         else
         {
-            set<term> tmpFirst = calcFirstOf(symbol);
+            symset tmpFirst = calcFirstOf(symbol);
             resFirst.insert(tmpFirst.begin(), tmpFirst.end());
-            debug(1) << "First(" << product.first << ") <- " << container2str(tmpFirst) << endl;
+            debug(1) << "First(" << vec2str(s) << ") <- " << set2str(tmpFirst) << endl;
             if (!_find(tmpFirst, EPSILON))
             {
                 // 该符号的first集不含epsilon，后面的符号不再计算
@@ -304,13 +309,13 @@ set<term> Grammar::calcFirstOf(production product)
     if (allHaveEpsilon)
     {
         resFirst.insert(EPSILON);
-        debug(1) << "First(" << product.first << ") <- { epsilon }" << endl;
+        debug(1) << "First(" << vec2str(s) << ") <- { epsilon }" << endl;
     }
-    firstP[product] = resFirst;
+    firstS[s] = resFirst;
     return resFirst;
 }
 
-set<term> Grammar::calcFollowOf(term t)
+symset Grammar::calcFollowOf(symbol t)
 {
     debug(0) << "Calculating Follow(" << t << ")" << endl;
     if (follow[t].size() > 0)
@@ -318,7 +323,7 @@ set<term> Grammar::calcFollowOf(term t)
         debug(1) << "Follow(" << t << ") has been calculated before" << endl;
         return follow[t]; // 已经计算过
     }
-    if (t == startTerm)
+    if (t == symStart)
     {
         follow[t].insert(SYM_END);
         debug(1) << "Follow(" << t << ") <- {#}" << endl;
@@ -336,7 +341,7 @@ set<term> Grammar::calcFollowOf(term t)
                     // A -> aB
                     if (rule.first != t)
                     {
-                        set<term> resFollow = calcFollowOf(rule.first);
+                        symset resFollow = calcFollowOf(rule.first);
                         follow[t].insert(resFollow.begin(), resFollow.end());
                         for (auto &f : resFollow)
                         {
@@ -353,11 +358,11 @@ set<term> Grammar::calcFollowOf(term t)
                 else
                 {
                     // A -> aBC
-                    set<term> resFirst;
+                    symset resFirst;
                     for (auto tmpIt = symIt + 1; tmpIt != right.end(); tmpIt++)
                     {
                         resFirst = calcFirstOf(*tmpIt);
-                        set<term> tmpFirst = resFirst;
+                        symset tmpFirst = resFirst;
                         tmpFirst.erase(EPSILON);
                         follow[t].insert(tmpFirst.begin(), tmpFirst.end());
                         for (auto &f : tmpFirst)
@@ -374,7 +379,7 @@ set<term> Grammar::calcFollowOf(term t)
                         // A -> aBC, First(C) 含有epsilon
                         if (rule.first != t)
                         {
-                            set<term> resFollow = calcFollowOf(rule.first);
+                            symset resFollow = calcFollowOf(rule.first);
                             follow[t].insert(resFollow.begin(), resFollow.end());
                             for (auto &f : resFollow)
                             {
@@ -390,22 +395,22 @@ set<term> Grammar::calcFollowOf(term t)
     return follow[t];
 }
 
-set<term> Grammar::calcSelectOf(production product)
+symset Grammar::calcSelectOf(product p)
 {
-    debug(0) << "Calculating Select(" << product.first;
-    debug_u(0) << " -> " << vec2str(product.second) << ")" << endl;
-    set<term> resSelect;
-    set<term> resFirst = calcFirstOf(product);
-    set<term> tmpFirst = resFirst;
+    debug(0) << "Calculating Select(" << p.first;
+    debug_u(0) << " -> " << vec2str(p.second) << ")" << endl;
+    symset resSelect;
+    symset resFirst = calcFirstOf(p.second);
+    symset tmpFirst = resFirst;
     tmpFirst.erase(EPSILON); // First(A) - {epsilon}
     resSelect.insert(tmpFirst.begin(), tmpFirst.end());
-    debug(1) << "Select(" << product.first << " -> " << vec2str(product.second);
+    debug(1) << "Select(" << p.first << " -> " << vec2str(p.second);
     debug_u(1) << ") <- " << set2str(tmpFirst) << endl;
     if (_find(resFirst, EPSILON))
     {
-        set<term> resFollow = calcFollowOf(product.first);
+        symset resFollow = calcFollowOf(p.first);
         resSelect.insert(resFollow.begin(), resFollow.end());
-        debug(1) << "Select(" << product.first << " -> " << vec2str(product.second);
+        debug(1) << "Select(" << p.first << " -> " << vec2str(p.second);
         debug_u(1) << ") <- " << set2str(resFollow) << endl;
     }
     return resSelect;
@@ -441,55 +446,46 @@ void Grammar::calcSelect()
 void Grammar::printFirst()
 {
     info << "First:" << endl;
+    tb_head | "NonTerm" | "First";
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
-        cout << *it << " : ";
-        for (auto it2 = first[*it].begin(); it2 != first[*it].end(); it2++)
-        {
-            cout << *it2 << " ";
-        }
-        cout << endl;
+        set_row | *it | set2str(first[*it]);
     }
+    cout << tb_view;
 }
 
 void Grammar::printFollow()
 {
     info << "Follow:" << endl;
+    tb_head | "NonTerm" | "Follow";
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
-        cout << *it << " : ";
-        for (auto it2 = follow[*it].begin(); it2 != follow[*it].end(); it2++)
-        {
-            cout << *it2 << " ";
-        }
-        cout << endl;
+        set_row | *it | set2str(follow[*it]);
     }
+    cout << tb_view;
 }
 
-void Grammar::printFirstP()
+void Grammar::printFirstS()
 {
-    info << "First of Product: " << endl;
+    info << "First of Symstr: " << endl;
+    tb_head | "Symstr" | "First";
     for (auto it = products.begin(); it != products.end(); it++)
     {
-        cout << format(
-            "$ -> $ : $\n",
-            it->first,
-            vec2str(it->second),
-            set2str(firstP[*it]));
+        symstr &s = it->second;
+        set_row | vec2str(s) | set2str(firstS[s]);
     }
+    cout << tb_view;
 }
 
 void Grammar::printSelect()
 {
     info << "Select: " << endl;
+    tb_head | "Product" | "Select";
     for (auto it = products.begin(); it != products.end(); it++)
     {
-        cout << format(
-            "$ -> $ : $\n",
-            it->first,
-            vec2str(it->second),
-            set2str(select[*it]));
+        set_row | it->first + "->" + vec2str(it->second) | set2str(select[*it]);
     }
+    cout << tb_view;
 }
 
 void Grammar::printRules()
@@ -512,23 +508,13 @@ void Grammar::printRules()
 void Grammar::printTerminals()
 {
     info << "Terminals:" << endl;
-    cout << "{ ";
-    for (auto it = terminals.begin(); it != terminals.end(); it++)
-    {
-        cout << *it << ", ";
-    }
-    cout << "}" << endl;
+    cout << set2str(terminals) << endl;
 }
 
 void Grammar::printNonTerms()
 {
     info << "Non-terminals:" << endl;
-    cout << "{ ";
-    for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
-    {
-        cout << *it << ", ";
-    }
-    cout << "}" << endl;
+    cout << set2str(nonTerms) << endl;
 }
 
 vector<token> Grammar::transferTokens(vector<token> tokens)
@@ -541,17 +527,17 @@ vector<token> Grammar::transferTokens(vector<token> tokens)
         {
             debug(0) << "terminals: " << t.value << endl;
             res.push_back(token(
-                make_shared<term>(t.value),
+                make_shared<symbol>(t.value),
                 t.value,
                 t.line,
                 t.col));
         }
-        else if (_find(tok2term, t.type))
+        else if (_find(tok2sym, t.type))
         {
-            debug(0) << "tok2term: " << t.value << endl;
+            debug(0) << "tok2sym: " << t.value << endl;
             res.push_back(
                 token(
-                    make_shared<term>(tok2term[t.type]),
+                    make_shared<symbol>(tok2sym[t.type]),
                     t.value,
                     t.line,
                     t.col));

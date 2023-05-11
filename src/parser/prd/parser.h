@@ -23,7 +23,7 @@ public:
     {
         tree = cst_tree::createNode(TERMINAL, SYM_END, 0, 0);
     }
-    bool parseNonTerm(TokenViewer &viewer, term t);
+    bool parseNonTerm(TokenViewer &viewer, symbol t);
     bool parse(vector<token> &input);
 };
 

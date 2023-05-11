@@ -28,7 +28,7 @@ void sptTest()
     G.calcSelect();
     G.printFirst();
     G.printFollow();
-    G.printFirstP();
+    G.printFirstS();
     G.printSelect();
     cout << G.isLL1Grammar() << endl;
     StackPredictiveTableParser pta(G);

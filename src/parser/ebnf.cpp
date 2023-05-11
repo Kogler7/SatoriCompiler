@@ -21,7 +21,7 @@
 
 using namespace std;
 
-typedef string term;
+typedef string symbol;
 
 token_iter findType(vector<token> &tokens, token_type type, token_iter start)
 {
@@ -65,7 +65,7 @@ void EBNFParser::tokenizeSyntax(string grammarPath)
     ebnfLexer.printTokens();
 }
 
-term getEndSep(term sep)
+symbol getEndSep(symbol sep)
 {
     if (sep == "(")
     {
@@ -95,7 +95,7 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
     }
     cout << endl;
     vector<tok_production> products;
-    term &left = product.first;
+    symbol &left = product.first;
     vector<token> &right = product.second;
     auto lastIt = right.begin();
     auto nextIt = right.begin();
@@ -122,7 +122,7 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
         else
         {
             // 如果是分组符，则需要递归拆分
-            term endDeli = getEndSep(deliBeginIt->value);
+            symbol endDeli = getEndSep(deliBeginIt->value);
             auto deliEndIt = findSep(right, endDeli, deliBeginIt);
             assert(
                 deliEndIt != right.end(),
@@ -146,7 +146,7 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
                 for (auto &pro : subProducts)
                 {
                     // 构造新的非终结符
-                    term newLeft = left + "_";
+                    symbol newLeft = left + "_";
                     newLeft += to_string(++nonTermCount);
                     token newLeftTok = token(get_tok_type("NON_TERM"), newLeft);
                     // 构造含新非终结符的新产生式
@@ -231,7 +231,7 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
             format(
                 "EBNFParser: EBNF syntax error: Expected non-terminal, got $ at <$, $>.",
                 it->value, it->line, it->col));
-        term left = it->value;
+        symbol left = it->value;
         it++;
         assert(
             it != end && it->type == grammarDef,
@@ -274,11 +274,11 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
         debug_u(0) << endl;
     }
     // 删去tok_production中的token额外信息，转换为production
-    vector<production> &gProducts = grammar.products;
+    vector<product> &gProducts = grammar.products;
     token_type termType = get_tok_type("TERMINAL");
     for (auto &pro : products)
     {
-        production newPro;
+        product newPro;
         newPro.first = pro.first;
         for (auto &tok : pro.second)
         {
@@ -308,7 +308,7 @@ vector<tok_production> EBNFParser::geneMapProducts(token_iter start, token_iter 
             format(
                 "EBNFParser: MAPPING syntax error: Expected mul-terminal, got $ at <$, $>.",
                 it->value, it->line, it->col));
-        term left = it->value;
+        symbol left = it->value;
         it++;
         assert(
             it->type == mappingDef,
@@ -349,13 +349,13 @@ void EBNFParser::addRules(vector<tok_production> &products)
     token_type nonTermType = get_tok_type("NON_TERM");
     token_type termType = get_tok_type("TERMINAL");
     token_type mulTermType = get_tok_type("MUL_TERM");
-    set<term> &nonTerms = grammar.nonTerms;
-    set<term> &terminals = grammar.terminals;
-    map<term, set<vector<term>>> &rules = grammar.rules;
+    symset &nonTerms = grammar.nonTerms;
+    symset &terminals = grammar.terminals;
+    map<symbol, set<symstr>> &rules = grammar.rules;
     for (auto &pro : products)
     {
         nonTerms.insert(pro.first);
-        vector<term> right;
+        symstr right;
         for (auto &tok : pro.second)
         {
             if (tok.type == nonTermType)
@@ -380,10 +380,10 @@ void EBNFParser::addRules(vector<tok_production> &products)
 void EBNFParser::addMappings(vector<tok_production> &products)
 {
     token_type tokType = get_tok_type("TOK_TYPE");
-    map<token_type, term> &tok2term = grammar.tok2term;
+    map<token_type, symbol> &tok2sym = grammar.tok2sym;
     for (auto &pro : products)
     {
-        term left = pro.first;
+        symbol left = pro.first;
         vector<token> &right = pro.second;
         assert(
             right.size() == 1,
@@ -395,7 +395,7 @@ void EBNFParser::addMappings(vector<tok_production> &products)
             format(
                 "EBNFParser: Mapping syntax error: Expected token type, got $ at <$, $>.",
                 right[0].value, right[0].line, right[0].col));
-        term tokTerm = right[0].value;
+        symbol tokTerm = right[0].value;
         tokTerm = tokTerm.substr(1);
         grammar.terminals.insert(left);
         if (!find_tok_type(tokTerm))
@@ -403,7 +403,7 @@ void EBNFParser::addMappings(vector<tok_production> &products)
             warn << "EBNFParser: Mapping syntax warn: Undefined token type " << tokTerm << endl;
             set_tok_type(tokTerm, make_tok_type(tokTerm));
         }
-        tok2term[get_tok_type(tokTerm)] = left;
+        tok2sym[get_tok_type(tokTerm)] = left;
     }
 }
 
@@ -415,11 +415,11 @@ Grammar EBNFParser::parse(string grammarPath)
     // 解析开始符号
     auto startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
     assert(startIt != tokens.end(), "EBNFParser: No start symbol defined.");
-    grammar.startTerm = (startIt - 1)->value;
+    grammar.symStart = (startIt - 1)->value;
     startIt = tokens.erase(startIt);
     startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
     assert(startIt == tokens.end(), "EBNFParser: Multiple start symbols defined.");
-    info << "EBNFParser: Start symbol is " << grammar.startTerm << endl;
+    info << "EBNFParser: Start symbol is " << grammar.symStart << endl;
     // 解析EBNF定义的文法
     auto grammarIt = findType(tokens, get_tok_type("GRAMMAR"), tokens.begin());
     assert(grammarIt != tokens.end(), "EBNFParser: No grammar defined.");

@@ -12,7 +12,7 @@
 #include "common/gram.h"
 #include "lexer/lexer.h"
 
-typedef pair<term, vector<token>> tok_production;
+typedef pair<symbol, vector<token>> tok_production;
 
 class EBNFParser
 {

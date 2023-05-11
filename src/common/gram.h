@@ -24,33 +24,35 @@
 
 using namespace std;
 
-typedef string term;
-typedef pair<term, vector<term>> production;
+typedef string symbol;
+typedef set<symbol> symset;
+typedef vector<symbol> symstr;
+typedef pair<symbol, symstr> product;
 
 class Grammar
 {
 public:
-    term startTerm;
-    set<term> terminals;
-    set<term> nonTerms;
-    map<token_type, term> tok2term;
-    vector<production> products;
-    map<term, set<vector<term>>> rules;
-    map<term, set<term>> first;
-    map<term, set<term>> follow;
-    map<production, set<term>> firstP;
-    map<production, set<term>> select;
+    symbol symStart;
+    symset terminals;
+    symset nonTerms;
+    map<token_type, symbol> tok2sym;
+    vector<product> products;
+    map<symbol, set<symstr>> rules;
+    map<symbol, symset> first;
+    map<symstr, symset> firstS;
+    map<symbol, symset> follow;
+    map<product, symset> select;
 
-    Grammar(term start, set<term> terms, set<term> non_terms, vector<production> products, map<term, set<vector<term>>> rules, map<token_type, term> tok2term);
+    Grammar(symbol start, symset terms, symset nonTerms, vector<product> products, map<symbol, set<symstr>> rules, map<token_type, symbol> tok2sym);
     Grammar() { terminals.insert(SYM_END); }
     void operator=(const Grammar &g);
     void eliminateLeftRecursion();
     void extractLeftCommonFactor();
     bool isLL1Grammar();
-    set<term> calcFirstOf(term t);
-    set<term> calcFollowOf(term t);
-    set<term> calcFirstOf(production product);
-    set<term> calcSelectOf(production product);
+    symset calcFirstOf(symbol t);
+    symset calcFirstOf(symstr s);
+    symset calcFollowOf(symbol t);
+    symset calcSelectOf(product p);
     void calcFirst();
     void calcFollow();
     void calcSelect();
@@ -59,7 +61,7 @@ public:
     void printNonTerms();
     void printFirst();
     void printFollow();
-    void printFirstP();
+    void printFirstS();
     void printSelect();
     vector<token> transferTokens(vector<token> tokens);
 };
@@ -71,8 +73,8 @@ typedef vector<tt_node_ptr> tt_childs;
 
 struct tt_node_data
 {
-    term symbol;
-    set<vector<term>>::iterator ruleIt;
+    symbol symbol;
+    set<symstr>::iterator ruleIt;
     size_t index;
 };
 
@@ -81,17 +83,17 @@ class TermTreeNode : public AbstractTreeNode<tt_node_data>
 public:
     TermTreeNode(tt_node_data t) : AbstractTreeNode<tt_node_data>(t) {}
 
-    static tt_node_ptr createNode(term symbol, set<vector<term>>::iterator ruleIt, size_t index)
+    static tt_node_ptr createNode(symbol symbol, set<symstr>::iterator ruleIt, size_t index)
     {
         return make_shared<TermTreeNode>(tt_node_data(symbol, ruleIt, index));
     }
 
-    static tt_node_ptr createNode(term symbol)
+    static tt_node_ptr createNode(symbol symbol)
     {
-        return make_shared<TermTreeNode>(tt_node_data(symbol, set<vector<term>>::iterator(), 0));
+        return make_shared<TermTreeNode>(tt_node_data(symbol, set<symstr>::iterator(), 0));
     }
 
-    size_t find(term symbol) const
+    size_t find(symbol symbol) const
     {
         auto cmp = [=](tree_node_ptr<tt_node_data> ptr)
         {

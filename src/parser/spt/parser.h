@@ -16,7 +16,7 @@ class StackPredictiveTableParser
 public:
     Grammar grammar;
     cst_tree_ptr tree;
-    map<term, map<term, vector<term>>> predict;
+    map<symbol, map<symbol, symstr>> predict;
 
     StackPredictiveTableParser(Grammar g) : grammar(g)
     {

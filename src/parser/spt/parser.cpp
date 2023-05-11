@@ -12,7 +12,6 @@
 #include "utils/log.h"
 #include "utils/table.h"
 #include "utils/tok_view.h"
-#include <iomanip>
 #include <stack>
 
 using namespace std;
@@ -21,23 +20,23 @@ using namespace std;
 
 void StackPredictiveTableParser::calcPredictTable()
 {
-    for (auto pdt : grammar.products)
+    for (auto p : grammar.products)
     {
-        auto first = grammar.firstP[pdt];
+        auto first = grammar.firstS[p.second];
         for (auto t : first)
         {
             if (t != EPSILON)
             {
-                predict[pdt.first][t] = pdt.second;
+                predict[p.first][t] = p.second;
             }
         }
         if (_find(first, EPSILON))
         {
-            auto follow = grammar.follow[pdt.first];
+            auto follow = grammar.follow[p.first];
             for (auto t : follow)
             {
                 if (_find(grammar.terminals, t))
-                    predict[pdt.first][t] = pdt.second;
+                    predict[p.first][t] = p.second;
             }
         }
     }
@@ -84,7 +83,7 @@ void StackPredictiveTableParser::printPredictTable()
 string descStack(stack<cst_node_ptr> s)
 {
     stringstream ss;
-    vector<term> v;
+    symstr v;
     while (!s.empty())
     {
         v.push_back(top_sym(s));
@@ -108,10 +107,10 @@ string descVecFrom(vector<token> v, int i)
 bool StackPredictiveTableParser::parse(vector<token> input)
 {
     stack<cst_node_ptr> s;
-    input.push_back(token(make_shared<term>(SYM_END), SYM_END, 0, 0));
+    input.push_back(token(make_shared<symbol>(SYM_END), SYM_END, 0, 0));
     TokenViewer viewer(input);
     s.push(cst_tree::createNode(TERMINAL, SYM_END, 0, 0));
-    cst_node_ptr startNode = cst_tree::createNode(NON_TERM, grammar.startTerm, 0, 0);
+    cst_node_ptr startNode = cst_tree::createNode(NON_TERM, grammar.symStart, 0, 0);
     s.push(startNode);
     tb_head | "Analyze Stack" | "Remaining Input" | "Action";
     set_col | AL_LFT | AL_RGT | AL_RGT;
@@ -121,8 +120,8 @@ bool StackPredictiveTableParser::parse(vector<token> input)
         token &cur = viewer.current();
         size_t idx = viewer.pos();
         string actionDesc;
-        term curSym = top_sym(s);
-        term curType = *(cur.type);
+        symbol curSym = top_sym(s);
+        symbol curType = *(cur.type);
         assert(_find(grammar.terminals, curType));
         if (curSym == curType)
         {
