@@ -1,8 +1,8 @@
 /**
- * @file spt_test.cpp
+ * @file prd_test.cpp
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Test Stack Predictive Table Parser
- * @date 2023-05-06
+ * @brief Test Predictive Recursive Descent Parser
+ * @date 2023-05-11
  *
  * @copyright Copyright (c) 2023
  *
@@ -11,10 +11,10 @@
 #include "test.h"
 #include "lexer/lexer.h"
 #include "parser/ebnf.h"
-#include "parser/spt/parser.h"
+#include "parser/prd/parser.h"
 #include "utils/log.h"
 
-void sptTest()
+void prdTest()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
     Grammar G = ebnfParser.parse("./assets/lab3.stx");
@@ -28,13 +28,12 @@ void sptTest()
     G.printFirstS();
     G.printSelect();
     cout << G.isLL1Grammar() << endl;
-    StackPredictiveTableParser stp(G);
-    stp.printPredictTable();
+    PredictiveRecursiveDescentParser prd(G);
     Lexer lexer("./assets/lab3.lex");
     lexer.readSrcFile("./assets/lab3.txt");
     auto tokens = lexer.tokenize();
     lexer.printTokens();
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);
-    info << "result: \n" << stp.parse(tokens);
+    info << "result: \n" << prd.parse(tokens);
 }

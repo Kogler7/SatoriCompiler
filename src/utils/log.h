@@ -96,7 +96,7 @@ std::string container2str(T s, std::string sep = ", ", std::string lr = "{}")
 	return ss.str();
 }
 
+#define str2str(s) container2str(s, "^", "")
 #define set2str(s) container2str(s, ", ", "{}")
 #define vec2str(s) container2str(s, ", ", "[]")
 #define compact(s) container2str(s, "", "")
-

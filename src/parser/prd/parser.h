@@ -17,7 +17,7 @@ class PredictiveRecursiveDescentParser
 {
     Grammar grammar;
     cst_tree_ptr tree;
-    bool parseNonTerm(TokenViewer &viewer, symbol t);
+    bool parseNonTerm(TokenViewer &viewer, symbol sym, cst_node_ptr node);
 
 public:
     PredictiveRecursiveDescentParser(Grammar &grammar) : grammar(grammar)
