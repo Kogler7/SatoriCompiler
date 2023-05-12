@@ -12,5 +12,29 @@
 
 class OperatorPrecedenceGrammar : public Grammar
 {
+    symset calcFirstVTOf(symbol t);
+    symset calcLastVTOf(symbol t);
+    void calcFirstVT();
+    void calcLastVT();
+    void calcOPT();
 
+public:
+    map<symbol, symset> firstVT;
+    map<symbol, symset> lastVT;
+    map<symbol, map<symbol, int>> opt; // operator priority table
+    OperatorPrecedenceGrammar() : Grammar(){};
+    OperatorPrecedenceGrammar(const Grammar &g) : Grammar(g)
+    {
+        calcFirstVT();
+        calcLastVT();
+        calcOPT();
+    }
+    OperatorPrecedenceGrammar(const OperatorPrecedenceGrammar &g) : Grammar(g)
+    {
+        firstVT = g.firstVT;
+        lastVT = g.lastVT;
+    }
+    void printFirstVT();
+    void printLastVT();
+    void printOPT();
 };

@@ -23,6 +23,10 @@ class PredictiveGrammar : public Grammar
     void calcSelect();
 
 public:
+    map<symbol, symset> first;
+    map<symstr, symset> firstS;
+    map<symbol, symset> follow;
+    map<product, symset> select;
     PredictiveGrammar() : Grammar(){};
     PredictiveGrammar(const Grammar &g) : Grammar(g)
     {
@@ -37,10 +41,6 @@ public:
         follow = g.follow;
         select = g.select;
     }
-    map<symbol, symset> first;
-    map<symstr, symset> firstS;
-    map<symbol, symset> follow;
-    map<product, symset> select;
     void printFirst();
     void printFollow();
     void printFirstS();

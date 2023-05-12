@@ -15,3 +15,4 @@ void parserTest();
 void logTest();
 void sptTest();
 void prdTest();
+void opgTest();
