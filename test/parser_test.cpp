@@ -22,9 +22,4 @@ void parserTest()
     G.printRules();
     G.printTerminals();
     G.printNonTerms();
-    G.printFirst();
-    G.printFollow();
-    G.printFirstS();
-    G.printSelect();
-    cout << G.isLL1Grammar() << endl;
 }

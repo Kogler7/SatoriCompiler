@@ -1,7 +1,7 @@
 /**
- * @file gram.h
+ * @file gram/basic.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Grammar
+ * @brief Basic Grammar
  * @date 2023-04-29
  *
  * @copyright Copyright (c) 2023
@@ -16,10 +16,10 @@
 #include <string>
 
 #include "common/token.h"
-#include "utils/tree.h"
+#include "common/tree/tree.h"
 #include "algorithm"
 
-#define EPSILON "@" // 用于表示空串
+#define EPSILON "$" // 用于表示空串
 #define SYM_END "#" // 用于表示输入串结束
 
 using namespace std;
@@ -31,25 +31,14 @@ typedef pair<symbol, symstr> product;
 
 class Grammar
 {
-    symset calcFirstOf(symbol t);
-    symset calcFirstOf(symstr s);
-    symset calcFollowOf(symbol t);
-    symset calcSelectOf(product p);
-    void calcFirst();
-    void calcFollow();
-    void calcSelect();
 
 public:
     symbol symStart;
-    symset terminals;
     symset nonTerms;
-    map<token_type, symbol> tok2sym;
+    symset terminals;
     vector<product> products;
     map<symbol, set<symstr>> rules;
-    map<symbol, symset> first;
-    map<symstr, symset> firstS;
-    map<symbol, symset> follow;
-    map<product, symset> select;
+    map<token_type, symbol> tok2sym;
 
     Grammar(symbol start, symset terms, symset nonTerms, vector<product> products, map<symbol, set<symstr>> rules, map<token_type, symbol> tok2sym);
     Grammar() { terminals.insert(SYM_END); }
@@ -61,20 +50,12 @@ public:
         tok2sym = g.tok2sym;
         products = g.products;
         rules = g.rules;
-        calcFirst();
-        calcFollow();
-        calcSelect();
     }
     void eliminateLeftRecursion();
     void extractLeftCommonFactor();
-    bool isLL1Grammar();
     void printRules();
     void printTerminals();
     void printNonTerms();
-    void printFirst();
-    void printFollow();
-    void printFirstS();
-    void printSelect();
     vector<token> transferTokens(vector<token> tokens);
 };
 

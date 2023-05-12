@@ -1,7 +1,7 @@
 /**
- * @file log.h
+ * @file utils/table.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
- * @brief Level-based Log
+ * @brief My Custom Table Render
  * @date 2023-04-22
  *
  * @copyright Copyright (c) 2023

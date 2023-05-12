@@ -9,6 +9,7 @@
  */
 
 #include "test.h"
+#include "common/gram/predict.h"
 #include "lexer/lexer.h"
 #include "parser/ebnf.h"
 #include "parser/prd/parser.h"
@@ -17,7 +18,8 @@
 void prdTest()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar G = ebnfParser.parse("./assets/lab3.stx");
+    Grammar g = ebnfParser.parse("./assets/lab3.stx");
+    PredictiveGrammar G = PredictiveGrammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
     G.printRules();
@@ -35,5 +37,6 @@ void prdTest()
     lexer.printTokens();
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);
-    info << "result: \n" << prd.parse(tokens);
+    info << "result: \n"
+         << prd.parse(tokens);
 }

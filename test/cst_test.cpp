@@ -8,7 +8,7 @@
  *
  */
 
-#include "common/cst.h"
+#include "common/tree/cst.h"
 
 void cstTest()
 {

@@ -9,14 +9,13 @@
  */
 
 #include "parser.h"
+#include "utils/stl.h"
 #include "utils/log.h"
 #include "utils/table.h"
 #include "utils/tok_view.h"
 #include <stack>
 
 using namespace std;
-
-#define _find(s, t) (s.find(t) != s.end())
 
 void StackPredictiveTableParser::calcPredictTable()
 {
@@ -153,21 +152,26 @@ bool StackPredictiveTableParser::parse(vector<token> input)
                 {
                     *(topNode) << *it1;
                 }
+                if (children.size() == 0)
+                {
+                    // 空串
+                    *(topNode) << cst_tree::createNode(TERMINAL, EPSILON, 0, 0);
+                }
                 actionDesc = it->first + " -> " + compact(it->second);
             }
             else
             {
-                error << "StackPredictiveTableParser: "
-                      << "Unexpected token: " << cur.value << " at " << cur.line
-                      << ":" << cur.col << ": " << std::endl;
+                error << format(
+                    "StackPredictiveTableParser: Unexpected token: $ at <$, $>.\n",
+                    cur.value, cur.line, cur.col);
                 return false;
             }
         }
         else
         {
-            error << "StackPredictiveTableParser: "
-                  << "Unexpected token: " << cur.value << " at " << cur.line
-                  << ":" << cur.col << ": " << std::endl;
+            error << format(
+                    "StackPredictiveTableParser: Unexpected token: $ at <$, $>.\n",
+                    cur.value, cur.line, cur.col);
             return false;
         }
         set_row | descStack(s) | descVecFrom(input, viewer.pos()) | actionDesc;

@@ -8,19 +8,19 @@
  *
  */
 
-#include "common/cst.h"
-#include "common/gram.h"
+#include "common/tree/cst.h"
+#include "common/gram/predict.h"
 #include "common/token.h"
 #include "utils/tok_view.h"
 
 class PredictiveRecursiveDescentParser
 {
-    Grammar grammar;
+    PredictiveGrammar grammar;
     cst_tree_ptr tree;
     bool parseNonTerm(TokenViewer &viewer, symbol sym, cst_node_ptr node);
 
 public:
-    PredictiveRecursiveDescentParser(Grammar &grammar) : grammar(grammar)
+    PredictiveRecursiveDescentParser(PredictiveGrammar &grammar) : grammar(grammar)
     {
         tree = cst_tree::createNode(TERMINAL, SYM_END, 0, 0);
     }

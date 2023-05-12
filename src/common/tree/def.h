@@ -1,5 +1,5 @@
 /**
- * @file tree.h
+ * @file def.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Abstract Syntax Tree Definition
  * @date 2023-05-06

@@ -17,7 +17,8 @@
 void sptTest()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar G = ebnfParser.parse("./assets/lab3.stx");
+    Grammar g = ebnfParser.parse("./assets/lab3.stx");
+    PredictiveGrammar G = PredictiveGrammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
     G.printRules();

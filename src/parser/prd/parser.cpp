@@ -8,12 +8,12 @@
  *
  */
 
+#include "utils/stl.h"
 #include "parser.h"
 #include "utils/log.h"
 
 #define DEBUG_LEVEL 0
 
-#define _find(s, t) (s.find(t) != s.end())
 #define _cur_tok(v) *(v.current().type)
 
 bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol sym, cst_node_ptr node)

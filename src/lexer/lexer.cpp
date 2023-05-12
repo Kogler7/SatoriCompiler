@@ -13,10 +13,9 @@
 #include "regexp/parser.h"
 #include <fstream>
 #include <sstream>
+#include "utils/stl.h"
 #include "utils/log.h"
 #include "utils/table.h"
-
-#define _find(x, y) (x.find(y) != x.end())
 
 void Lexer::addTokenType(string typeName, string regExp)
 {

@@ -8,11 +8,10 @@
  * 
  */
 
+#include "utils/stl.h"
 #include "parser.h"
 #include "utils/log.h"
 #include "define.h"
-
-#define _find(x, y) (x.find(y) != x.end())
 
 string RegexpParser::getStackDesc()
 {

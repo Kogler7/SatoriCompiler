@@ -9,7 +9,7 @@
  */
 
 #include "common/token.h"
-#include "common/gram.h"
+#include "common/gram/basic.h"
 #include "lexer/lexer.h"
 
 typedef pair<symbol, vector<token>> tok_production;

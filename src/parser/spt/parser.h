@@ -8,18 +8,18 @@
  *
  */
 
-#include "common/cst.h"
-#include "common/gram.h"
+#include "common/tree/cst.h"
+#include "common/gram/predict.h"
 
 class StackPredictiveTableParser
 {
-    Grammar grammar;
+    PredictiveGrammar grammar;
     cst_tree_ptr tree;
     map<symbol, map<symbol, symstr>> predict;
     void calcPredictTable();
 
 public:
-    StackPredictiveTableParser(Grammar g) : grammar(g)
+    StackPredictiveTableParser(PredictiveGrammar g) : grammar(g)
     {
         tree = cst_tree::createNode(TERMINAL, SYM_END, 0, 0);
         calcPredictTable();

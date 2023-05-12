@@ -1,5 +1,5 @@
 /**
- * @file tok_view.h
+ * @file utils/tok_view.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Lightweight Token Viewer
  * @date 2023-04-27

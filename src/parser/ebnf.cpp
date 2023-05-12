@@ -252,6 +252,7 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
     // 进一步拆分
     for (auto &pro : rawProducts)
     {
+        // 递归下降法解析拆分EBNF
         vector<tok_production> subProducts = segmentProduct(pro);
         products.insert(products.end(), subProducts.begin(), subProducts.end());
     }
@@ -442,6 +443,5 @@ Grammar EBNFParser::parse(string grammarPath)
     assert(blkEnd != tokens.end(), "EBNFParser: Mappings block not ended.");
     products = geneMapProducts(blkStart + 1, blkEnd);
     addMappings(products);
-    grammar = Grammar(grammar);
     return grammar;
 }
