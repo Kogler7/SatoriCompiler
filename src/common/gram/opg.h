@@ -27,6 +27,10 @@ public:
     {
         calcFirstVT();
         calcLastVT();
+        // 添加产生式S->#S#
+        product p(symStart, {SYM_END, symStart, SYM_END});
+        products.push_back(p);
+        rules[symStart].insert(p.second);
         calcOPT();
     }
     OperatorPrecedenceGrammar(const OperatorPrecedenceGrammar &g) : Grammar(g)
