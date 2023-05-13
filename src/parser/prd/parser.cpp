@@ -84,6 +84,7 @@ bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol 
 
 bool PredictiveRecursiveDescentParser::parse(vector<token> &input)
 {
+    info << "PRDParser: parsing..." << endl;
     input.push_back(token(make_shared<symbol>(SYM_END), SYM_END, 0, 0));
     TokenViewer viewer(input);
     cst_tree_ptr root = cst_tree::createNode(NON_TERM, grammar.symStart, 0, 0);

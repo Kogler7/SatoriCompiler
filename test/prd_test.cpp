@@ -32,9 +32,8 @@ void prdTest()
     cout << G.isLL1Grammar() << endl;
     PredictiveRecursiveDescentParser prd(G);
     Lexer lexer("./assets/lab3.lex");
-    lexer.readSrcFile("./assets/lab3.txt");
-    auto tokens = lexer.tokenize();
-    lexer.printTokens();
+    auto tokens = lexer.tokenize("./assets/lab3.txt");
+    lexer.printTokens(tokens);
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);
     info << "result: \n"

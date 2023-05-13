@@ -51,4 +51,18 @@ public:
     {
         index++;
     }
+    vector<token> rest()
+    {
+        vector<token> ret;
+        for (size_t i = index; i < tokens.size(); i++)
+            ret.push_back(tokens[i]);
+        return ret;
+    }
+    vector<string> restTypes()
+    {
+        vector<string> ret;
+        for (size_t i = index; i < tokens.size(); i++)
+            ret.push_back(*(tokens[i].type));
+        return ret;
+    }
 };

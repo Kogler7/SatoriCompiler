@@ -15,8 +15,6 @@ void lexerTest()
 {
     Lexer lexer("./assets/cpp.lex");
     // lexer.readSrcFile("./assets/code.cpp");
-    lexer.readSrcFile("./assets/error.cpp");
-    // lexer.readCodeFile("./assets/test.cpp");
-    lexer.tokenize();
-    lexer.printTokens();
+    auto tokens = lexer.tokenize("./assets/error.cpp");
+    lexer.printTokens(tokens);
 }

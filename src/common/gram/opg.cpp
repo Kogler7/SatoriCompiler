@@ -109,12 +109,12 @@ void OperatorPrecedenceGrammar::calcLastVT()
 void OperatorPrecedenceGrammar::calcOPT()
 {
     info << "calcOPT()" << endl;
-    // 全部初始化为-2
+    // 全部初始化为OP::NL
     for (auto &t : terminals)
     {
         for (auto &s : terminals)
         {
-            opt[t][s] = -2;
+            opt[t][s] = OP::NL;
         }
     }
     for (auto &t : nonTerms)
@@ -125,7 +125,7 @@ void OperatorPrecedenceGrammar::calcOPT()
             {
                 if (_isVT(right[i]) && _isVT(right[i + 1]))
                 {
-                    opt[right[i]][right[i + 1]] = 0;
+                    opt[right[i]][right[i + 1]] = OP::EQ;
                 }
                 if (i < right.size() - 2 && _isVT(right[i]) && _isVN(right[i + 1]) && _isVT(right[i + 2]))
                 {
@@ -136,7 +136,7 @@ void OperatorPrecedenceGrammar::calcOPT()
                     symset tmp = calcFirstVTOf(right[i + 1]);
                     for (auto &s : tmp)
                     {
-                        opt[right[i]][s] = -1;
+                        opt[right[i]][s] = OP::LT;
                     }
                 }
                 if (_isVN(right[i]) && _isVT(right[i + 1]))
@@ -144,7 +144,7 @@ void OperatorPrecedenceGrammar::calcOPT()
                     symset tmp = calcLastVTOf(right[i]);
                     for (auto &s : tmp)
                     {
-                        opt[s][right[i + 1]] = 1;
+                        opt[s][right[i + 1]] = OP::GT;
                     }
                 }
             }
@@ -182,6 +182,7 @@ void OperatorPrecedenceGrammar::printOPT()
     for (auto &t : terminals)
     {
         tb_cont | t;
+        set_cur_col(AL_MID);
     }
     for (auto &t : terminals)
     {
@@ -191,7 +192,7 @@ void OperatorPrecedenceGrammar::printOPT()
             int opt_val = opt[t][t2] + 2;
             assert(
                 opt_val >= 0 && opt_val <= 3,
-                format("OperatorPrecedenceGrammar: Invalid opt_val: %d.\n", opt_val));
+                format("OperatorPrecedenceGrammar: Invalid opt_val: $.\n", opt_val));
             tb_cont | ops[opt_val];
         }
         tb_line;

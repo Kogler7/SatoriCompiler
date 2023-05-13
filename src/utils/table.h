@@ -58,6 +58,7 @@ public:
     TableRender &resetRowCur();
     TableRender &nextRow();
     TableRender &setLine();
+    TableRender &setPrevLine();
     std::string geneView();
     TableRender &operator|(std::string field);
     TableRender &operator|(t_align align);
@@ -78,3 +79,5 @@ extern TableRender _table;
 #define tb_cont _table
 
 #define set_cur_col(x) _table.curAlign(x)
+
+#define tb_line_p _table.setPrevLine()

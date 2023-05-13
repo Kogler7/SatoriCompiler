@@ -60,9 +60,8 @@ EBNFParser::EBNFParser(string ebnfLexPath)
 
 void EBNFParser::tokenizeSyntax(string grammarPath)
 {
-    ebnfLexer.readSrcFile(grammarPath);
-    tokens = ebnfLexer.tokenize();
-    ebnfLexer.printTokens();
+    tokens = ebnfLexer.tokenize(grammarPath);
+    ebnfLexer.printTokens(tokens);
 }
 
 symbol getEndSep(symbol sep)
@@ -410,9 +409,8 @@ void EBNFParser::addMappings(vector<tok_production> &products)
 
 Grammar EBNFParser::parse(string grammarPath)
 {
-    ebnfLexer.readSrcFile(grammarPath);
-    tokens = ebnfLexer.tokenize();
-    ebnfLexer.printTokens();
+    tokens = ebnfLexer.tokenize(grammarPath);
+    ebnfLexer.printTokens(tokens);
     // 解析开始符号
     auto startIt = findType(tokens, get_tok_type("START_MRK"), tokens.begin());
     assert(startIt != tokens.end(), "EBNFParser: No start symbol defined.");

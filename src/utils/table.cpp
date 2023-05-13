@@ -157,6 +157,16 @@ TableRender &TableRender::setLine()
     return *this;
 }
 
+TableRender &TableRender::setPrevLine()
+{
+    int i = rowCur - 1;
+    assert(
+        i >= 0 && i < int(rowMax),
+        format("Table Render: Row index out of range. rowCur = $, rowMax = $", rowCur, rowMax));
+    lines.push_back(i);
+    return *this;
+}
+
 std::string TableRender::geneView()
 {
     std::stringstream ss;

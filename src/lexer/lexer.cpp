@@ -48,11 +48,18 @@ void Lexer::addIgnoredType(string typeName)
     error << "Type " << typeName << " not found!" << endl;
 }
 
-vector<token> Lexer::tokenize(string codeSeg)
+vector<token> Lexer::tokenize(string fileName)
 {
-    if (codeSeg != "")
-        this->code = codeSeg;
+    ifstream ifs(fileName);
+    assert(ifs.is_open(), "File not found: " + fileName);
+    string code(
+        (istreambuf_iterator<char>(ifs)),
+        (istreambuf_iterator<char>()));
+    ifs.close();
+    info << "Code: " << endl;
+    cout << code << endl;
     info << "Tokenizing... " << endl;
+    vector<token> tokens;
     code_viewer vCode(code);
     while (!vCode.ends())
     {
@@ -106,18 +113,6 @@ vector<token> Lexer::tokenize(string codeSeg)
     return tokens;
 }
 
-void Lexer::printTokens()
-{
-    info << "Tokens: " << endl;
-    tb_head | "Token Type" | "Token Value";
-    set_col | AL_RGT | AL_LFT;
-    for (int i = 0; i < tokens.size(); i++)
-    {
-        set_row | *tokens[i].type | tokens[i].value;
-    }
-    cout << tb_view;
-}
-
 void Lexer::printTokens(vector<token> tokens)
 {
     info << "Tokens: " << endl;
@@ -128,23 +123,6 @@ void Lexer::printTokens(vector<token> tokens)
         set_row | *tokens[i].type | tokens[i].value;
     }
     cout << tb_view;
-}
-
-void Lexer::clear()
-{
-    tokens.clear();
-}
-
-void Lexer::readSrcFile(string fileName)
-{
-    ifstream ifs(fileName);
-    string _code(
-        (istreambuf_iterator<char>(ifs)),
-        (istreambuf_iterator<char>()));
-    code = _code;
-    ifs.close();
-    info << "Code: " << endl;
-    cout << code << endl;
 }
 
 bool startWith(const string &s, const string &prefix)
@@ -178,6 +156,7 @@ vector<string> split(const string &s, char delimiter)
 void Lexer::readLexerDef(string fileName)
 {
     ifstream ifs(fileName);
+    assert(ifs.is_open(), "File not found: " + fileName);
     vector<string> tokens;
     // 读取关键字，使用cin循环读入，并存到vector中
     string token;

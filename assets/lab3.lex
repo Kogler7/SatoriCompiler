@@ -1,9 +1,11 @@
 PATTERN ${
     BLANK       \s+
-    IDENTIFIER [\a_][\w]*
-    SEPARATOR  [\+\-\*/=\(\)]
+    LIN_CMT     //[^\r\n]*
+    IDENTIFIER  [\a_][\w]*
+    SEPARATOR   [\+\-\*/=\(\)]
 $}
 
 IGNORE ${
     BLANK
+    LIN_CMT
 $}

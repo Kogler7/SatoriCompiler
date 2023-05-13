@@ -28,4 +28,12 @@ void opgTest()
     G.printFirstVT();
     G.printLastVT();
     G.printOPT();
+    OperatorPrecedenceGrammarParser parser(G);
+    Lexer lexer("./assets/lab3.lex");
+    vector<token> tokens = lexer.tokenize("./assets/lab4.txt");
+    lexer.printTokens(tokens);
+    tokens = G.transferTokens(tokens);
+    lexer.printTokens(tokens);
+    parser.parse(tokens);
+    parser.getTree()->print();
 }

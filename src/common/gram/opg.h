@@ -8,7 +8,17 @@
  *
  */
 
+#pragma once
+
 #include "basic.h"
+
+enum OP
+{
+    NL = -2,
+    LT = -1,
+    EQ = 0,
+    GT = 1
+};
 
 class OperatorPrecedenceGrammar : public Grammar
 {
@@ -37,6 +47,7 @@ public:
     {
         firstVT = g.firstVT;
         lastVT = g.lastVT;
+        opt = g.opt;
     }
     void printFirstVT();
     void printLastVT();
