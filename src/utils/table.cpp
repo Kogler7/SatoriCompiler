@@ -20,6 +20,37 @@ TableRender::TableRender()
     reset();
 }
 
+void TableRender::resetTabLayout()
+{
+    tabWidths = 0;
+    tabAlign = AL_MID;
+}
+
+std::pair<size_t, t_align> TableRender::calcTabLayout(std::string &s, size_t i)
+{
+    std::pair<size_t, t_align> res;
+    if (s.starts_with("\t"))
+    {
+        tabWidths += widths[i] + 3;
+        if (s == LF_TAB)
+            tabAlign = AL_LFT;
+        else if (s == MD_TAB)
+            tabAlign = AL_MID;
+        else if (s == RT_TAB)
+            tabAlign = AL_RGT;
+        else if (s != "\t")
+            warn << "Table Render: Invalid tab align placeholder " << s << std::endl;
+        res = std::make_pair(0, AL_MID);
+    }
+    else
+    {
+        res = std::make_pair(tabWidths, tabWidths > 0 ? tabAlign : aligns[i]);
+        tabWidths = 0;
+        tabAlign = AL_MID;
+    }
+    return res;
+}
+
 std::string TableRender::geneField(std::string s, size_t width, t_align align)
 {
     std::stringstream ss;
@@ -65,6 +96,8 @@ TableRender &TableRender::reset()
     colCur = 0;
     rowMax = 1;
     colMax = 0;
+    tabWidths = 0;
+    tabAlign = AL_MID;
     lines.clear();
     heads.clear();
     table.clear();
@@ -94,6 +127,7 @@ TableRender &TableRender::setHead(std::string title)
     heads[colCur] = title;
     widths[colCur] = std::max(widths[colCur], title.size());
     colCur++;
+    resetTabLayout();
     return *this;
 }
 
@@ -116,8 +150,21 @@ TableRender &TableRender::addField(std::string field)
 {
     assert(colCur < colMax, "Column index out of range.");
     assert(rowCur >= 0 && rowCur < rowMax, "Row index out of range.");
+    size_t leadWidth;
+    t_align align;
+    std::tie(leadWidth, align) = calcTabLayout(field, colCur);
     table[rowCur][colCur] = field;
-    widths[colCur] = std::max(widths[colCur], field.size());
+    size_t fSize = field.size();
+    if (leadWidth > 0)
+    {
+        widths[colCur] = std::max(
+            widths[colCur],
+            leadWidth >= fSize ? 0 : fSize - leadWidth);
+    }
+    else
+    {
+        widths[colCur] = std::max(widths[colCur], fSize);
+    }
     colCur++;
     return *this;
 }
@@ -145,6 +192,7 @@ TableRender &TableRender::nextRow()
         for (size_t i = 0; i < rowMax; i++)
             table[i].resize(colMax);
     }
+    resetTabLayout();
     return *this;
 }
 
@@ -171,36 +219,32 @@ std::string TableRender::geneView()
 {
     std::stringstream ss;
     ss << geneLine();
+    resetTabLayout();
+    size_t leadWidth;
+    t_align align;
+    std::string s;
     for (size_t i = 0; i < colMax; i++)
     {
-        ss << geneField(heads[i], widths[i], aligns[i]);
+        s = heads[i];
+        std::tie(leadWidth, align) = calcTabLayout(s, i);
+        if (!s.starts_with("\t"))
+        {
+            ss << geneField(s, leadWidth + widths[i], align);
+        }
     }
     ss << "|" << std::endl;
     ss << geneLine();
     for (size_t i = 0; i < rowMax; i++)
     {
-        size_t tab_widths = 0;
-        t_align tab_align = AL_MID;
+        resetTabLayout();
         for (size_t j = 0; j < colMax; j++)
         {
-            std::string s = table[i][j];
-            if (s.starts_with("\t"))
+            s = table[i][j];
+            std::tie(leadWidth, align) = calcTabLayout(s, j);
+            if (!s.starts_with("\t"))
             {
-                tab_widths += widths[j] + 3;
-                if (s == LF_TAB)
-                    tab_align = AL_LFT;
-                else if (s == MD_TAB)
-                    tab_align = AL_MID;
-                else if (s == RT_TAB)
-                    tab_align = AL_RGT;
-                else if (s != "\t")
-                    warn << "Table Render: Invalid tab align placeholder " << s << std::endl;
-            }
-            else
-            {
-                ss << geneField(s, widths[j] + tab_widths, tab_widths > 0 ? tab_align : aligns[j]);
-                tab_widths = 0;
-                tab_align = AL_MID;
+                std::string str = geneField(s, leadWidth + widths[j], align);
+                ss << str;
             }
         }
         ss << "|" << std::endl;

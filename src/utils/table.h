@@ -29,12 +29,16 @@ class TableRender
     int rowCur;
     size_t colCur;
     size_t rowMax, colMax;
+    size_t tabWidths;
+    t_align tabAlign;
     std::vector<size_t> lines;
     std::vector<std::string> heads;
     std::vector<std::vector<std::string>> table;
     std::vector<size_t> widths;
     std::vector<t_align> aligns;
 
+    void resetTabLayout();
+    std::pair<size_t, t_align> calcTabLayout(std::string &s, size_t i);
     std::string geneField(std::string s, size_t width, t_align align);
     std::string geneLine();
 

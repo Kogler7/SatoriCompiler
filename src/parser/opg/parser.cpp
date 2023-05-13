@@ -69,8 +69,8 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
     TokenViewer viewer(input);
     vector<symbol> stk;
     stk.push_back(SYM_END);
-    tb_head | "Stack" | "Priority" | "Input" | "Action";
-    set_col | AL_LFT | AL_MID | AL_RGT | AL_RGT;
+    tb_head | "Stack" | "Priority" | "Input" | MD_TAB | "Action";
+    set_col | AL_LFT | AL_MID | AL_RGT | AL_RGT | AL_LFT;
     while (!stk.empty() && !viewer.ends())
     {
         assert(stk.size() >= 1, "OPGParser: invalid stack.");
@@ -81,7 +81,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
         if (top == grammar.symStart && cur == SYM_END)
         {
             tb_line_p;
-            tb_cont | TB_TAB | TB_TAB | "Accepted";
+            tb_cont | TB_TAB | TB_TAB | TB_TAB | "Accepted";
             cout << tb_view;
             info << "OPGParser: parsing succeeded." << endl;
             return true;
@@ -96,7 +96,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
         {
             tb_cont | top + (grammar.opt[top][cur] == OP::LT ? "<" : "=") + cur;
             tb_cont | compact(viewer.restTypes());
-            tb_cont | "Shift " + cur;
+            tb_cont | "Shift" | cur;
             stk.push_back(cur);
             viewer.advance();
         }
@@ -117,7 +117,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
                     tb_cont | now + "<" + top + ">" + cur | compact(viewer.restTypes());
                     stk.erase(stk.begin() + cursor + 1, stk.end());
                     symbol left = findLeft(right, grammar);
-                    tb_cont | "Reduce " + left + " -> " + compact(right);
+                    tb_cont | "Reduce" | left + "->" + compact(right);
                     if (left == "")
                     {
                         error << "Product " << now << "->" << str2str(right) << " not found." << endl;

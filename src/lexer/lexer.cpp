@@ -17,6 +17,8 @@
 #include "utils/log.h"
 #include "utils/table.h"
 
+#define DEBUG_LEVEL 0
+
 void Lexer::addTokenType(string typeName, string regExp)
 {
     token_type type;
@@ -46,6 +48,15 @@ void Lexer::addIgnoredType(string typeName)
         return;
     }
     error << "Type " << typeName << " not found!" << endl;
+}
+
+string &zTrim(string &s)
+{
+    while (!s.empty() && s.back() == 0)
+    {
+        s.pop_back();
+    }
+    return s;
 }
 
 vector<token> Lexer::tokenize(string fileName)
@@ -90,6 +101,7 @@ vector<token> Lexer::tokenize(string fileName)
         }
         if (matched)
         {
+            matchedToken = zTrim(matchedToken); // 补丁：去掉末尾的空字符，产生原因未知
             vCode = matchedView;
             if (!_find(ignoredTypes, matchedType))
             {
@@ -99,7 +111,7 @@ vector<token> Lexer::tokenize(string fileName)
                 tokens.push_back(
                     token(matchedType, matchedToken, line, col));
             }
-            debug(0) << "Tokenize accepted: " << matchedToken << endl;
+            debug(0) << format("Matched: $ <$>", matchedToken, matchedToken.size()) << endl;
         }
         else
         {
