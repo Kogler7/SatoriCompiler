@@ -43,35 +43,6 @@ std::pair<std::string, std::string> parseStyle(const std::string &s, l_sign styl
     return std::make_pair(ss.str(), "\033[0m");
 }
 
-std::string Cell::render(size_t width)
-{
-    std::stringstream ss;
-    if (align == AL_CTR)
-    {
-        size_t l = (width - field.length()) / 2;
-        size_t r = width - field.length() - l;
-        ss << std::setw(l) << std::setfill(' ') << "";
-        ss << field;
-        ss << std::setw(r) << std::setfill(' ') << "";
-        return ss.str();
-    }
-    else
-    {
-        ss << std::setw(width) << std::setfill(' ');
-        switch (align)
-        {
-        case AL_LFT:
-            ss << std::left;
-            break;
-        case AL_RGT:
-            ss << std::right;
-            break;
-        }
-        ss << field;
-    }
-    return ss.str();
-}
-
 TableRender::TableRender()
 {
     reset();

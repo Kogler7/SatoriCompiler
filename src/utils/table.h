@@ -83,7 +83,6 @@ namespace table
             style = sty;
             align = ali;
         }
-        std::string render(size_t width);
     };
 
     class TableRender
