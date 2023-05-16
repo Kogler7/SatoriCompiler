@@ -16,6 +16,7 @@
 #include <stack>
 
 using namespace std;
+using namespace table;
 
 void StackPredictiveTableParser::calcPredictTable()
 {
@@ -50,12 +51,12 @@ void StackPredictiveTableParser::printPredictTable()
         if (t != EPSILON)
         {
             tb_cont | t;
-            set_cur_col(AL_MID);
+            tb_cont = AL_CTR;
         }
     }
     for (auto nonTerm : grammar.nonTerms)
     {
-        set_row | nonTerm;
+        new_row | nonTerm;
         for (auto terminal : grammar.terminals)
         {
             if (terminal != EPSILON)
@@ -72,9 +73,9 @@ void StackPredictiveTableParser::printPredictTable()
                 }
             }
         }
-        tb_line;
+        tb_line();
     }
-    cout << tb_view << std::endl;
+    cout << tb_view() << std::endl;
 }
 
 #define top_sym(s) ((s.top())->data.symbol)
@@ -113,7 +114,7 @@ bool StackPredictiveTableParser::parse(vector<token> input)
     s.push(startNode);
     tb_head | "Analyze Stack" | "Remaining Input" | "Action";
     set_col | AL_LFT | AL_RGT | AL_RGT;
-    set_row | descStack(s) | descVecFrom(input, 0) | "Initial";
+    new_row | descStack(s) | descVecFrom(input, 0) | "Initial";
     while (top_sym(s) != SYM_END && !viewer.ends())
     {
         token &cur = viewer.current();
@@ -174,12 +175,12 @@ bool StackPredictiveTableParser::parse(vector<token> input)
                     cur.value, cur.line, cur.col);
             return false;
         }
-        set_row | descStack(s) | descVecFrom(input, viewer.pos()) | actionDesc;
+        new_row | descStack(s) | descVecFrom(input, viewer.pos()) | actionDesc;
     }
-    tb_line;
-    set_row | TB_TAB | MD_TAB | "Accepted";
+    tb_line();
+    new_row | TB_TAB | MD_TAB | "Accepted";
     info << "Analyze finished." << std::endl;
-    cout << tb_view;
+    cout << tb_view();
     info << "Parse Tree: " << std::endl;
     startNode->print();
     return true;

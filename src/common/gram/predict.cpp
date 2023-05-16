@@ -305,9 +305,9 @@ void PredictiveGrammar::printFirst()
     tb_head | "NonTerm" | "First";
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
-        set_row | *it | set2str(first[*it]);
+        new_row | *it | set2str(first[*it]);
     }
-    cout << tb_view;
+    cout << tb_view();
 }
 
 void PredictiveGrammar::printFollow()
@@ -316,9 +316,9 @@ void PredictiveGrammar::printFollow()
     tb_head | "NonTerm" | "Follow";
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
-        set_row | *it | set2str(follow[*it]);
+        new_row | *it | set2str(follow[*it]);
     }
-    cout << tb_view;
+    cout << tb_view();
 }
 
 void PredictiveGrammar::printFirstS()
@@ -328,9 +328,9 @@ void PredictiveGrammar::printFirstS()
     for (auto it = products.begin(); it != products.end(); it++)
     {
         symstr &s = it->second;
-        set_row | vec2str(s) | set2str(firstS[s]);
+        new_row | vec2str(s) | set2str(firstS[s]);
     }
-    cout << tb_view;
+    cout << tb_view();
 }
 
 void PredictiveGrammar::printSelect()
@@ -339,7 +339,7 @@ void PredictiveGrammar::printSelect()
     tb_head | "Product" | "Select";
     for (auto it = products.begin(); it != products.end(); it++)
     {
-        set_row | it->first + "->" + vec2str(it->second) | set2str(select[*it]);
+        new_row | it->first + "->" + vec2str(it->second) | set2str(select[*it]);
     }
-    cout << tb_view;
+    cout << tb_view();
 }

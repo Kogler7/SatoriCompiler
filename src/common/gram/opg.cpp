@@ -155,23 +155,27 @@ void OperatorPrecedenceGrammar::calcOPT()
 void OperatorPrecedenceGrammar::printFirstVT()
 {
     info << "FirstVT: " << endl;
-    tb_head | "Symbol" | "FirstVT";
+    tb_head | "Symbol" | "FirstVT" = table::AL_CTR;
+    set_col | table::AL_CTR;
     for (auto &t : nonTerms)
     {
-        set_row | t | set2str(firstVT[t]);
+        new_row | t + ":" | set2str(firstVT[t]);
+        tb_cont = table::AL_LFT;
     }
-    cout << tb_view;
+    cout << tb_view(table::BDR_RUD);
 }
 
 void OperatorPrecedenceGrammar::printLastVT()
 {
     info << "LastVT: " << endl;
-    tb_head | "Symbol" | "LastVT";
+    tb_head | "Symbol" | "LastVT" = table::AL_CTR;
+    set_col | table::AL_CTR;
     for (auto &t : nonTerms)
     {
-        set_row | t | set2str(lastVT[t]);
+        new_row | t + ":" | set2str(lastVT[t]);
+        tb_cont = table::AL_LFT;
     }
-    cout << tb_view;
+    cout << tb_view(table::BDR_RUD);
 }
 
 void OperatorPrecedenceGrammar::printOPT()
@@ -182,11 +186,11 @@ void OperatorPrecedenceGrammar::printOPT()
     for (auto &t : terminals)
     {
         tb_cont | t;
-        set_cur_col(AL_MID);
+        tb_cont = table::AL_CTR;
     }
     for (auto &t : terminals)
     {
-        set_row | t;
+        new_row | t;
         for (auto &t2 : terminals)
         {
             int opt_val = opt[t][t2] + 2;
@@ -195,7 +199,6 @@ void OperatorPrecedenceGrammar::printOPT()
                 format("OperatorPrecedenceGrammar: Invalid opt_val: $.\n", opt_val));
             tb_cont | ops[opt_val];
         }
-        tb_line;
     }
-    cout << tb_view;
+    cout << tb_view(table::BDR_ALL);
 }

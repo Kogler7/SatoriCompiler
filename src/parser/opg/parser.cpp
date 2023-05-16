@@ -17,6 +17,8 @@
 
 #define DEBUG_LEVEL 0
 
+using namespace table;
+
 #define _isVT(t) _find(grammar.terminals, t)
 #define _isVN(t) _find(grammar.nonTerms, t)
 #define _lt(t1, t2) (grammar.opt[t1][t2] == OP::LT)
@@ -70,19 +72,19 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
     vector<symbol> stk;
     stk.push_back(SYM_END);
     tb_head | "Stack" | "Priority" | "Input" | MD_TAB | "Action";
-    set_col | AL_LFT | AL_MID | AL_RGT | AL_RGT | AL_LFT;
+    set_col | AL_LFT | AL_CTR | AL_RGT | AL_RGT | AL_LFT;
     while (!stk.empty() && !viewer.ends())
     {
         assert(stk.size() >= 1, "OPGParser: invalid stack.");
         int cursor = stk.size() - 1;
         symbol top = stk.back();
         symbol cur = *(viewer.current().type);
-        set_row | compact(stk);
+        new_row | compact(stk);
         if (top == grammar.symStart && cur == SYM_END)
         {
-            tb_line_p;
-            tb_cont | TB_TAB | TB_TAB | TB_TAB | "Accepted";
-            cout << tb_view;
+            tb_line(-1);
+            tb_cont | TB_TAB | TB_TAB | MD_TAB | "Accepted" = table::FORE_GRE;
+            cout << tb_view();
             info << "OPGParser: parsing succeeded." << endl;
             return true;
         }
@@ -121,7 +123,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
                     if (left == "")
                     {
                         error << "Product " << now << "->" << str2str(right) << " not found." << endl;
-                        cout << tb_view;
+                        cout << tb_view();
                         return false;
                     }
                     stk.push_back(left);
@@ -132,7 +134,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
             }
         }
     }
-    cout << tb_view;
+    cout << tb_view();
     info << "OPGParser: parsing failed." << endl;
     return false;
 }

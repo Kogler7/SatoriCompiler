@@ -22,17 +22,17 @@ void logTest()
     // assert(0 == 1, format("assert $ $", 1));
     // tb_head | "head1" | "head2" | "head3" | "head4" | "he5";
     // set_col | AL_LFT | AL_RGT | AL_MID;
-    // set_row | "roaw1" | TB_GAP | "rosefsdefw3";
+    // new_row | "roaw1" | TB_GAP | "rosefsdefw3";
     // tb_line;
-    // set_row | MD_TAB | "s" | MD_TAB | "rowsefsefsefsef";
+    // new_row | MD_TAB | "s" | MD_TAB | "rowsefsefsefsef";
     // tb_line;
-    // set_row | "roaw1" | "s" | "row" | RT_TAB | "rosefsefw3";
+    // new_row | "roaw1" | "s" | "row" | RT_TAB | "rosefsefw3";
     // tb_line;
-    // set_row | MD_TAB | "roadgrgdrgdrw1" | "row" | LF_TAB | "rosefsefw3";
+    // new_row | MD_TAB | "roadgrgdrgdrw1" | "row" | LF_TAB | "rosefsefw3";
     tb_head | "head1" | "head2";
     for (int i = 0; i < 10; i++)
     {
-        set_row | "1" | "2";
+        new_row | "1" | "2";
     }
-    std::cout << tb_view;
+    std::cout << tb_view();
 }

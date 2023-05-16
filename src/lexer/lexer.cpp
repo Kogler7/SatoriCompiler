@@ -128,13 +128,13 @@ vector<token> Lexer::tokenize(string fileName)
 void Lexer::printTokens(vector<token> tokens)
 {
     info << "Tokens: " << endl;
-    tb_head | "Token Type" | "Token Value";
-    set_col | AL_RGT | AL_LFT;
+    tb_head | "Type" | "Value";
+    set_col | table::AL_RGT | table::AL_LFT;
     for (int i = 0; i < tokens.size(); i++)
     {
-        set_row | *tokens[i].type | tokens[i].value;
+        new_row | *tokens[i].type | tokens[i].value;
     }
-    cout << tb_view;
+    cout << tb_view(table::BDR_VRT | table::BDR_TOP | table::BDR_BTM);
 }
 
 bool startWith(const string &s, const string &prefix)
