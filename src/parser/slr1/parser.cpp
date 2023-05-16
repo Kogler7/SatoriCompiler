@@ -9,3 +9,8 @@
  */
 
 #include "parser.h"
+
+bool SimpleLR1Parser::parse(vector<token> &input)
+{
+    return true;
+}

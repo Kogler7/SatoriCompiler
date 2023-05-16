@@ -217,6 +217,7 @@ TableRender &TableRender::operator=(const l_sign style)
 
 TableRender &TableRender::operator=(const align_t align)
 {
+    info << "set align: " << int(align) << std::endl;
     if (lineSetting)
     {
         if (horizDirected)
@@ -248,7 +249,7 @@ TableRender &TableRender::operator=(const std::string &field)
         align = rowCur > 0 ? table[rowCur - 1][colCur].align : AL_DFT;
     }
     table[rowCur][colCur] = Cell(field, style, align);
-    size_t fSize = field.size();
+    size_t fSize = field.starts_with("\t") ? 0 : field.length();
     if (leadWidth > 0)
     {
         widths[colCur] = std::max(
@@ -265,7 +266,7 @@ TableRender &TableRender::operator=(const std::string &field)
 TableRender &TableRender::operator|(const Cell &cell)
 {
     this->moveNext();
-    if (cell.field != "")
+    if (cell.field != "\x07")
         *this = cell.field;
     if (cell.style != FONT_NON)
         *this = cell.style;
@@ -317,7 +318,7 @@ std::string TableRender::geneField(const std::string &field, size_t width, size_
         size_t l = (width - field.length()) / 2;
         size_t r = width - field.length() - l;
         ss << std::setw(l) << std::setfill(' ') << "";
-        ss << field;
+        ss << (field == "\x07" ? " " : field);
         ss << std::setw(r) << std::setfill(' ') << "";
     }
     else
@@ -334,7 +335,7 @@ std::string TableRender::geneField(const std::string &field, size_t width, size_
             ss << std::right;
             break;
         }
-        ss << field;
+        ss << (field == "\x07" ? " " : field);
     }
     ss << post;
     return ss.str();

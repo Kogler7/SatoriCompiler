@@ -13,6 +13,8 @@
 #include "utils/stl.h"
 #include "utils/table.h"
 
+using namespace table;
+
 void LR0Grammar::calcLR0Closure()
 {
 }
@@ -37,12 +39,26 @@ void LR0Grammar::calcLR0Items()
 void LR0Grammar::printItems()
 {
     info << "LR(0) items:" << endl;
+    tb_head | TB_TAB | TB_TAB | TB_TAB | MD_TAB | "Items";
+    set_col | AL_RGT | AL_CTR | AL_RGT | AL_CTR | AL_LFT;
+    for (auto &item : items)
+    {
+        symbol left = item.first.get().first;
+        symstr right = item.first.get().second;
+        size_t pos = item.second;
+        symstr r1 = symstr(right.begin(), right.begin() + pos);
+        symstr r2 = symstr(right.begin() + pos, right.end());
+        new_row | left | "->" | compact(r1) | "." | compact(r2);
+    }
+    cout << tb_view(BDR_RUD);
 }
 
 void LR0Grammar::printGotoTable()
 {
+    info << "LR(0) goto table:" << endl;
 }
 
 void LR0Grammar::printActTable()
 {
+    info << "LR(0) action table:" << endl;
 }

@@ -17,3 +17,4 @@ void sptTest();
 void prdTest();
 void opgTest();
 void tblTest();
+void slr1Test();

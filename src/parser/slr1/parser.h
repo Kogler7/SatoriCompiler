@@ -8,8 +8,20 @@
  *
  */
 
+#include "common/tree/cst.h"
 #include "common/gram/lr0.h"
 
 class SimpleLR1Parser
 {
+    LR0Grammar grammar;
+    cst_tree_ptr tree;
+public:
+    SimpleLR1Parser(LR0Grammar &grammar) : grammar(grammar)
+    {
+        tree = cst_tree::createNode(TERMINAL, SYM_END, 0, 0);
+    }
+    bool parse(vector<token> &input);
+    cst_tree_ptr getTree() { return tree; }
 };
+
+typedef SimpleLR1Parser SLR1Parser;

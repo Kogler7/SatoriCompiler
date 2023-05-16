@@ -70,10 +70,10 @@ namespace table
         l_sign style;
         align_t align;
         std::string field;
-        Cell() : field(""), style(FONT_NON), align(AL_DFT) {}
+        Cell() : field("\x07"), style(FONT_NON), align(AL_DFT) {}
         Cell(const char *s) : field(s), style(FONT_NON), align(AL_DFT) {}
-        Cell(l_sign sty) : field(""), style(sty), align(AL_DFT) {}
-        Cell(align_t ali) : field(""), style(FONT_NON), align(ali) {}
+        Cell(l_sign sty) : field("\x07"), style(sty), align(AL_DFT) {}
+        Cell(align_t ali) : field("\x07"), style(FONT_NON), align(ali) {}
         Cell(std::string s) : field(s), style(FONT_NON), align(AL_DFT) {}
         Cell(std::string s, l_sign sty, align_t ali) : field(s), style(sty), align(ali) {}
         Cell &operator&(const char *s)
