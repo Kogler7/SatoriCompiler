@@ -30,13 +30,22 @@ void tbl1()
 
 void tbl2()
 {
-    tb_head | "head1" | "head2";
-    for (int i = 0; i < 10; i++)
+    tb_head | "head1" | Cell("head3") & BACK_GRE &AL_CTR | "head4";
+    for (int i = 0; i < 4; i++)
     {
-        new_row | "1" | "2";
-        tb_cont = FORE_BLU | BACK_GRE | FONT_BOL;
+        new_row | "1" | Cell("asdfghjkl") & (FORE_GRE | BACK_YEL | FONT_BOL);
+        new_row | "2" | Cell("asdkl") & AL_RGT | "3";
+        tb_cont = FORE_BLU | BACK_RED | FONT_UND;
     }
-    std::cout << tb_view();
+    new_col | "head5" | "5" | "6";
+    tb_line(-2);
+    new_row | "7" | "8" | "9";
+    tb_line();
+    set_col | FONT_ITA | AL_RGT | AL_CTR;
+    new_row | "0" | MD_TAB | "12";
+    tb_move(0, 0);
+    tb_cont = FORE_WHI | BACK_CYA | FONT_BOL;
+    std::cout << tb_view(BDR_RUD);
 }
 
 void tblTest()

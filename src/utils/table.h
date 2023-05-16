@@ -24,6 +24,7 @@ namespace table
     typedef unsigned short int l_sign;
     enum align_t : sign
     {
+        AL_DFT,
         AL_LFT,
         AL_CTR,
         AL_RGT,
@@ -68,20 +69,31 @@ namespace table
         l_sign style;
         align_t align;
         std::string field;
-        Cell() : field("")
+        Cell() : field(""), style(FONT_NON), align(AL_DFT) {}
+        Cell(const char *s) : field(s), style(FONT_NON), align(AL_DFT) {}
+        Cell(l_sign sty) : field(""), style(sty), align(AL_DFT) {}
+        Cell(align_t ali) : field(""), style(FONT_NON), align(ali) {}
+        Cell(std::string s) : field(s), style(FONT_NON), align(AL_DFT) {}
+        Cell(std::string s, l_sign sty, align_t ali) : field(s), style(sty), align(ali) {}
+        Cell &operator&(const char *s)
         {
-            style = FONT_NON;
-            align = AL_LFT;
+            field = s;
+            return *this;
         }
-        Cell(std::string s) : field(s)
-        {
-            style = FONT_NON;
-            align = AL_LFT;
-        }
-        Cell(std::string s, l_sign sty, align_t ali) : field(s)
+        Cell &operator&(const l_sign sty)
         {
             style = sty;
+            return *this;
+        }
+        Cell &operator&(const align_t ali)
+        {
             align = ali;
+            return *this;
+        }
+        Cell &operator&(const std::string &s)
+        {
+            field = s;
+            return *this;
         }
     };
 
@@ -90,6 +102,7 @@ namespace table
     public:
         TableRender();
         TableRender &reset();
+        TableRender &moveTo(int r, int c);
         TableRender &carriRet();
         TableRender &lineFeed();
         TableRender &moveNext();
@@ -99,9 +112,7 @@ namespace table
         TableRender &operator=(const l_sign style);
         TableRender &operator=(const align_t align);
         TableRender &operator=(const std::string &field);
-        TableRender &operator|(const l_sign style);
-        TableRender &operator|(const align_t align);
-        TableRender &operator|(const std::string &field);
+        TableRender &operator|(const Cell &cell);
         std::string geneView(sign style = BDR_RUD | BDR_VRT);
 
     private:
@@ -137,6 +148,8 @@ extern table::TableRender _tableRender;
 #define new_col _tableRender.useHorizDirection(false).lineFeed().carriRet().enableLineSetting(false)
 
 #define new_row _tableRender.useHorizDirection().lineFeed().carriRet().enableLineSetting(false)
+
+#define tb_move(r, c) _tableRender.moveTo(r, c)
 
 #define tb_line(x) _tableRender.setLine(x)
 

@@ -22,7 +22,7 @@ std::pair<std::string, std::string> parseStyle(const std::string &s, l_sign styl
     static std::vector<int> vecStyles;
     vecStyles.clear();
     styles[0] = style & 0x0f ? (style & 0x0f) + 30 : 0;
-    styles[1] = style & 0xf0 ? (style & 0xf0 >> 4) + 40 : 0;
+    styles[1] = style & 0xf0 ? ((style & 0xf0) >> 4) + 40 : 0;
     styles[2] = style & 0x100 ? 1 : 0;
     styles[3] = style & 0x200 ? 3 : 0;
     styles[4] = style & 0x400 ? 4 : 0;
@@ -82,6 +82,16 @@ void TableRender::resize()
         rowMax = newMax;
         hLines.resize(rowMax, false);
     }
+}
+
+TableRender &TableRender::moveTo(int r, int c)
+{
+    rowCur = r < 0 ? rowCur + r : r;
+    rowCur = rowCur >= -1 ? rowCur : -1;
+    colCur = c < 0 ? colCur + c : c;
+    colCur = colCur >= -1 ? colCur : -1;
+    resize();
+    return *this;
 }
 
 TableRender &TableRender::carriRet()
@@ -210,7 +220,7 @@ TableRender &TableRender::operator=(const std::string &field)
     std::tie(leadWidth, align) = calcTabLayout(field, colCur, true);
     if (leadWidth == 0)
     {
-        align = rowCur > 0 ? table[rowCur - 1][colCur].align : AL_LFT;
+        align = rowCur > 0 ? table[rowCur - 1][colCur].align : AL_DFT;
     }
     table[rowCur][colCur] = Cell(field, style, align);
     size_t fSize = field.size();
@@ -227,19 +237,16 @@ TableRender &TableRender::operator=(const std::string &field)
     return *this;
 }
 
-TableRender &TableRender::operator|(const l_sign style)
+TableRender &TableRender::operator|(const Cell &cell)
 {
-    return this->moveNext() = style;
-}
-
-TableRender &TableRender::operator|(const align_t align)
-{
-    return this->moveNext() = align;
-}
-
-TableRender &TableRender::operator|(const std::string &field)
-{
-    return this->moveNext() = field;
+    this->moveNext();
+    if (cell.field != "")
+        *this = cell.field;
+    if (cell.style != FONT_NON)
+        *this = cell.style;
+    if (cell.align != AL_DFT)
+        *this = cell.align;
+    return *this;
 }
 
 void TableRender::resetTabLayout()
@@ -293,6 +300,8 @@ std::string TableRender::geneField(const std::string &field, size_t width, size_
         ss << std::setw(width) << std::setfill(' ');
         switch (align)
         {
+        case AL_DFT:
+            break;
         case AL_LFT:
             ss << std::left;
             break;
@@ -303,8 +312,6 @@ std::string TableRender::geneField(const std::string &field, size_t width, size_
         ss << field;
     }
     ss << post;
-    if (c != colMax - 1 && vLines[c])
-        ss << " | ";
     return ss.str();
 }
 
