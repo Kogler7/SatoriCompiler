@@ -1,7 +1,3 @@
-#pragma once
-#include <set>
-#include <vector>
-#include <string>
 /**
  * @file nfa.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
@@ -12,6 +8,10 @@
  *
  */
 
+#pragma once
+#include <set>
+#include <vector>
+#include <string>
 #include <unordered_map>
 #include "utils/viewer.h"
 
