@@ -60,6 +60,7 @@ TableRender &TableRender::reset()
     hLines.assign(rowMax, false);
     vLines.assign(colMax, false);
     table.clear();
+    posStack = std::stack<std::pair<int, int>>();
     return *this;
 }
 
@@ -86,11 +87,35 @@ void TableRender::resize()
 
 TableRender &TableRender::moveTo(int r, int c)
 {
-    rowCur = r < 0 ? rowCur + r : r;
+    posStack.push(std::make_pair(rowCur, colCur));
+    rowCur += r;
     rowCur = rowCur >= -1 ? rowCur : -1;
-    colCur = c < 0 ? colCur + c : c;
+    colCur += c;
     colCur = colCur >= -1 ? colCur : -1;
     resize();
+    return *this;
+}
+
+TableRender &TableRender::jumpTo(int r, int c)
+{
+    posStack.push(std::make_pair(rowCur, colCur));
+    rowCur = r;
+    rowCur = rowCur >= -1 ? rowCur : -1;
+    colCur = c < 0 ? colCur + c : c;
+    colCur = c;
+    resize();
+    return *this;
+}
+
+TableRender &TableRender::JumpBack(int n)
+{
+    while (n--)
+    {
+        if (posStack.empty())
+            break;
+        std::tie(rowCur, colCur) = posStack.top();
+        posStack.pop();
+    }
     return *this;
 }
 

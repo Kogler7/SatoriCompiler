@@ -11,6 +11,7 @@
 #include "log.h"
 #include <map>
 #include <vector>
+#include <stack>
 
 #define TB_TAB "\t"
 #define LF_TAB "\tl"
@@ -103,6 +104,8 @@ namespace table
         TableRender();
         TableRender &reset();
         TableRender &moveTo(int r, int c);
+        TableRender &jumpTo(int r, int c);
+        TableRender &JumpBack(int n = 1);
         TableRender &carriRet();
         TableRender &lineFeed();
         TableRender &moveNext();
@@ -126,6 +129,7 @@ namespace table
         std::vector<bool> hLines;
         std::vector<bool> vLines;
         std::vector<std::vector<Cell>> table;
+        std::stack<std::pair<int, int>> posStack;
 
         void resize();
         void resetTabLayout();
@@ -138,19 +142,17 @@ namespace table
 extern table::TableRender _tableRender;
 
 #define tb_head _tableRender.reset().lineFeed().setLine()
-
 #define tb_cont _tableRender
 
 #define set_col _tableRender.useHorizDirection().carriRet().enableLineSetting()
-
 #define set_row _tableRender.useHorizDirection(false).lineFeed().enableLineSetting()
 
 #define new_col _tableRender.useHorizDirection(false).lineFeed().carriRet().enableLineSetting(false)
-
 #define new_row _tableRender.useHorizDirection().lineFeed().carriRet().enableLineSetting(false)
 
 #define tb_move(r, c) _tableRender.moveTo(r, c)
+#define tb_jump(r, c) _tableRender.jumpTo(r, c)
+#define tb_back(n) _tableRender.JumpBack(n)
 
 #define tb_line(x) _tableRender.setLine(x)
-
 #define tb_view(s) _tableRender.geneView(s)
