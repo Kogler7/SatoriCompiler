@@ -38,4 +38,5 @@ void prdTest()
     lexer.printTokens(tokens);
     info << "result: \n"
          << prd.parse(tokens);
+    prd.getTree()->print();
 }

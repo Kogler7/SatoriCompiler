@@ -94,16 +94,6 @@ string descStack(stack<cst_node_ptr_t> s)
     return ss.str();
 }
 
-string descVecFrom(vector<token> v, int i)
-{
-    stringstream ss;
-    for (int j = i; j < v.size(); j++)
-    {
-        ss << v[j].value << " ";
-    }
-    return ss.str();
-}
-
 bool StackPredictiveTableParser::parse(vector<token> input)
 {
     stack<cst_node_ptr_t> s;
@@ -114,7 +104,7 @@ bool StackPredictiveTableParser::parse(vector<token> input)
     s.push(startNode);
     tb_head | "Analyze Stack" | "Remaining Input" | "Action";
     set_col | AL_LFT | AL_RGT | AL_RGT;
-    new_row | descStack(s) | descVecFrom(input, 0) | "Initial";
+    new_row | descStack(s) | descTokVecFrom(input, 0) | "Initial";
     while (top_sym(s) != SYM_END && !viewer.ends())
     {
         token &cur = viewer.current();
@@ -165,6 +155,7 @@ bool StackPredictiveTableParser::parse(vector<token> input)
                 error << format(
                     "StackPredictiveTableParser: Unexpected token: $ at <$, $>.\n",
                     cur.value, cur.line, cur.col);
+                cout << tb_view();
                 return false;
             }
         }
@@ -173,15 +164,16 @@ bool StackPredictiveTableParser::parse(vector<token> input)
             error << format(
                     "StackPredictiveTableParser: Unexpected token: $ at <$, $>.\n",
                     cur.value, cur.line, cur.col);
+            cout << tb_view();
             return false;
         }
-        new_row | descStack(s) | descVecFrom(input, viewer.pos()) | actionDesc;
+        new_row | descStack(s) | descTokVecFrom(input, viewer.pos()) | actionDesc;
     }
     tb_line();
     new_row | TB_TAB | MD_TAB | "Accepted";
     info << "Analyze finished." << std::endl;
     cout << tb_view();
     info << "Parse Tree: " << std::endl;
-    startNode->print();
+    tree = startNode;
     return true;
 }

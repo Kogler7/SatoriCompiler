@@ -37,4 +37,5 @@ void sptTest()
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);
     info << "result: \n" << stp.parse(tokens);
+    stp.getTree()->print();
 }

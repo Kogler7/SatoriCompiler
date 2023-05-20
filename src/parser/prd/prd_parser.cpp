@@ -92,14 +92,12 @@ bool PredictiveRecursiveDescentParser::parse(vector<token> &input)
     {
         info << "PRDParser: parse succeed." << endl;
         tree = root;
-        tree->print();
         return true;
     }
     else
     {
         error << "PRDParser: parse failed." << endl;
         tree = root;
-        tree->print();
         return false;
     }
 }

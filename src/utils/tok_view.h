@@ -8,6 +8,8 @@
  *
  */
 
+#pragma once
+
 #include "common/token.h"
 #include "vector"
 #include "log.h"
@@ -66,3 +68,15 @@ public:
         return ret;
     }
 };
+
+inline string descTokVecFrom(const vector<token> &v, int i)
+{
+    stringstream ss;
+    for (int j = i; j < v.size(); j++)
+    {
+        ss << v[j].value;
+        if (j != v.size() - 1)
+            ss << " ";
+    }
+    return ss.str();
+}

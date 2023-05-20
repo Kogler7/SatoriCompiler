@@ -145,7 +145,7 @@ extern table::TableRender _tableRender;
 #define tb_cont _tableRender
 
 #define set_col _tableRender.useHorizDirection().carriRet().enableLineSetting()
-#define set_row _tableRender.useHorizDirection(false).lineFeed().enableLineSetting()
+#define set_row _tableRender.useHorizDirection(false).carriRet().enableLineSetting()
 
 #define new_col _tableRender.useHorizDirection(false).lineFeed().carriRet().enableLineSetting(false)
 #define new_row _tableRender.useHorizDirection().lineFeed().carriRet().enableLineSetting(false)

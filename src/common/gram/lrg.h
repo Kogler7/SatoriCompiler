@@ -19,7 +19,10 @@
 using namespace std;
 
 typedef reference_wrapper<product_t> product_ref;
-typedef variant<bool, product_ref, state_id_t> action_t;
+typedef product_ref reduce_t;
+typedef state_id_t shift_t;
+typedef bool accept_t;
+typedef variant<accept_t, reduce_t, shift_t> action_t;
 typedef pair<product_ref, size_t> lr_item_t;
 
 inline string product2str(product_ref p)
