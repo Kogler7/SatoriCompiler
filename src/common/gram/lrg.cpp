@@ -9,8 +9,6 @@
  */
 
 #include "lrg.h"
-#include "utils/log.h"
-#include "utils/stl.h"
 #include "utils/table.h"
 #include <queue>
 
@@ -21,20 +19,15 @@ using namespace table;
 #define _isVT(t) _find(terminals, t)
 #define _isVN(t) _find(nonTerms, t)
 
-inline string product2str(product_ref p)
-{
-    string s = p.get().first + "->";
-    s += compact(p.get().second);
-    return s;
-}
-
 size_t intersects(const cluster_t &c1, const cluster_t &c2)
 {
     size_t cnt = 0;
     for (auto &item : c1)
     {
         if (c2.find(item) != c2.end())
+        {
             cnt++;
+        }
     }
     return cnt;
 }
@@ -45,7 +38,7 @@ int findInClusters(const clusters_t &clusters, const cluster_t &c)
     {
         if (clusters[i].size() != c.size())
             continue;
-        if (intersects(clusters[i], c) != c.size())
+        if (intersects(clusters[i], c) == c.size())
             return i;
     }
     return -1;
@@ -73,7 +66,7 @@ void LRGrammar::calcClosure(cluster_t &c)
                 if (p.first != next)
                     continue;
                 lr_item_t item(p, 0);
-                debug(0) << "inserting " << product2str(item.first) << endl;
+                debug(0) << "inserting " << item2str(item) << endl;
                 if (c.find(item) != c.end())
                     continue;
                 c1.insert(item);
@@ -109,16 +102,20 @@ void LRGrammar::calcClusters()
                 if (next != v)
                     continue;
                 lr_item_t item1(item.first, item.second + 1);
+                debug(0) << "inserting(nt) " << item2str(item1) << endl;
                 c1.insert(item1);
             }
             if (c1.size() == 0)
                 continue;
             calcClosure(c1);
+            debug(0) << "new cluster(nt): " << cluster2str(c1) << endl;
             int c1Idx = findInClusters(clusters, c1);
+            debug(0) << "cluster(nt) index: " << c1Idx << endl;
             if (c1Idx == -1)
             {
                 c1Idx = clusters.size();
                 clusters.push_back(c1);
+                debug(0) << "inserting cluster " << c1Idx << endl;
                 q.push(c1);
             }
             coord_t crd(cIdx, v);
@@ -145,16 +142,20 @@ void LRGrammar::calcClusters()
                 if (next != t)
                     continue;
                 lr_item_t item1(item.first, item.second + 1);
+                debug(0) << "inserting(t) " << item2str(item1) << endl;
                 c1.insert(item1);
             }
             if (c1.size() == 0)
                 continue;
             calcClosure(c1);
+            debug(0) << "new cluster(t): " << cluster2str(c1) << endl;
             int c1Idx = findInClusters(clusters, c1);
+            debug(0) << "cluster(t) index: " << c1Idx << endl;
             if (c1Idx == -1)
             {
                 c1Idx = clusters.size();
                 clusters.push_back(c1);
+                debug(0) << "inserting cluster " << c1Idx << endl;
                 q.push(c1);
             }
             coord_t crd(cIdx, t);

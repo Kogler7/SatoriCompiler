@@ -89,19 +89,20 @@ symset_t PredictiveGrammar::calcFirstOf(symbol_t t)
         {
             // 对于产生式右部的每个符号
             bool allHaveEpsilon = true;
-            for (auto &symbol : right)
+            for (auto it = right.begin(); it != right.end(); it++)
             {
-                if (_find(terminals, symbol))
+                if (_find(terminals, *it))
                 {
                     // 终结符，直接加入first集
-                    first[t].insert(symbol);
-                    debug(1) << "First(" << t << ") <- {" << symbol << "}" << endl;
+                    first[t].insert(*it);
+                    debug(1) << "First(" << t << ") <- {" << *it << "}" << endl;
                     allHaveEpsilon = false;
                     break; // 终结符后面的符号不再计算
                 }
                 else
                 {
-                    symset_t resFirst = calcFirstOf(symbol);
+                    assert(it != right.begin() || *it != t, "Direct left recursion detected.");
+                    symset_t resFirst = calcFirstOf(*it);
                     symset_t tmpFirst = resFirst;
                     tmpFirst.erase(EPSILON);
                     first[t].insert(tmpFirst.begin(), tmpFirst.end());

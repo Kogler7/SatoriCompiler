@@ -17,17 +17,14 @@
 void slr1Test()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/lab3.stx");
+    Grammar g = ebnfParser.parse("./assets/lab5.stx");
     SLR1Grammar G = SLR1Grammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
     G.printRules();
     G.printTerminals();
     G.printNonTerms();
-    G.printFirst();
     G.printFollow();
-    G.printFirstS();
-    G.printSelect();
     SLR1Parser slr1(G);
     Lexer lexer("./assets/lab3.lex");
     auto tokens = lexer.tokenize("./assets/lab3.txt");

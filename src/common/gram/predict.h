@@ -14,6 +14,7 @@
 
 class PredictiveGrammar : public Grammar
 {
+protected:
     symset_t calcFirstOf(symbol_t t);
     symset_t calcFirstOf(symstr_t s);
     symset_t calcFollowOf(symbol_t t);

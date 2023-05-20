@@ -22,13 +22,6 @@ inline symset_t intersects(const symset_t &s1, const symset_t &s2)
     return inter;
 }
 
-inline string product2str(product_ref p)
-{
-    string s = p.get().first + "->";
-    s += compact(p.get().second);
-    return s;
-}
-
 bool SLR1Grammar::checkSLR1()
 {
     info << "Checking SLR(1) grammar..." << endl;
@@ -159,7 +152,7 @@ void SLR1Grammar::printSLR1Table()
                 if (action.index() == 0)
                     tb_cont | "acc" = FORE_GRE;
                 else if (action.index() == 1)
-                    tb_cont | "r" + product2str(get<1>(action));
+                    tb_cont | product2str(get<1>(action));
                 else
                     tb_cont | "s" + to_string(get<2>(action));
             }
