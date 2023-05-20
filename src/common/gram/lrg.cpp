@@ -251,7 +251,7 @@ void LRGrammar::printGoTrans()
         {
             coord_t crd(i, v);
             if (_find(goTrans, crd))
-                tb_cont | to_string(goTrans[crd]);
+                tb_cont | "C" + to_string(goTrans[crd]);
             else
                 tb_cont | "";
         }

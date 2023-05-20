@@ -17,7 +17,7 @@
 void slr1Test()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/lab5.stx");
+    Grammar g = ebnfParser.parse("./assets/lab5r.stx");
     SLR1Grammar G = SLR1Grammar(g);
     G.printRules();
     G.extractLeftCommonFactor();

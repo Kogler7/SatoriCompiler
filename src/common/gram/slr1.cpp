@@ -136,13 +136,13 @@ void SLR1Grammar::printSLR1Table()
     tb_cont | "Goto" = AL_CTR;
     new_row | "";
     for (auto &t : terminals)
-        tb_cont | t;
+        tb_cont | t = AL_CTR;
     for (auto &t : nonTerms)
-        tb_cont | t;
+        tb_cont | t = AL_CTR;
     for (int i = 0; i < clusters.size(); i++)
     {
         cluster_t &c = clusters[i];
-        new_row | "C" + to_string(i);
+        new_row | "S" + to_string(i);
         for (auto &t : terminals)
         {
             coord_t coord(i, t);
@@ -150,11 +150,11 @@ void SLR1Grammar::printSLR1Table()
             {
                 action_t action = slr1Table[coord];
                 if (action.index() == 0)
-                    tb_cont | "acc" = FORE_GRE;
+                    tb_cont | Cell("ACC") & (FORE_GRE | FONT_BOL);
                 else if (action.index() == 1)
                     tb_cont | product2str(get<1>(action));
                 else
-                    tb_cont | "s" + to_string(get<2>(action));
+                    tb_cont | "S" + to_string(get<2>(action));
             }
             else
                 tb_cont | "";
