@@ -19,7 +19,7 @@ class RegexpParser
 	string rawReg;
 	string tmpReg;
 	string postfix;
-	stack<sub_nfa> nfaStack;
+	stack<sub_nfa_t> nfaStack;
 	vector<int> setStates;
 	FiniteAutomaton nfa;
 

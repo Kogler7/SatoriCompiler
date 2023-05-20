@@ -80,10 +80,10 @@ void StackPredictiveTableParser::printPredictTable()
 
 #define top_sym(s) ((s.top())->data.symbol)
 
-string descStack(stack<cst_node_ptr> s)
+string descStack(stack<cst_node_ptr_t> s)
 {
     stringstream ss;
-    symstr v;
+    symstr_t v;
     while (!s.empty())
     {
         v.push_back(top_sym(s));
@@ -106,11 +106,11 @@ string descVecFrom(vector<token> v, int i)
 
 bool StackPredictiveTableParser::parse(vector<token> input)
 {
-    stack<cst_node_ptr> s;
-    input.push_back(token(make_shared<symbol>(SYM_END), SYM_END, 0, 0));
+    stack<cst_node_ptr_t> s;
+    input.push_back(token(make_shared<symbol_t>(SYM_END), SYM_END, 0, 0));
     TokenViewer viewer(input);
-    s.push(cst_tree::createNode(TERMINAL, SYM_END, 0, 0));
-    cst_node_ptr startNode = cst_tree::createNode(NON_TERM, grammar.symStart, 0, 0);
+    s.push(cst_tree_t::createNode(TERMINAL, SYM_END, 0, 0));
+    cst_node_ptr_t startNode = cst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
     s.push(startNode);
     tb_head | "Analyze Stack" | "Remaining Input" | "Action";
     set_col | AL_LFT | AL_RGT | AL_RGT;
@@ -120,12 +120,12 @@ bool StackPredictiveTableParser::parse(vector<token> input)
         token &cur = viewer.current();
         size_t idx = viewer.pos();
         string actionDesc;
-        symbol curSym = top_sym(s);
-        symbol curType = *(cur.type);
+        symbol_t curSym = top_sym(s);
+        symbol_t curType = *(cur.type);
         assert(_find(grammar.terminals, curType));
         if (curSym == curType)
         {
-            cst_node_ptr topNode = s.top();
+            cst_node_ptr_t topNode = s.top();
             topNode->data.symbol = cur.value;
             topNode->data.line = cur.line;
             topNode->data.col = cur.col;
@@ -138,13 +138,13 @@ bool StackPredictiveTableParser::parse(vector<token> input)
             auto it = predict[curSym].find(curType);
             if (it != predict[curSym].end())
             {
-                cst_node_ptr topNode = s.top();
+                cst_node_ptr_t topNode = s.top();
                 s.pop();
-                vector<cst_node_ptr> children;
+                vector<cst_node_ptr_t> children;
                 for (auto it1 = it->second.rbegin(); it1 != it->second.rend(); it1++)
                 {
                     node_type type = _find(grammar.terminals, *it1) ? TERMINAL : NON_TERM;
-                    cst_node_ptr newNode = cst_tree::createNode(type, *it1, 0, 0);
+                    cst_node_ptr_t newNode = cst_tree_t::createNode(type, *it1, 0, 0);
                     children.push_back(newNode);
                     s.push(newNode);
                 }
@@ -156,7 +156,7 @@ bool StackPredictiveTableParser::parse(vector<token> input)
                 if (children.size() == 0)
                 {
                     // 空串
-                    *(topNode) << cst_tree::createNode(TERMINAL, EPSILON, 0, 0);
+                    *(topNode) << cst_tree_t::createNode(TERMINAL, EPSILON, 0, 0);
                 }
                 actionDesc = it->first + " -> " + compact(it->second);
             }

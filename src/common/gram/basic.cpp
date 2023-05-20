@@ -13,14 +13,14 @@
 #include "utils/log.h"
 #include "utils/table.h"
 
-typedef string symbol;
-typedef set<symbol> symset;
-typedef vector<symbol> symstr;
-typedef pair<symbol, symstr> product;
+typedef string symbol_t;
+typedef set<symbol_t> symset_t;
+typedef vector<symbol_t> symstr_t;
+typedef pair<symbol_t, symstr_t> product_t;
 
 #define DEBUG_LEVEL 1
 
-Grammar::Grammar(symbol start, symset terms, symset nonTerms, vector<product> products, map<symbol, set<symstr>> rules, map<token_type, symbol> tok2sym)
+Grammar::Grammar(symbol_t start, symset_t terms, symset_t nonTerms, vector<product_t> products, map<symbol_t, set<symstr_t>> rules, map<token_type_t, symbol_t> tok2sym)
 {
     symStart = start;
     terminals = terms;
@@ -50,7 +50,7 @@ void Grammar::eliminateLeftRecursion() // 消除左递归
             {
                 debug(1) << "Direct Left Recursion" << endl;
                 // 新建一个非终结符A'，将A'->βA'加入产生式
-                symbol newNonTerm = A + "'";
+                symbol_t newNonTerm = A + "'";
                 nonTerms.insert(newNonTerm);
                 rules[newNonTerm].insert(alpha);
                 // 将A->α|β改为A->αA'|ε
@@ -63,7 +63,7 @@ void Grammar::eliminateLeftRecursion() // 消除左递归
             {
                 debug(1) << "Indirect Left Recursion" << endl;
                 // 新建一个非终结符A'，将A'->βA'加入产生式
-                symbol newNonTerm = A + "'";
+                symbol_t newNonTerm = A + "'";
                 nonTerms.insert(newNonTerm);
                 rules[newNonTerm].insert(alpha);
                 // 将A->α|β改为A->αA'
@@ -79,21 +79,21 @@ void Grammar::extractLeftCommonFactor()
 {
     info << "Grammar: Extracting Left Common Factor" << endl;
     // 将规则按照左部分组，分别构造TermTree
-    map<symbol, tt_node_ptr> termTrees;
+    map<symbol_t, tt_node_ptr_t> termTrees;
     for (auto &A : nonTerms)
     {
-        termTrees[A] = tt_node::createNode(A);
+        termTrees[A] = tt_node_t::createNode(A);
         for (auto alphaIt = rules[A].begin(); alphaIt != rules[A].end(); alphaIt++)
         {
             auto &alpha = *alphaIt;
-            tt_node_ptr cur = termTrees[A];
+            tt_node_ptr_t cur = termTrees[A];
             for (size_t i = 0; i < alpha.size(); i++)
             {
                 auto &sym = alpha[i];
                 size_t index = cur->find(sym);
                 if (index == -1)
                 {
-                    tt_node_ptr new_node = tt_node::createNode(sym, alphaIt, i);
+                    tt_node_ptr_t new_node = tt_node_t::createNode(sym, alphaIt, i);
                     (*cur) << new_node;
                     cur = new_node;
                 }
@@ -102,7 +102,7 @@ void Grammar::extractLeftCommonFactor()
                     cur = cur->get_child_ptr(index);
                 }
             }
-            (*cur) << tt_node::createNode("#", alphaIt, 0);
+            (*cur) << tt_node_t::createNode("#", alphaIt, 0);
         }
         termTrees[A]->print();
     }
@@ -111,10 +111,10 @@ void Grammar::extractLeftCommonFactor()
     size_t cnt = 0;
     for (auto &tree : termTrees)
     {
-        const symbol &left = tree.first;
-        tt_node_ptr &root = tree.second;
+        const symbol_t &left = tree.first;
+        tt_node_ptr_t &root = tree.second;
         root->postorder(
-            [&](tt_node node)
+            [&](tt_node_t node)
             {
                 if (node.size() > 1 && node.data.index != 0)
                 {
@@ -122,18 +122,18 @@ void Grammar::extractLeftCommonFactor()
                     info << "Grammar: Fixing Rule " << left << "->" << node.data.symbol;
                     cout << " " << node.data.index << endl;
                     assert(node.data.ruleIt != rules[left].end());
-                    symstr curRule = *(node.data.ruleIt);
-                    symstr prefix;
+                    symstr_t curRule = *(node.data.ruleIt);
+                    symstr_t prefix;
                     prefix.insert(prefix.end(), curRule.begin(), curRule.begin() + node.data.index + 1);
-                    symbol newNonTerm = left + "^" + to_string(++cnt);
+                    symbol_t newNonTerm = left + "^" + to_string(++cnt);
                     nonTerms.insert(newNonTerm);
                     prefix.push_back(newNonTerm);
                     rules[left].insert(prefix);
                     node.foreach (
-                        [&](tt_node child)
+                        [&](tt_node_t child)
                         {
                             // 对于每个子节点，将其所代表的子产生式加入新的规则
-                            symstr suffix;
+                            symstr_t suffix;
                             if (child.data.symbol != "#")
                             {
                                 suffix.insert(
@@ -188,7 +188,7 @@ vector<token> Grammar::transferTokens(vector<token> tokens)
         {
             debug(0) << "terminals: " << t.value << endl;
             res.push_back(token(
-                make_shared<symbol>(t.value),
+                make_shared<symbol_t>(t.value),
                 t.value,
                 t.line,
                 t.col));
@@ -198,7 +198,7 @@ vector<token> Grammar::transferTokens(vector<token> tokens)
             debug(0) << "tok2sym: " << t.value << endl;
             res.push_back(
                 token(
-                    make_shared<symbol>(tok2sym[t.type]),
+                    make_shared<symbol_t>(tok2sym[t.type]),
                     t.value,
                     t.line,
                     t.col));

@@ -21,11 +21,11 @@
 
 using namespace std;
 
-typedef string symbol;
+typedef string symbol_t;
 
-token_iter findType(vector<token> &tokens, token_type type, token_iter start)
+token_iter_t findType(vector<token> &tokens, token_type_t type, token_iter_t start)
 {
-    for (token_iter it = start; it != tokens.end(); it++)
+    for (token_iter_t it = start; it != tokens.end(); it++)
     {
         if (it->type == type)
         {
@@ -35,10 +35,10 @@ token_iter findType(vector<token> &tokens, token_type type, token_iter start)
     return tokens.end();
 }
 
-token_iter findSep(vector<token> &tokens, string sep, token_iter start)
+token_iter_t findSep(vector<token> &tokens, string sep, token_iter_t start)
 {
-    token_type sepType = get_tok_type("DELIMITER");
-    for (token_iter it = start; it != tokens.end(); it++)
+    token_type_t sepType = get_tok_type("DELIMITER");
+    for (token_iter_t it = start; it != tokens.end(); it++)
     {
         if (it->type == sepType && it->value == sep)
         {
@@ -64,7 +64,7 @@ void EBNFParser::tokenizeSyntax(string grammarPath)
     ebnfLexer.printTokens(tokens);
 }
 
-symbol getEndSep(symbol sep)
+symbol_t getEndSep(symbol_t sep)
 {
     if (sep == "(")
     {
@@ -85,7 +85,7 @@ symbol getEndSep(symbol sep)
     }
 }
 
-vector<tok_production> EBNFParser::segmentProduct(tok_production product)
+vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t product)
 {
     info << "EBNFParser: Segmenting product: " << product.first << " -> ";
     for (auto it = product.second.begin(); it != product.second.end(); it++)
@@ -93,8 +93,8 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
         cout << it->value << " ";
     }
     cout << endl;
-    vector<tok_production> products;
-    symbol &left = product.first;
+    vector<tok_product_t> products;
+    symbol_t &left = product.first;
     vector<token> &right = product.second;
     auto lastIt = right.begin();
     auto nextIt = right.begin();
@@ -121,7 +121,7 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
         else
         {
             // 如果是分组符，则需要递归拆分
-            symbol endDeli = getEndSep(deliBeginIt->value);
+            symbol_t endDeli = getEndSep(deliBeginIt->value);
             auto deliEndIt = findSep(right, endDeli, deliBeginIt);
             assert(
                 deliEndIt != right.end(),
@@ -134,7 +134,7 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
                 format(
                     "EBNFParser: EBNF syntax error: Expected |, got $ at <$, $>",
                     nextIt->value, nextIt->line, nextIt->col));
-            vector<tok_production> subProducts;
+            vector<tok_product_t> subProducts;
             subProducts = segmentProduct(make_pair(left, vector<token>(deliBeginIt + 1, deliEndIt)));
             vector<token> head = vector<token>(lastIt, deliBeginIt);
             vector<token> tail = vector<token>(deliEndIt + 1, nextIt);
@@ -145,7 +145,7 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
                 for (auto &pro : subProducts)
                 {
                     // 构造新的非终结符
-                    symbol newLeft = left + "_";
+                    symbol_t newLeft = left + "_";
                     newLeft += to_string(++nonTermCount);
                     token newLeftTok = token(get_tok_type("NON_TERM"), newLeft);
                     // 构造含新非终结符的新产生式
@@ -214,15 +214,15 @@ vector<tok_production> EBNFParser::segmentProduct(tok_production product)
     return products;
 }
 
-vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter end)
+vector<tok_product_t> EBNFParser::geneStxProducts(token_iter_t start, token_iter_t end)
 {
-    vector<tok_production> products;
-    token_type grammarDef = get_tok_type("GRAMMAR_DEF");
-    token_type sepType = get_tok_type("SEPARATOR");
-    token_type nonTermType = get_tok_type("NON_TERM");
-    token_type epsilonType = get_tok_type("EPSILON");
+    vector<tok_product_t> products;
+    token_type_t grammarDef = get_tok_type("GRAMMAR_DEF");
+    token_type_t sepType = get_tok_type("SEPARATOR");
+    token_type_t nonTermType = get_tok_type("NON_TERM");
+    token_type_t epsilonType = get_tok_type("EPSILON");
     // 预处理，拆分 ; 表示的多个产生式
-    vector<tok_production> rawProducts;
+    vector<tok_product_t> rawProducts;
     for (auto it = start; it != end; it++)
     {
         assert(
@@ -230,7 +230,7 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
             format(
                 "EBNFParser: EBNF syntax error: Expected non-terminal, got $ at <$, $>.",
                 it->value, it->line, it->col));
-        symbol left = it->value;
+        symbol_t left = it->value;
         it++;
         assert(
             it != end && it->type == grammarDef,
@@ -239,7 +239,7 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
                 it->value, it->line, it->col));
         it++;
         assert(it != end);
-        token_iter sepIt = findType(tokens, sepType, it);
+        token_iter_t sepIt = findType(tokens, sepType, it);
         vector<token> right;
         for (auto it2 = it; it2 != sepIt; it2++)
         {
@@ -252,7 +252,7 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
     for (auto &pro : rawProducts)
     {
         // 递归下降法解析拆分EBNF
-        vector<tok_production> subProducts = segmentProduct(pro);
+        vector<tok_product_t> subProducts = segmentProduct(pro);
         products.insert(products.end(), subProducts.begin(), subProducts.end());
     }
     // 处理产生式中的 ε
@@ -274,12 +274,12 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
         debug_u(0) << endl;
     }
     // 删去tok_production中的token额外信息，转换为production
-    vector<product> &gProducts = grammar.products;
-    token_type termType = get_tok_type("TERMINAL");
-    token_type mulTermType = get_tok_type("MUL_TERM");
+    vector<product_t> &gProducts = grammar.products;
+    token_type_t termType = get_tok_type("TERMINAL");
+    token_type_t mulTermType = get_tok_type("MUL_TERM");
     for (auto &pro : products)
     {
-        product newPro;
+        product_t newPro;
         newPro.first = pro.first;
         for (auto &tok : pro.second)
         {
@@ -301,15 +301,15 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
     return products;
 }
 
-vector<tok_production> EBNFParser::geneMapProducts(token_iter start, token_iter end)
+vector<tok_product_t> EBNFParser::geneMapProducts(token_iter_t start, token_iter_t end)
 {
-    vector<tok_production> products;
-    token_type mappingDef = get_tok_type("MAPPING_DEF");
-    token_type sepType = get_tok_type("SEPARATOR");
-    token_type mulTermType = get_tok_type("MUL_TERM");
-    token_type epsilonType = get_tok_type("EPSILON");
+    vector<tok_product_t> products;
+    token_type_t mappingDef = get_tok_type("MAPPING_DEF");
+    token_type_t sepType = get_tok_type("SEPARATOR");
+    token_type_t mulTermType = get_tok_type("MUL_TERM");
+    token_type_t epsilonType = get_tok_type("EPSILON");
     // 预处理，拆分 ; 表示的多个产生式
-    vector<tok_production> rawProducts;
+    vector<tok_product_t> rawProducts;
     for (auto it = start; it != end; it++)
     {
         assert(
@@ -317,7 +317,7 @@ vector<tok_production> EBNFParser::geneMapProducts(token_iter start, token_iter 
             format(
                 "EBNFParser: MAPPING syntax error: Expected mul-terminal, got $ at <$, $>.",
                 it->value, it->line, it->col));
-        symbol left = it->value;
+        symbol_t left = it->value;
         it++;
         assert(
             it->type == mappingDef,
@@ -325,7 +325,7 @@ vector<tok_production> EBNFParser::geneMapProducts(token_iter start, token_iter 
                 "EBNFParser: MAPPING syntax error: Expected ->, got $ at <$, $>.",
                 it->value, it->line, it->col));
         it++;
-        token_iter sepIt = findType(tokens, sepType, it);
+        token_iter_t sepIt = findType(tokens, sepType, it);
         vector<token> right;
         for (auto it2 = it; it2 != sepIt; it2++)
         {
@@ -337,7 +337,7 @@ vector<tok_production> EBNFParser::geneMapProducts(token_iter start, token_iter 
     // 进一步拆分
     for (auto &pro : rawProducts)
     {
-        vector<tok_production> subProducts = segmentProduct(pro);
+        vector<tok_product_t> subProducts = segmentProduct(pro);
         products.insert(products.end(), subProducts.begin(), subProducts.end());
     }
     info << "EBNFParser::geneMapProducts: " << products.size() << " productions generated." << endl;
@@ -353,18 +353,18 @@ vector<tok_production> EBNFParser::geneMapProducts(token_iter start, token_iter 
     return products;
 }
 
-void EBNFParser::addRules(vector<tok_production> &products)
+void EBNFParser::addRules(vector<tok_product_t> &products)
 {
-    token_type nonTermType = get_tok_type("NON_TERM");
-    token_type termType = get_tok_type("TERMINAL");
-    token_type mulTermType = get_tok_type("MUL_TERM");
-    symset &nonTerms = grammar.nonTerms;
-    symset &terminals = grammar.terminals;
-    map<symbol, set<symstr>> &rules = grammar.rules;
+    token_type_t nonTermType = get_tok_type("NON_TERM");
+    token_type_t termType = get_tok_type("TERMINAL");
+    token_type_t mulTermType = get_tok_type("MUL_TERM");
+    symset_t &nonTerms = grammar.nonTerms;
+    symset_t &terminals = grammar.terminals;
+    map<symbol_t, set<symstr_t>> &rules = grammar.rules;
     for (auto &pro : products)
     {
         nonTerms.insert(pro.first);
-        symstr right;
+        symstr_t right;
         for (auto &tok : pro.second)
         {
             if (tok.type == nonTermType)
@@ -385,13 +385,13 @@ void EBNFParser::addRules(vector<tok_production> &products)
     }
 }
 
-void EBNFParser::addMappings(vector<tok_production> &products)
+void EBNFParser::addMappings(vector<tok_product_t> &products)
 {
-    token_type tokType = get_tok_type("TOK_TYPE");
-    map<token_type, symbol> &tok2sym = grammar.tok2sym;
+    token_type_t tokType = get_tok_type("TOK_TYPE");
+    map<token_type_t, symbol_t> &tok2sym = grammar.tok2sym;
     for (auto &pro : products)
     {
-        symbol left = pro.first.substr(1);
+        symbol_t left = pro.first.substr(1);
         vector<token> &right = pro.second;
         assert(
             right.size() == 1,
@@ -403,7 +403,7 @@ void EBNFParser::addMappings(vector<tok_production> &products)
             format(
                 "EBNFParser: Mapping syntax error: Expected token type, got $ at <$, $>.",
                 right[0].value, right[0].line, right[0].col));
-        symbol tokTerm = right[0].value;
+        symbol_t tokTerm = right[0].value;
         tokTerm = tokTerm.substr(1);
         grammar.terminals.insert(left);
         if (!find_tok_type(tokTerm))
@@ -434,7 +434,7 @@ Grammar EBNFParser::parse(string grammarPath)
     assert(blkStart != tokens.end(), "EBNFParser: Grammar block not found.");
     auto blkEnd = findType(tokens, get_tok_type("BLOCK_END"), blkStart);
     assert(blkEnd != tokens.end(), "EBNFParser: Grammar block not ended.");
-    vector<tok_production> products = geneStxProducts(blkStart + 1, blkEnd);
+    vector<tok_product_t> products = geneStxProducts(blkStart + 1, blkEnd);
     addRules(products);
     // 解析MAPPING映射
     auto mappingIt = findType(tokens, get_tok_type("MAPPING"), tokens.begin());

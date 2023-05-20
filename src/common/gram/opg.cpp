@@ -18,7 +18,7 @@
 #define _isVT(t) _find(terminals, t)
 #define _isVN(t) _find(nonTerms, t)
 
-symset OperatorPrecedenceGrammar::calcFirstVTOf(symbol t)
+symset_t OperatorPrecedenceGrammar::calcFirstVTOf(symbol_t t)
 {
     info << "calcFirstVTOf(" << t << ")" << endl;
     if (firstVT[t].size() > 0)
@@ -28,7 +28,7 @@ symset OperatorPrecedenceGrammar::calcFirstVTOf(symbol t)
             vec2str(t));
         return firstVT[t];
     }
-    symset ret;
+    symset_t ret;
     for (auto &right : rules[t])
     {
         assert(!right.empty(), "OperatorPrecedenceGrammar: invalid null production.");
@@ -40,7 +40,7 @@ symset OperatorPrecedenceGrammar::calcFirstVTOf(symbol t)
         {
             if (right[0] != t)
             {
-                symset tmp = calcFirstVTOf(right[0]);
+                symset_t tmp = calcFirstVTOf(right[0]);
                 ret.insert(tmp.begin(), tmp.end());
             }
             if (right.size() > 1 && _isVT(right[1]))
@@ -53,7 +53,7 @@ symset OperatorPrecedenceGrammar::calcFirstVTOf(symbol t)
     return ret;
 }
 
-symset OperatorPrecedenceGrammar::calcLastVTOf(symbol t)
+symset_t OperatorPrecedenceGrammar::calcLastVTOf(symbol_t t)
 {
     info << "calcLastVTOf(" << t << ")" << endl;
     if (lastVT[t].size() > 0)
@@ -63,7 +63,7 @@ symset OperatorPrecedenceGrammar::calcLastVTOf(symbol t)
             vec2str(t));
         return lastVT[t];
     }
-    symset ret;
+    symset_t ret;
     for (auto &right : rules[t])
     {
         assert(!right.empty(), "OperatorPrecedenceGrammar: invalid null production.");
@@ -75,7 +75,7 @@ symset OperatorPrecedenceGrammar::calcLastVTOf(symbol t)
         {
             if (right.back() != t)
             {
-                symset tmp = calcLastVTOf(right.back());
+                symset_t tmp = calcLastVTOf(right.back());
                 ret.insert(tmp.begin(), tmp.end());
             }
             if (right.size() > 1 && _isVT(right[right.size() - 2]))
@@ -133,7 +133,7 @@ void OperatorPrecedenceGrammar::calcOPT()
                 }
                 if (_isVT(right[i]) && _isVN(right[i + 1]))
                 {
-                    symset tmp = calcFirstVTOf(right[i + 1]);
+                    symset_t tmp = calcFirstVTOf(right[i + 1]);
                     for (auto &s : tmp)
                     {
                         opt[right[i]][s] = OP::LT;
@@ -141,7 +141,7 @@ void OperatorPrecedenceGrammar::calcOPT()
                 }
                 if (_isVN(right[i]) && _isVT(right[i + 1]))
                 {
-                    symset tmp = calcLastVTOf(right[i]);
+                    symset_t tmp = calcLastVTOf(right[i]);
                     for (auto &s : tmp)
                     {
                         opt[s][right[i + 1]] = OP::GT;

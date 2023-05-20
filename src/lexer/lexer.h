@@ -19,9 +19,9 @@ using namespace std;
 
 class Lexer
 {
-    set<token_type, type_less> ignoredTypes;
-    vector<token_type> typeOrder;                              // 词法单元类型顺序
-    map<token_type, vector<FiniteAutomaton>, type_less> faMap; // 状态自动机对照表
+    set<token_type_t, type_less> ignoredTypes;
+    vector<token_type_t> typeOrder;                              // 词法单元类型顺序
+    map<token_type_t, vector<FiniteAutomaton>, type_less> faMap; // 状态自动机对照表
     void readLexerDef(string fileName);
 
 public:

@@ -23,10 +23,10 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
         // 对于每个产生式A->α
         for (auto &alpha : rules[A])
         {
-            product pA(A, alpha);
+            product_t pA(A, alpha);
             debug(1) << format("Processing Production $->$", A, vec2str(alpha)) << endl;
             // 计算Select集
-            symset selectA = select[pA];
+            symset_t selectA = select[pA];
             debug(1) << format("Select($->$) = $", A, vec2str(alpha), set2str(selectA)) << endl;
             // 检查是否有空产生式
             bool aHasEpsilon = _find(firstS[alpha], EPSILON);
@@ -37,8 +37,8 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
                     continue;
                 for (auto &beta : rules[B])
                 {
-                    symset resSet;
-                    product pB(B, beta);
+                    symset_t resSet;
+                    product_t pB(B, beta);
                     bool bHasEpsilon = _find(firstS[beta], EPSILON);
                     if (aHasEpsilon && bHasEpsilon)
                     {
@@ -47,7 +47,7 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
                             A, vec2str(alpha), B, vec2str(beta));
                         return false;
                     }
-                    symset selectB = select[pB];
+                    symset_t selectB = select[pB];
                     set_intersection(
                         selectA.begin(),
                         selectA.end(),
@@ -68,7 +68,7 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
     return true;
 }
 
-symset PredictiveGrammar::calcFirstOf(symbol t)
+symset_t PredictiveGrammar::calcFirstOf(symbol_t t)
 {
     debug(0) << "Calculating First(" << t << ")" << endl;
     if (first[t].size() > 0)
@@ -101,8 +101,8 @@ symset PredictiveGrammar::calcFirstOf(symbol t)
                 }
                 else
                 {
-                    symset resFirst = calcFirstOf(symbol);
-                    symset tmpFirst = resFirst;
+                    symset_t resFirst = calcFirstOf(symbol);
+                    symset_t tmpFirst = resFirst;
                     tmpFirst.erase(EPSILON);
                     first[t].insert(tmpFirst.begin(), tmpFirst.end());
                     for (auto &f : tmpFirst)
@@ -127,7 +127,7 @@ symset PredictiveGrammar::calcFirstOf(symbol t)
     return first[t];
 }
 
-symset PredictiveGrammar::calcFirstOf(symstr s)
+symset_t PredictiveGrammar::calcFirstOf(symstr_t s)
 {
     debug(0) << format("Calculating First($)", vec2str(s)) << endl;
     if (firstS[s].size() > 0)
@@ -137,7 +137,7 @@ symset PredictiveGrammar::calcFirstOf(symstr s)
             vec2str(s));
         return firstS[s]; // 已经计算过
     }
-    symset resFirst;
+    symset_t resFirst;
     bool allHaveEpsilon = true;
     for (auto &symbol : s)
     {
@@ -151,7 +151,7 @@ symset PredictiveGrammar::calcFirstOf(symstr s)
         }
         else
         {
-            symset tmpFirst = calcFirstOf(symbol);
+            symset_t tmpFirst = calcFirstOf(symbol);
             resFirst.insert(tmpFirst.begin(), tmpFirst.end());
             debug(1) << "First(" << vec2str(s) << ") <- " << set2str(tmpFirst) << endl;
             if (!_find(tmpFirst, EPSILON))
@@ -171,7 +171,7 @@ symset PredictiveGrammar::calcFirstOf(symstr s)
     return resFirst;
 }
 
-symset PredictiveGrammar::calcFollowOf(symbol t)
+symset_t PredictiveGrammar::calcFollowOf(symbol_t t)
 {
     debug(0) << "Calculating Follow(" << t << ")" << endl;
     if (follow[t].size() > 0)
@@ -197,7 +197,7 @@ symset PredictiveGrammar::calcFollowOf(symbol t)
                     // A -> aB
                     if (rule.first != t)
                     {
-                        symset resFollow = calcFollowOf(rule.first);
+                        symset_t resFollow = calcFollowOf(rule.first);
                         follow[t].insert(resFollow.begin(), resFollow.end());
                         for (auto &f : resFollow)
                         {
@@ -214,11 +214,11 @@ symset PredictiveGrammar::calcFollowOf(symbol t)
                 else
                 {
                     // A -> aBC
-                    symset resFirst;
+                    symset_t resFirst;
                     for (auto tmpIt = symIt + 1; tmpIt != right.end(); tmpIt++)
                     {
                         resFirst = calcFirstOf(*tmpIt);
-                        symset tmpFirst = resFirst;
+                        symset_t tmpFirst = resFirst;
                         tmpFirst.erase(EPSILON);
                         follow[t].insert(tmpFirst.begin(), tmpFirst.end());
                         for (auto &f : tmpFirst)
@@ -235,7 +235,7 @@ symset PredictiveGrammar::calcFollowOf(symbol t)
                         // A -> aBC, First(C) 含有epsilon
                         if (rule.first != t)
                         {
-                            symset resFollow = calcFollowOf(rule.first);
+                            symset_t resFollow = calcFollowOf(rule.first);
                             follow[t].insert(resFollow.begin(), resFollow.end());
                             for (auto &f : resFollow)
                             {
@@ -251,20 +251,20 @@ symset PredictiveGrammar::calcFollowOf(symbol t)
     return follow[t];
 }
 
-symset PredictiveGrammar::calcSelectOf(product p)
+symset_t PredictiveGrammar::calcSelectOf(product_t p)
 {
     debug(0) << "Calculating Select(" << p.first;
     debug_u(0) << " -> " << vec2str(p.second) << ")" << endl;
-    symset resSelect;
-    symset resFirst = firstS[p.second];
-    symset tmpFirst = resFirst;
+    symset_t resSelect;
+    symset_t resFirst = firstS[p.second];
+    symset_t tmpFirst = resFirst;
     tmpFirst.erase(EPSILON); // First(A) - {epsilon}
     resSelect.insert(tmpFirst.begin(), tmpFirst.end());
     debug(1) << "Select(" << p.first << " -> " << vec2str(p.second);
     debug_u(1) << ") <- " << set2str(tmpFirst) << endl;
     if (_find(resFirst, EPSILON))
     {
-        symset resFollow = calcFollowOf(p.first);
+        symset_t resFollow = calcFollowOf(p.first);
         resSelect.insert(resFollow.begin(), resFollow.end());
         debug(1) << "Select(" << p.first << " -> " << vec2str(p.second);
         debug_u(1) << ") <- " << set2str(resFollow) << endl;
@@ -328,7 +328,7 @@ void PredictiveGrammar::printFirstS()
     tb_head | "Symstr" | "First" = table::AL_LFT;
     for (auto it = products.begin(); it != products.end(); it++)
     {
-        symstr &s = it->second;
+        symstr_t &s = it->second;
         new_row | vec2str(s) | set2str(firstS[s]);
     }
     cout << tb_view();

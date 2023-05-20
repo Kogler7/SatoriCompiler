@@ -9,6 +9,7 @@
  */
 
 #include "table.h"
+#include <sstream>
 #include <iomanip>
 #include <algorithm>
 

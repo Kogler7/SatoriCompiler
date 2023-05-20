@@ -11,4 +11,4 @@
 #include "token.h"
 #include <map>
 
-map<string, token_type> tokTypeMap;
+map<string, token_type_t> tokTypeMap;

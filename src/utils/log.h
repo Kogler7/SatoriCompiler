@@ -80,25 +80,3 @@ inline void print_ln(std::string s)
 		print_ln(msg);                                    \
 		exit(1);                                          \
 	}
-
-template <typename T>
-std::string container2str(T s, std::string sep = ", ", std::string lr = "{}")
-{
-	std::stringstream ss;
-	if (lr.size() > 0)
-		(ss << lr[0]);
-	for (auto it = s.begin(); it != s.end(); it++)
-	{
-		if (it != s.begin())
-			ss << sep;
-		ss << *it;
-	}
-	if (lr.size() > 1)
-		(ss << lr[1]);
-	return ss.str();
-}
-
-#define str2str(s) container2str(s, "^", "")
-#define set2str(s) container2str(s, ", ", "{}")
-#define vec2str(s) container2str(s, ", ", "[]")
-#define compact(s) container2str(s, "", "")

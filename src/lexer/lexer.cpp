@@ -21,7 +21,7 @@
 
 void Lexer::addTokenType(string typeName, string regExp)
 {
-    token_type type;
+    token_type_t type;
     if (find_tok_type(typeName))
     {
         type = get_tok_type(typeName);
@@ -42,7 +42,7 @@ void Lexer::addIgnoredType(string typeName)
 {
     if (find_tok_type(typeName))
     {
-        token_type type = get_tok_type(typeName);
+        token_type_t type = get_tok_type(typeName);
         ignoredTypes.insert(type);
         debug(1) << "Add ignored type: " << type << endl;
         return;
@@ -76,7 +76,7 @@ vector<token> Lexer::tokenize(string fileName)
     {
         bool matched = false;
         string matchedToken;
-        token_type matchedType;
+        token_type_t matchedType;
         Viewer matchedView = vCode;
         for (auto typ : typeOrder) // 按序遍历所有的状态自动机
         {

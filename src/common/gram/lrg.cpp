@@ -60,12 +60,12 @@ void LRGrammar::calcClosure(cluster_t &c)
         cluster_t c1;
         for (auto &item : c)
         {
-            symbol left = item.first.get().first;
-            symstr right = item.first.get().second;
+            symbol_t left = item.first.get().first;
+            symstr_t right = item.first.get().second;
             size_t pos = item.second;
             if (pos == right.size())
                 continue;
-            symbol next = right[pos];
+            symbol_t next = right[pos];
             if (_isVT(next))
                 continue;
             for (auto &p : products)
@@ -93,19 +93,19 @@ void LRGrammar::calcClusters()
     while (!q.empty())
     {
         cluster_t c = q.front();
-        state_id cIdx = findInClusters(clusters, c);
+        state_id_t cIdx = findInClusters(clusters, c);
         q.pop();
         for (auto &v : nonTerms)
         {
             cluster_t c1;
             for (auto &item : c)
             {
-                symbol &left = item.first.get().first;
-                symstr &right = item.first.get().second;
+                symbol_t &left = item.first.get().first;
+                symstr_t &right = item.first.get().second;
                 size_t pos = item.second;
                 if (pos == right.size())
                     continue;
-                symbol &next = right[pos];
+                symbol_t &next = right[pos];
                 if (next != v)
                     continue;
                 lr_item_t item1(item.first, item.second + 1);
@@ -136,12 +136,12 @@ void LRGrammar::calcClusters()
             cluster_t c1;
             for (auto &item : c)
             {
-                symbol &left = item.first.get().first;
-                symstr &right = item.first.get().second;
+                symbol_t &left = item.first.get().first;
+                symstr_t &right = item.first.get().second;
                 size_t pos = item.second;
                 if (pos == right.size())
                     continue;
-                symbol &next = right[pos];
+                symbol_t &next = right[pos];
                 if (next != t)
                     continue;
                 lr_item_t item1(item.first, item.second + 1);
@@ -190,11 +190,11 @@ void LRGrammar::printItems()
     set_col | AL_RGT | AL_CTR | AL_RGT | AL_CTR | AL_LFT;
     for (auto &item : items)
     {
-        symbol left = item.first.get().first;
-        symstr right = item.first.get().second;
+        symbol_t left = item.first.get().first;
+        symstr_t right = item.first.get().second;
         size_t pos = item.second;
-        symstr r1 = symstr(right.begin(), right.begin() + pos);
-        symstr r2 = symstr(right.begin() + pos, right.end());
+        symstr_t r1 = symstr_t(right.begin(), right.begin() + pos);
+        symstr_t r2 = symstr_t(right.begin() + pos, right.end());
         new_row | left | "->" | compact(r1) | "." | compact(r2);
     }
     cout << tb_view(BDR_RUD);
@@ -209,11 +209,11 @@ void LRGrammar::printClusters()
         set_col | AL_RGT | AL_CTR | AL_RGT | AL_CTR | AL_LFT;
         for (auto &item : clusters[i])
         {
-            symbol left = item.first.get().first;
-            symstr right = item.first.get().second;
+            symbol_t left = item.first.get().first;
+            symstr_t right = item.first.get().second;
             size_t pos = item.second;
-            symstr r1 = symstr(right.begin(), right.begin() + pos);
-            symstr r2 = symstr(right.begin() + pos, right.end());
+            symstr_t r1 = symstr_t(right.begin(), right.begin() + pos);
+            symstr_t r2 = symstr_t(right.begin() + pos, right.end());
             new_row | left | "->" | compact(r1) | "." | compact(r2);
         }
         cout << tb_view(BDR_RUD);

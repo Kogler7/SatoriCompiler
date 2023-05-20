@@ -22,23 +22,23 @@ enum OP
 
 class OperatorPrecedenceGrammar : public Grammar
 {
-    symset calcFirstVTOf(symbol t);
-    symset calcLastVTOf(symbol t);
+    symset_t calcFirstVTOf(symbol_t t);
+    symset_t calcLastVTOf(symbol_t t);
     void calcFirstVT();
     void calcLastVT();
     void calcOPT();
 
 public:
-    map<symbol, symset> firstVT;
-    map<symbol, symset> lastVT;
-    map<symbol, map<symbol, int>> opt; // operator priority table
+    map<symbol_t, symset_t> firstVT;
+    map<symbol_t, symset_t> lastVT;
+    map<symbol_t, map<symbol_t, int>> opt; // operator priority table
     OperatorPrecedenceGrammar() : Grammar(){};
     OperatorPrecedenceGrammar(const Grammar &g) : Grammar(g)
     {
         calcFirstVT();
         calcLastVT();
         // 添加产生式S->#S#
-        product p(symStart, {SYM_END, symStart, SYM_END});
+        product_t p(symStart, {SYM_END, symStart, SYM_END});
         products.push_back(p);
         rules[symStart].insert(p.second);
         calcOPT();

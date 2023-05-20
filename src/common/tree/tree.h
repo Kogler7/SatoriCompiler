@@ -25,33 +25,33 @@ template <typename data_t>
 class AbstractTreeNode;
 
 template <typename data_t>
-using tree_node = AbstractTreeNode<data_t>;
+using tree_node_t = AbstractTreeNode<data_t>;
 
 template <typename data_t>
-using tree_node_ptr = shared_ptr<AbstractTreeNode<data_t>>;
+using tree_node_ptr_t = shared_ptr<AbstractTreeNode<data_t>>;
 
 template <typename data_t>
-using tree_childs = vector<tree_node_ptr<data_t>>;
+using tree_childs = vector<tree_node_ptr_t<data_t>>;
 
 template <typename data_t>
 class AbstractTreeNode : public tree_childs<data_t>
 {
 public:
-    tree_node<data_t> *parent;
+    tree_node_t<data_t> *parent;
     data_t data;
 
     AbstractTreeNode(data_t data) : data(data), parent(nullptr) {}
 
-    static tree_node_ptr<data_t> createNode(data_t data)
+    static tree_node_ptr_t<data_t> createNode(data_t data)
     {
-        return make_shared<tree_node<data_t>>(data);
+        return make_shared<tree_node_t<data_t>>(data);
     }
 
     size_t find(data_t data) const
     {
         auto it = find_if(
             tree_childs<data_t>::begin(), tree_childs<data_t>::end(),
-            [=](tree_node_ptr<data_t> node)
+            [=](tree_node_ptr_t<data_t> node)
             { return node->data == data; });
         return it == tree_childs<data_t>::end() ? -1 : it - tree_childs<data_t>::begin();
     }
@@ -63,23 +63,23 @@ public:
         return it == tree_childs<data_t>::end() ? -1 : it - tree_childs<data_t>::begin();
     }
 
-    tree_node<data_t> &operator[](size_t index)
+    tree_node_t<data_t> &operator[](size_t index)
     {
         const auto &child = this->at(index);
-        return static_cast<tree_node<data_t> &>(*child);
+        return static_cast<tree_node_t<data_t> &>(*child);
     }
 
-    tree_node_ptr<data_t> get_child_ptr(size_t index) const
+    tree_node_ptr_t<data_t> get_child_ptr(size_t index) const
     {
-        tree_node_ptr<data_t> child = this->at(index);
+        tree_node_ptr_t<data_t> child = this->at(index);
         return child;
     }
 
-    tree_node<data_t> &operator<<(const tree_node_ptr<data_t> node)
+    tree_node_t<data_t> &operator<<(const tree_node_ptr_t<data_t> node)
     {
         this->push_back(node);
         this->back()->parent = this;
-        return static_cast<tree_node<data_t> &>(*this);
+        return static_cast<tree_node_t<data_t> &>(*this);
     }
 
     size_t size() const
@@ -107,7 +107,7 @@ public:
     {
         f(*this);
         foreach (
-            [=](tree_node<data_t> &ref)
+            [=](tree_node_t<data_t> &ref)
             { ref.traverse(f); })
             ;
     }
@@ -115,13 +115,13 @@ public:
     template <typename func_t>
     void traverse(func_t f, int &level, int &index)
     {
-        tree_node<data_t> &self = *this;
+        tree_node_t<data_t> &self = *this;
         f(self);
         level++;
         int tmpIdx = index++;
         index = 0;
         foreach (
-            [&](tree_node<data_t> &ref)
+            [&](tree_node_t<data_t> &ref)
             {
                 ref.traverse(f, level, index);
                 index++;
@@ -135,7 +135,7 @@ public:
     void postorder(func_t f) const
     {
         foreach (
-            [=](tree_node<data_t> &ref)
+            [=](tree_node_t<data_t> &ref)
             { ref.postorder(f); })
             ;
         f(*this);
@@ -144,12 +144,12 @@ public:
     template <typename func_t>
     void postorder(func_t f, int &level, int &index)
     {
-        tree_node<data_t> &self = *this;
+        tree_node_t<data_t> &self = *this;
         level++;
         int tmpIdx = index++;
         index = 0;
         foreach (
-            [&](tree_node<data_t> &ref)
+            [&](tree_node_t<data_t> &ref)
             {
                 ref.postorder(f, level, index);
                 index++;
@@ -167,7 +167,7 @@ public:
         int level = 0;
         int index = 0;
         traverse(
-            [&](tree_node<data_t> &node)
+            [&](tree_node_t<data_t> &node)
             {
                 if (visible.size() <= level)
                     visible.push_back(true);

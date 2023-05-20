@@ -17,19 +17,19 @@ ConcreteSyntaxTreeNode::ConcreteSyntaxTreeNode(
 {
 }
 
-cst_node_ptr ConcreteSyntaxTreeNode::createNode(node_type type, const string &symbol, size_t line, size_t col)
+cst_node_ptr_t ConcreteSyntaxTreeNode::createNode(node_type type, const string &symbol, size_t line, size_t col)
 {
-    return make_shared<cst_node>(type, symbol, line, col);
+    return make_shared<cst_node_t>(type, symbol, line, col);
 }
 
-cst_node &ConcreteSyntaxTreeNode::operator[](size_t index)
+cst_node_t &ConcreteSyntaxTreeNode::operator[](size_t index)
 {
-    return static_cast<cst_node &>(AbstractTreeNode<ast_node_data>::operator[](index));
+    return static_cast<cst_node_t &>(AbstractTreeNode<ast_node_data>::operator[](index));
 }
 
-cst_node &ConcreteSyntaxTreeNode::operator<<(const cst_node_ptr node)
+cst_node_t &ConcreteSyntaxTreeNode::operator<<(const cst_node_ptr_t node)
 {
-    return static_cast<cst_node &>(AbstractTreeNode<ast_node_data>::operator<<(node));
+    return static_cast<cst_node_t &>(AbstractTreeNode<ast_node_data>::operator<<(node));
 }
 
 string ConcreteSyntaxTreeNode::desc() const

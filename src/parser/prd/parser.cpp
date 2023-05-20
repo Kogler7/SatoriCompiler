@@ -16,7 +16,7 @@
 
 #define _cur_tok(v) *(v.current().type)
 
-bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol sym, cst_node_ptr node)
+bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol_t sym, cst_node_ptr_t node)
 {
     for (auto &right : grammar.rules[sym])
     {
@@ -24,19 +24,19 @@ bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol 
         {
             // 空产生式，即epsilon
             debug(0) << format("Viewing null production: $ -> $\n", sym, str2str(right));
-            symset &follow = grammar.follow[sym];
+            symset_t &follow = grammar.follow[sym];
             debug(0) << format("Follow set: $.\n", set2str(follow));
             if (_find(follow, _cur_tok(viewer)))
             {
                 // 分析成功
                 token &tok = viewer.current();
-                *(node) << cst_tree::createNode(TERMINAL, EPSILON, tok.line, tok.col);
+                *(node) << cst_tree_t::createNode(TERMINAL, EPSILON, tok.line, tok.col);
                 return true;
             }
         }
         else
         {
-            symset &first = grammar.firstS[right];
+            symset_t &first = grammar.firstS[right];
             if (_find(first, _cur_tok(viewer)))
             {
                 debug(0) << format("Viewing production: $ -> $\n", sym, str2str(right));
@@ -55,7 +55,7 @@ bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol 
                                   << format(" Expected: $, got: $.\n", *symIt, _cur_tok(viewer));
                             return false; // 分析失败
                         }
-                        *(node) << cst_tree::createNode(TERMINAL, viewer.current().value, tok.line, tok.col);
+                        *(node) << cst_tree_t::createNode(TERMINAL, viewer.current().value, tok.line, tok.col);
                         info << format("PRDParser: parseNonTerm: terminal matched: $.\n", *symIt);
                         viewer.advance();
                         debug(0) << format("Viewer advanced to: $.\n", viewer.current().value);
@@ -63,7 +63,7 @@ bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol 
                     else
                     {
                         // 非终结符
-                        cst_node_ptr child = cst_tree::createNode(NON_TERM, *symIt, tok.line, tok.col);
+                        cst_node_ptr_t child = cst_tree_t::createNode(NON_TERM, *symIt, tok.line, tok.col);
                         *(node) << child;
                         info << format("PRDParser: parseNonTerm: goto nonTerm: $.\n", *symIt);
                         if (!parseNonTerm(viewer, *symIt, child))
@@ -85,9 +85,9 @@ bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol 
 bool PredictiveRecursiveDescentParser::parse(vector<token> &input)
 {
     info << "PRDParser: parsing..." << endl;
-    input.push_back(token(make_shared<symbol>(SYM_END), SYM_END, 0, 0));
+    input.push_back(token(make_shared<symbol_t>(SYM_END), SYM_END, 0, 0));
     TokenViewer viewer(input);
-    cst_tree_ptr root = cst_tree::createNode(NON_TERM, grammar.symStart, 0, 0);
+    cst_tree_ptr_t root = cst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
     if (parseNonTerm(viewer, grammar.symStart, root))
     {
         info << "PRDParser: parse succeed." << endl;

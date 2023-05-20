@@ -15,9 +15,9 @@
 
 using namespace table;
 
-inline symset intersects(const symset &s1, const symset &s2)
+inline symset_t intersects(const symset_t &s1, const symset_t &s2)
 {
-    symset inter;
+    symset_t inter;
     set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), inserter(inter, inter.begin()));
     return inter;
 }
@@ -34,12 +34,12 @@ bool SLR1Grammar::checkSLR1()
     info << "Checking SLR(1) grammar..." << endl;
     for (size_t i = 0; i < clusters.size(); i++)
     {
-        symset shiftSet;
-        set<symset> reduceSet;
+        symset_t shiftSet;
+        set<symset_t> reduceSet;
         for (auto &item : clusters[i])
         {
-            symbol left = item.first.get().first;
-            symstr right = item.first.get().second;
+            symbol_t left = item.first.get().first;
+            symstr_t right = item.first.get().second;
             size_t pos = item.second;
             if (pos == right.size())
             {
@@ -51,7 +51,7 @@ bool SLR1Grammar::checkSLR1()
             else
             {
                 // 如果是移进项目
-                symbol next = right[pos];
+                symbol_t next = right[pos];
                 shiftSet.insert(next);
             }
         }
@@ -79,6 +79,7 @@ bool SLR1Grammar::checkSLR1()
             }
         }
     }
+    return true;
 }
 
 void SLR1Grammar::calcSLR1Table()
@@ -88,7 +89,7 @@ void SLR1Grammar::calcSLR1Table()
     for (auto &go : goTrans)
     {
         coord_t coord = go.first;
-        state_id state = go.second;
+        state_id_t state = go.second;
         if (_find(slr1Table, coord))
         {
             assert(slr1Table[coord].index() == 2, "Conflict in SLR(1) table!");
@@ -105,8 +106,8 @@ void SLR1Grammar::calcSLR1Table()
     {
         for (auto &item : clusters[i])
         {
-            symbol left = item.first.get().first;
-            symstr right = item.first.get().second;
+            symbol_t left = item.first.get().first;
+            symstr_t right = item.first.get().second;
             size_t pos = item.second;
             if (pos == right.size())
             {

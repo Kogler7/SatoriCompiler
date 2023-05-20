@@ -16,8 +16,8 @@
 
 using namespace std;
 
-typedef reference_wrapper<product> product_ref;
-typedef variant<bool, product_ref, state_id> action_t;
+typedef reference_wrapper<product_t> product_ref;
+typedef variant<bool, product_ref, state_id_t> action_t;
 typedef pair<product_ref, size_t> lr_item_t;
 
 struct item_less
@@ -41,7 +41,7 @@ struct item_less
 
 typedef set<lr_item_t, item_less> cluster_t;
 typedef vector<cluster_t> clusters_t;
-typedef pair<state_id, symbol> coord_t;
+typedef pair<state_id_t, symbol_t> coord_t;
 
 class LRGrammar : public PredictiveGrammar
 {
@@ -74,7 +74,7 @@ public:
     }
     clusters_t clusters;
     vector<lr_item_t> items;
-    map<coord_t, state_id> goTrans;
+    map<coord_t, state_id_t> goTrans;
     void printItems();
     void printClusters();
     void printGoTrans();

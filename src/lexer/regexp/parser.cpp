@@ -15,8 +15,8 @@
 
 string RegexpParser::getStackDesc()
 {
-	stack<sub_nfa> tmpStack = nfaStack;
-	vector<sub_nfa> tmpVec;
+	stack<sub_nfa_t> tmpStack = nfaStack;
+	vector<sub_nfa_t> tmpVec;
 	while (!tmpStack.empty())
 	{
 		tmpVec.push_back(tmpStack.top());
@@ -26,7 +26,7 @@ string RegexpParser::getStackDesc()
 	// 从栈底开始打印
 	for (auto it = tmpVec.rbegin(); it != tmpVec.rend(); it++)
 	{
-		sub_nfa state = *it;
+		sub_nfa_t state = *it;
 		int st = state.first;
 		int ed = state.second;
 		bool stFinal = nfa.getStates()[st].isFinal;
@@ -160,12 +160,12 @@ void RegexpParser::parseSet(string setExp)
 void RegexpParser::opSelect()
 {
 	// (st1, ed1) (st2, ed2) | => (nst, ned)
-	sub_nfa sub2 = nfaStack.top();
+	sub_nfa_t sub2 = nfaStack.top();
 	int ed2 = sub2.second;
 	int st2 = sub2.first;
 	nfa.setState(ed2, false);
 	nfaStack.pop();
-	sub_nfa sub1 = nfaStack.top();
+	sub_nfa_t sub1 = nfaStack.top();
 	int ed1 = sub1.second;
 	int st1 = sub1.first;
 	nfa.setState(ed1, false);
@@ -182,7 +182,7 @@ void RegexpParser::opSelect()
 void RegexpParser::opStar()
 {
 	// (st, ed) * => (nst, ned)
-	sub_nfa sub = nfaStack.top();
+	sub_nfa_t sub = nfaStack.top();
 	int ed = sub.second;
 	int st = sub.first;
 	nfa.setState(ed, false);
@@ -199,7 +199,7 @@ void RegexpParser::opStar()
 void RegexpParser::opPlus()
 {
 	// (st, ed) + => (nst, ned)
-	sub_nfa sub = nfaStack.top();
+	sub_nfa_t sub = nfaStack.top();
 	int ed = sub.second;
 	int st = sub.first;
 	nfa.setState(ed, false);
@@ -215,7 +215,7 @@ void RegexpParser::opPlus()
 void RegexpParser::opQues()
 {
 	// (st, ed) ? => (nst, ned)
-	sub_nfa sub = nfaStack.top();
+	sub_nfa_t sub = nfaStack.top();
 	int ed = sub.second;
 	int st = sub.first;
 	nfa.setState(ed, false);
@@ -231,11 +231,11 @@ void RegexpParser::opQues()
 void RegexpParser::opConcat()
 {
 	// (st1, ed1) (st2, ed2) ~ => (st1, ed2)
-	sub_nfa sub2 = nfaStack.top();
+	sub_nfa_t sub2 = nfaStack.top();
 	int ed2 = sub2.second;
 	int st2 = sub2.first;
 	nfaStack.pop();
-	sub_nfa sub1 = nfaStack.top();
+	sub_nfa_t sub1 = nfaStack.top();
 	int ed1 = sub1.second;
 	int st1 = sub1.first;
 	nfa.setState(ed1, false);
@@ -384,7 +384,7 @@ void RegexpParser::postfix2FA()
 			}
 			int st = setStates[setIdx++];
 			int ed = setStates[setIdx++];
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		else if (c == UNI) // 处理插入的UNI操作符
@@ -396,7 +396,7 @@ void RegexpParser::postfix2FA()
 			{
 				nfa.addTransition(st, ed, c);
 			}
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		else if (c == WORD)
@@ -408,7 +408,7 @@ void RegexpParser::postfix2FA()
 			{
 				nfa.addTransition(st, ed, c);
 			}
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		else if (c == ALPHA)
@@ -420,7 +420,7 @@ void RegexpParser::postfix2FA()
 			{
 				nfa.addTransition(st, ed, c);
 			}
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		else if (c == DIGIT)
@@ -432,7 +432,7 @@ void RegexpParser::postfix2FA()
 			{
 				nfa.addTransition(st, ed, c);
 			}
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		else if (c == SPACE)
@@ -444,7 +444,7 @@ void RegexpParser::postfix2FA()
 			{
 				nfa.addTransition(st, ed, c);
 			}
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		else if (c == NON_SPACE)
@@ -456,7 +456,7 @@ void RegexpParser::postfix2FA()
 			{
 				nfa.addTransition(st, ed, c);
 			}
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		else if (op2str.find(c) != op2str.end() && c != UNI) // operator
@@ -487,13 +487,13 @@ void RegexpParser::postfix2FA()
 			int st = nfa.addState(false);
 			int ed = nfa.addState(true);
 			nfa.addTransition(st, ed, c);
-			sub_nfa subNFA = make_pair(st, ed);
+			sub_nfa_t subNFA = make_pair(st, ed);
 			nfaStack.push(subNFA);
 		}
 		debug(0) << getStackDesc() << endl;
 	}
 	debug(0) << getStackDesc() << endl;
-	sub_nfa subNFA = nfaStack.top();
+	sub_nfa_t subNFA = nfaStack.top();
 	nfaStack.pop();
 	nfa.setStartState(subNFA.first);
 	if (nfaStack.empty())

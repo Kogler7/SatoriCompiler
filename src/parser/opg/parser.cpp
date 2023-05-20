@@ -25,11 +25,11 @@ using namespace table;
 #define _eq(t1, t2) (grammar.opt[t1][t2] == OP::EQ)
 #define _gt(t1, t2) (grammar.opt[t1][t2] == OP::GT)
 
-typedef std::pair<symbol, symstr> product;
+typedef std::pair<symbol_t, symstr_t> product_t;
 
-symbol findLeft(const symstr &right, const Grammar &grammar)
+symbol_t findLeft(const symstr_t &right, const Grammar &grammar)
 {
-    const vector<product> &products = grammar.products;
+    const vector<product_t> &products = grammar.products;
     for (auto &p : products)
     {
         if (p.second.size() != right.size())
@@ -67,9 +67,9 @@ symbol findLeft(const symstr &right, const Grammar &grammar)
 bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
 {
     info << "OPGParser: parsing..." << endl;
-    input.push_back(token(make_shared<symbol>(SYM_END), SYM_END, 0, 0));
+    input.push_back(token(make_shared<symbol_t>(SYM_END), SYM_END, 0, 0));
     TokenViewer viewer(input);
-    vector<symbol> stk;
+    vector<symbol_t> stk;
     stk.push_back(SYM_END);
     tb_head | "Stack" | "Priority" | "Input" | MD_TAB | "Action";
     set_col | AL_LFT | AL_CTR | AL_RGT | AL_RGT | AL_LFT;
@@ -77,8 +77,8 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
     {
         assert(stk.size() >= 1, "OPGParser: invalid stack.");
         int cursor = stk.size() - 1;
-        symbol top = stk.back();
-        symbol cur = *(viewer.current().type);
+        symbol_t top = stk.back();
+        symbol_t cur = *(viewer.current().type);
         new_row | compact(stk);
         if (top == grammar.symStart && cur == SYM_END)
         {
@@ -107,7 +107,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
             cursor--;
             while (cursor >= 0)
             {
-                symbol now = stk[cursor];
+                symbol_t now = stk[cursor];
                 if (!_isVT(now))
                 {
                     cursor--;
@@ -115,10 +115,10 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
                 }
                 if (_lt(now, top))
                 {
-                    symstr right(stk.begin() + cursor + 1, stk.end());
+                    symstr_t right(stk.begin() + cursor + 1, stk.end());
                     tb_cont | now + "<" + top + ">" + cur | compact(viewer.restTypes());
                     stk.erase(stk.begin() + cursor + 1, stk.end());
-                    symbol left = findLeft(right, grammar);
+                    symbol_t left = findLeft(right, grammar);
                     tb_cont | "Reduce" | left + "->" + compact(right);
                     if (left == "")
                     {

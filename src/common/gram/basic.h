@@ -24,23 +24,23 @@
 
 using namespace std;
 
-typedef string symbol;
-typedef set<symbol> symset;
-typedef vector<symbol> symstr;
-typedef pair<symbol, symstr> product;
+typedef string symbol_t;
+typedef set<symbol_t> symset_t;
+typedef vector<symbol_t> symstr_t;
+typedef pair<symbol_t, symstr_t> product_t;
 
 class Grammar
 {
 
 public:
-    symbol symStart;
-    symset nonTerms;
-    symset terminals;
-    vector<product> products;
-    map<symbol, set<symstr>> rules;
-    map<token_type, symbol> tok2sym;
+    symbol_t symStart;
+    symset_t nonTerms;
+    symset_t terminals;
+    vector<product_t> products;
+    map<symbol_t, set<symstr_t>> rules;
+    map<token_type_t, symbol_t> tok2sym;
 
-    Grammar(symbol start, symset terms, symset nonTerms, vector<product> products, map<symbol, set<symstr>> rules, map<token_type, symbol> tok2sym);
+    Grammar(symbol_t start, symset_t terms, symset_t nonTerms, vector<product_t> products, map<symbol_t, set<symstr_t>> rules, map<token_type_t, symbol_t> tok2sym);
     Grammar() { terminals.insert(SYM_END); }
     Grammar(const Grammar &g)
     {
@@ -60,14 +60,14 @@ public:
 };
 
 class TermTreeNode;
-typedef TermTreeNode tt_node;
-typedef shared_ptr<TermTreeNode> tt_node_ptr;
-typedef vector<tt_node_ptr> tt_childs;
+typedef TermTreeNode tt_node_t;
+typedef shared_ptr<TermTreeNode> tt_node_ptr_t;
+typedef vector<tt_node_ptr_t> tt_children_t;
 
 struct tt_node_data
 {
-    symbol symbol;
-    set<symstr>::iterator ruleIt;
+    symbol_t symbol;
+    set<symstr_t>::iterator ruleIt;
     size_t index;
 };
 
@@ -76,27 +76,27 @@ class TermTreeNode : public AbstractTreeNode<tt_node_data>
 public:
     TermTreeNode(tt_node_data t) : AbstractTreeNode<tt_node_data>(t) {}
 
-    static tt_node_ptr createNode(symbol symbol, set<symstr>::iterator ruleIt, size_t index)
+    static tt_node_ptr_t createNode(symbol_t symbol, set<symstr_t>::iterator ruleIt, size_t index)
     {
         return make_shared<TermTreeNode>(tt_node_data(symbol, ruleIt, index));
     }
 
-    static tt_node_ptr createNode(symbol symbol)
+    static tt_node_ptr_t createNode(symbol_t symbol)
     {
-        return make_shared<TermTreeNode>(tt_node_data(symbol, set<symstr>::iterator(), 0));
+        return make_shared<TermTreeNode>(tt_node_data(symbol, set<symstr_t>::iterator(), 0));
     }
 
-    size_t find(symbol symbol) const
+    size_t find(symbol_t symbol) const
     {
-        auto cmp = [=](tree_node_ptr<tt_node_data> ptr)
+        auto cmp = [=](tree_node_ptr_t<tt_node_data> ptr)
         {
-            tt_node_ptr node = static_pointer_cast<TermTreeNode>(ptr);
+            tt_node_ptr_t node = static_pointer_cast<TermTreeNode>(ptr);
             return node->data.symbol == symbol;
         };
         return AbstractTreeNode<tt_node_data>::find(cmp);
     }
 
-    TermTreeNode &operator<<(const tt_node_ptr node)
+    TermTreeNode &operator<<(const tt_node_ptr_t node)
     {
         return static_cast<TermTreeNode &>(AbstractTreeNode<tt_node_data>::operator<<(
             static_pointer_cast<AbstractTreeNode<tt_node_data>>(node)));
@@ -107,7 +107,7 @@ public:
         return static_cast<TermTreeNode &>(AbstractTreeNode<tt_node_data>::operator[](index));
     }
 
-    tt_node_ptr get_child_ptr(size_t index) const
+    tt_node_ptr_t get_child_ptr(size_t index) const
     {
         return static_pointer_cast<TermTreeNode>(AbstractTreeNode<tt_node_data>::get_child_ptr(index));
     }
@@ -126,7 +126,7 @@ public:
     void postorder(func_t f) const
     {
         foreach (
-            [=](tt_node &ref)
+            [=](tt_node_t &ref)
             { ref.postorder(f); })
             ;
         f(*this);

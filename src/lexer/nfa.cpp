@@ -12,7 +12,7 @@
 #include "regexp/define.h"
 #include "utils/log.h"
 
-void FiniteAutomaton::setStartState(state_id id)
+void FiniteAutomaton::setStartState(state_id_t id)
 {
 	startState = id;
 }
@@ -26,7 +26,7 @@ void FiniteAutomaton::setStartState(state_id id)
  * @return true		匹配成功
  * @return false	匹配失败
  */
-bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id start)
+bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start)
 {
 	if (start == -1) // 未指定起始状态，使用默认起始状态
 		start = startState;
@@ -39,13 +39,13 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id start)
 	if (transitions.find(start) != transitions.end())
 	{
 		char c = subView.step(); // 获取当前字符，视图向后移动一位
-		transition_map available = transitions[start];
+		transition_map_t available = transitions[start];
 		bool resFlag = false;
 		string tmpRes;			  // 保存当前匹配结果
 		Viewer tmpView = subView; // 保存当前视图，用于回溯
 		if (available.find(c) != available.end())
 		{
-			set<state_id> nextSet = available[c];
+			set<state_id_t> nextSet = available[c];
 			for (auto i : nextSet)
 			{
 				string nxtRes;
@@ -71,7 +71,7 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id start)
 		{
 			subView.skip(-1); // EPSILON转移不消耗字符，视图回退一位
 			tmpView = subView;
-			set<state_id> nextSet = available[EPSILON];
+			set<state_id_t> nextSet = available[EPSILON];
 			for (auto i : nextSet)
 			{
 				string nxtRes;
@@ -100,7 +100,7 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id start)
 	return false;
 }
 
-void FiniteAutomaton::setState(state_id id, bool isFinal)
+void FiniteAutomaton::setState(state_id_t id, bool isFinal)
 {
 	states[id].isFinal = isFinal;
 }
@@ -128,11 +128,11 @@ void FiniteAutomaton::print()
 	info << "Transitions:" << endl;
 	for (const auto &transition : transitions)
 	{
-		state_id from = transition.first;
+		state_id_t from = transition.first;
 		for (const auto &symbol : transition.second)
 		{
 			char c = symbol.first;
-			const set<state_id> &to = symbol.second;
+			const set<state_id_t> &to = symbol.second;
 			for (const auto &t : to)
 			{
 				cout << "    " << from << " --" << char2str(c) << "(" << int(c) << ")--> " << t << endl;
@@ -141,15 +141,15 @@ void FiniteAutomaton::print()
 	}
 }
 
-state_id FiniteAutomaton::addState(bool isFinal)
+state_id_t FiniteAutomaton::addState(bool isFinal)
 {
-	state_id id = states.size();
+	state_id_t id = states.size();
 	states.push_back(State(id, isFinal));
 	debug(1) << "add state: " << id << endl;
 	return id;
 }
 
-void FiniteAutomaton::addTransition(state_id from, state_id to, char symbol)
+void FiniteAutomaton::addTransition(state_id_t from, state_id_t to, char symbol)
 {
 	debug(1) << "add transition: " << from << " --" << char2str(symbol) << "--> " << to << endl;
 	transitions[from][symbol].insert(to);
