@@ -37,6 +37,6 @@ void prdTest()
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);
     info << "result: \n"
-         << prd.parse(tokens);
+         << prd.parse(tokens) << endl;
     prd.getTree()->print();
 }

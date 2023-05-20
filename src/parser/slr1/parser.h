@@ -15,6 +15,7 @@ class SimpleLR1Parser
 {
     SLR1Grammar grammar;
     cst_tree_ptr_t tree;
+    pair<string, string> descAction(const action_t &act);
 public:
     SimpleLR1Parser(SLR1Grammar &grammar) : grammar(grammar)
     {

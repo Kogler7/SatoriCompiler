@@ -166,7 +166,7 @@ void SLR1Grammar::printSLR1Table()
             {
                 action_t action = slr1Table[coord];
                 if (action.index() == 2)
-                    tb_cont | to_string(get<2>(action));
+                    tb_cont | "S" + to_string(get<2>(action));
                 else
                     tb_cont | "";
             }

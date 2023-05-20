@@ -36,6 +36,6 @@ void slr1Test()
     G.printGoTrans();
     G.printSLR1Table();
     info << "result: \n"
-         << slr1.parse(tokens);
+         << slr1.parse(tokens) << endl;
     slr1.getTree()->print();
 }

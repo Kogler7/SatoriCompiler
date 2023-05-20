@@ -32,7 +32,7 @@ string descStack(stack<T> s)
     return ss.str();
 }
 
-pair<string, string> descAction(const action_t &act)
+pair<string, string> SimpleLR1Parser::descAction(const action_t &act)
 {
     string a, b;
     stringstream ss;
@@ -51,7 +51,8 @@ pair<string, string> descAction(const action_t &act)
     }
     else if (holds_alternative<accept_t>(act) && get<accept_t>(act))
     {
-        a = "Accept";
+        a = "Reduce";
+        ss << grammar.symStart << " -> " << compact(*(grammar.rules[grammar.symStart].begin()));
     }
     else
     {
@@ -112,7 +113,7 @@ bool SimpleLR1Parser::parse(vector<token> &input)
                 children.push_back(cstStk.top());
                 cstStk.pop();
             }
-            for(auto it = children.rbegin(); it != children.rend(); it++)
+            for (auto it = children.rbegin(); it != children.rend(); it++)
                 *node << *it;
             symStk.push(left);
             cstStk.push(node);
@@ -131,8 +132,7 @@ bool SimpleLR1Parser::parse(vector<token> &input)
     }
 reject:
     error << "SimpleLR1Parser: Parsing failed!" << endl;
-    new_row | Cell(descStack(symStk)) & AL_LFT | Cell(descTokVecFrom(input, viewer.pos())) & AL_LFT | Cell("Reject") & AL_LFT;
-    new_row | descStack(stateStk) | Cell(descTokVecFrom(input, viewer.pos())) & AL_RGT | Cell("Reject") & AL_RGT;
+    new_row | TB_TAB | MD_TAB | Cell("Rejected") & FORE_RED;
     cout << tb_view();
     return false;
 accept:
@@ -142,14 +142,15 @@ accept:
     vector<cst_node_ptr_t> children;
     for (size_t i = 0; i < right.size(); i++)
     {
+        symStk.pop();
+        stateStk.pop();
         children.push_back(cstStk.top());
         cstStk.pop();
     }
-    for(auto it = children.rbegin(); it != children.rend(); it++)
+    for (auto it = children.rbegin(); it != children.rend(); it++)
         *startNode << *it;
     tree = startNode;
-    new_row | Cell(descStack(symStk)) & AL_LFT | Cell(descTokVecFrom(input, viewer.pos())) & AL_LFT | Cell("Accept") & AL_LFT;
-    new_row | descStack(stateStk) | Cell(descTokVecFrom(input, viewer.pos())) & AL_RGT | Cell("Accept") & AL_RGT;
+    new_row | Cell(descStack(symStk)) & AL_LFT | MD_TAB | Cell("Accepted") & FORE_GRE;
     cout << tb_view();
     return true;
 }
