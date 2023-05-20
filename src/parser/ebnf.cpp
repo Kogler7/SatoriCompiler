@@ -276,6 +276,7 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
     // 删去tok_production中的token额外信息，转换为production
     vector<product> &gProducts = grammar.products;
     token_type termType = get_tok_type("TERMINAL");
+    token_type mulTermType = get_tok_type("MUL_TERM");
     for (auto &pro : products)
     {
         product newPro;
@@ -283,7 +284,15 @@ vector<tok_production> EBNFParser::geneStxProducts(token_iter start, token_iter 
         for (auto &tok : pro.second)
         {
             if (tok.type == termType)
-                newPro.second.push_back(lrtri(tok.value));
+            {
+                tok.value = lrtri(tok.value);
+                newPro.second.push_back(tok.value);
+            }
+            else if (tok.type == mulTermType)
+            {
+                tok.value = tok.value.substr(1);
+                newPro.second.push_back(tok.value);
+            }
             else
                 newPro.second.push_back(tok.value);
         }
@@ -368,7 +377,6 @@ void EBNFParser::addRules(vector<tok_production> &products)
             }
             else if (tok.type == termType)
             {
-                tok.value = lrtri(tok.value);
                 terminals.insert(tok.value);
             }
             right.push_back(tok.value);
@@ -383,7 +391,7 @@ void EBNFParser::addMappings(vector<tok_production> &products)
     map<token_type, symbol> &tok2sym = grammar.tok2sym;
     for (auto &pro : products)
     {
-        symbol left = pro.first;
+        symbol left = pro.first.substr(1);
         vector<token> &right = pro.second;
         assert(
             right.size() == 1,

@@ -65,6 +65,7 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
             }
         }
     }
+    return true;
 }
 
 symset PredictiveGrammar::calcFirstOf(symbol t)
@@ -274,7 +275,7 @@ symset PredictiveGrammar::calcSelectOf(product p)
 void PredictiveGrammar::calcFirst()
 {
     info << "Calculating First(S)..." << endl;
-    for (auto &p: products)
+    for (auto &p : products)
     {
         calcFirstOf(p.first);
         calcFirstOf(p.second);
@@ -302,7 +303,7 @@ void PredictiveGrammar::calcSelect()
 void PredictiveGrammar::printFirst()
 {
     info << "First:" << endl;
-    tb_head | "NonTerm" | "First";
+    tb_head | "NonTerm" | "First" = table::AL_LFT;
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
         new_row | *it | set2str(first[*it]);
@@ -313,7 +314,7 @@ void PredictiveGrammar::printFirst()
 void PredictiveGrammar::printFollow()
 {
     info << "Follow:" << endl;
-    tb_head | "NonTerm" | "Follow";
+    tb_head | "NonTerm" | "Follow" = table::AL_LFT;
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
         new_row | *it | set2str(follow[*it]);
@@ -324,7 +325,7 @@ void PredictiveGrammar::printFollow()
 void PredictiveGrammar::printFirstS()
 {
     info << "First of Symstr: " << endl;
-    tb_head | "Symstr" | "First";
+    tb_head | "Symstr" | "First" = table::AL_LFT;
     for (auto it = products.begin(); it != products.end(); it++)
     {
         symstr &s = it->second;
@@ -336,7 +337,7 @@ void PredictiveGrammar::printFirstS()
 void PredictiveGrammar::printSelect()
 {
     info << "Select: " << endl;
-    tb_head | "Product" | "Select";
+    tb_head | "Product" | "Select" = table::AL_LFT;
     for (auto it = products.begin(); it != products.end(); it++)
     {
         new_row | it->first + "->" + vec2str(it->second) | set2str(select[*it]);
