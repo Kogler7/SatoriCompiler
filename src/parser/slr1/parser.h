@@ -9,14 +9,14 @@
  */
 
 #include "common/tree/cst.h"
-#include "common/gram/lr0.h"
+#include "common/gram/slr1.h"
 
 class SimpleLR1Parser
 {
-    LR0Grammar grammar;
+    SLR1Grammar grammar;
     cst_tree_ptr tree;
 public:
-    SimpleLR1Parser(LR0Grammar &grammar) : grammar(grammar)
+    SimpleLR1Parser(SLR1Grammar &grammar) : grammar(grammar)
     {
         tree = cst_tree::createNode(TERMINAL, SYM_END, 0, 0);
     }

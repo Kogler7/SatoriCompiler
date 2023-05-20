@@ -11,12 +11,12 @@ GRAMMAR ${
     AddItem     ::=     (`+` | `-`) ExpItem AddItem | \e ;
     ExpItem     ::=     Factor MulItem ;
     MulItem     ::=     (`*` | `/`) Factor MulItem | \e ;
-    Factor      ::=     `(`Exp`)` | $Num | FuncCall ;
-    FuncCall    ::=     $FuncName `(` [Exp { `,` Exp }] `)` ;
+    Factor      ::=     `(`Exp`)` | $Num | $LValue ;
+    //FuncCall    ::=     $FuncName `(` [Exp { `,` Exp }] `)` ;
 $}
 
-MAPPING {
+MAPPING ${
     $LValue     -->     @IDENTIFIER ;
     $Num        -->     @REAL | @INTEGER ;
-    $FuncName   -->     @IDENTIFIER ;
+    //$FuncName   -->     @IDENTIFIER ;
 $}

@@ -18,7 +18,7 @@ void slr1Test()
 {
     EBNFParser ebnfParser("./assets/syntax.lex");
     Grammar g = ebnfParser.parse("./assets/lab3.stx");
-    LR0Grammar G = LR0Grammar(g);
+    SLR1Grammar G = SLR1Grammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
     G.printRules();
@@ -28,7 +28,6 @@ void slr1Test()
     G.printFollow();
     G.printFirstS();
     G.printSelect();
-    cout << G.isLL1Grammar() << endl;
     SLR1Parser slr1(G);
     Lexer lexer("./assets/lab3.lex");
     auto tokens = lexer.tokenize("./assets/lab3.txt");
@@ -36,8 +35,9 @@ void slr1Test()
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);
     G.printItems();
-    G.printGotoTable();
-    G.printActTable();
+    G.printClusters();
+    G.printGoTrans();
+    G.printSLR1Table();
     info << "result: \n"
          << slr1.parse(tokens);
 }

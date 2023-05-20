@@ -217,7 +217,6 @@ TableRender &TableRender::operator=(const l_sign style)
 
 TableRender &TableRender::operator=(const align_t align)
 {
-    info << "set align: " << int(align) << std::endl;
     if (lineSetting)
     {
         if (horizDirected)
