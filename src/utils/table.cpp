@@ -242,7 +242,7 @@ TableRender &TableRender::operator=(const std::string &field)
 {
     size_t leadWidth;
     align_t align;
-    l_sign style = rowCur > 0 ? table[rowCur - 1][colCur].style : FONT_NON;
+    l_sign style = FONT_NON;
     std::tie(leadWidth, align) = calcTabLayout(field, colCur, true);
     if (leadWidth == 0)
     {
