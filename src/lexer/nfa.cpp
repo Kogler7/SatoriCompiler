@@ -32,7 +32,6 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start)
 		start = startState;
 	if (states[start].isFinal) // 如果当前状态为终态，返回true
 	{
-		// cout << "reached final state: " << start << endl;
 		return true;
 	}
 	Viewer subView = view; // 保存当前视图，用于回溯
@@ -54,15 +53,12 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start)
 				{
 					resFlag = true;
 					tmpRes = nxtRes;
-					// cout << "<" << start << ">nxtRes: " << nxtRes << endl;
 					tmpView = vNext;
 				}
-				// cout << "<" << start << ">accepts: " << c << " " << resFlag << endl;
 			}
 			if (resFlag)
 			{
 				result = c + tmpRes;
-				// cout << "<" << start << ">concat: " << c << " " << tmpRes << endl;
 				view = tmpView;
 				return true;
 			}
@@ -80,12 +76,8 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start)
 				{
 					resFlag = true;
 					tmpRes = nxtRes;
-					// cout << "<" << start << ">EPSILONnxtRes: " << nxtRes << endl;
 					tmpView = vNext;
 				}
-				// cout << "<" << start << ">view: " << vNext.getPos() << " " << tmpView.getPos() << " " << subView.getPos() << endl;
-				// cout << "<" << start << ">accepts: "
-				// 		  << "EPSILON " << resFlag << endl;
 			}
 			if (resFlag)
 			{
@@ -94,8 +86,6 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start)
 				return true;
 			}
 		}
-		// if (states[start].isFinal) // 如果当前状态为终态，返回true
-		// 	return true;
 	}
 	return false;
 }

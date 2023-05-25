@@ -17,7 +17,7 @@
 #include "utils/log.h"
 #include "utils/table.h"
 
-#define DEBUG_LEVEL 0
+#define DEBUG_LEVEL -1
 
 void Lexer::addTokenType(string typeName, string regExp)
 {
