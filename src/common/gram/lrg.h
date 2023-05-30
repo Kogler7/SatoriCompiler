@@ -70,7 +70,6 @@ struct item_less
 
 typedef set<lr_item_t, item_less> cluster_t;
 typedef vector<cluster_t> clusters_t;
-typedef pair<state_id_t, symbol_t> coord_t;
 
 inline string cluster2str(cluster_t c)
 {
@@ -136,7 +135,7 @@ public:
     }
     clusters_t clusters;
     vector<lr_item_t> items;
-    map<coord_t, state_id_t> goTrans;
+    table_t<state_id_t, symbol_t, state_id_t> goTrans;
     void printItems();
     void printClusters();
     void printGoTrans();

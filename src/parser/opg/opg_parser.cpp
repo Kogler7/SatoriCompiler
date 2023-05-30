@@ -21,9 +21,9 @@ using namespace table;
 
 #define _isVT(t) _find(grammar.terminals, t)
 #define _isVN(t) _find(grammar.nonTerms, t)
-#define _lt(t1, t2) (grammar.opt[t1][t2] == OP::LT)
-#define _eq(t1, t2) (grammar.opt[t1][t2] == OP::EQ)
-#define _gt(t1, t2) (grammar.opt[t1][t2] == OP::GT)
+#define _lt(t1, t2) (grammar.opt[mkcrd(t1, t2)] == OP::LT)
+#define _eq(t1, t2) (grammar.opt[mkcrd(t1, t2)] == OP::EQ)
+#define _gt(t1, t2) (grammar.opt[mkcrd(t1, t2)] == OP::GT)
 
 typedef std::pair<symbol_t, symstr_t> product_t;
 
@@ -96,7 +96,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
         }
         if (!_gt(top, cur))
         {
-            tb_cont | top + (grammar.opt[top][cur] == OP::LT ? "<" : "=") + cur;
+            tb_cont | top + (grammar.opt[mkcrd(top, cur)] == OP::LT ? "<" : "=") + cur;
             tb_cont | compact(viewer.restTypes());
             tb_cont | "Shift" | cur;
             stk.push_back(cur);

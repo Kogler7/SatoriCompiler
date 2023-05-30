@@ -31,7 +31,7 @@ class OperatorPrecedenceGrammar : public Grammar
 public:
     map<symbol_t, symset_t> firstVT;
     map<symbol_t, symset_t> lastVT;
-    map<symbol_t, map<symbol_t, int>> opt; // operator priority table
+    table_t<symbol_t, symbol_t, int> opt; // operator precedence table
     OperatorPrecedenceGrammar() : Grammar(){};
     OperatorPrecedenceGrammar(const Grammar &g) : Grammar(g)
     {

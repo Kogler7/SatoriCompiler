@@ -30,6 +30,6 @@ public:
     {
         slr1Table = g.slr1Table;
     }
-    map<coord_t, action_t> slr1Table;
+    table_t<state_id_t, symbol_t, action_t> slr1Table;
     void printSLR1Table();
 };

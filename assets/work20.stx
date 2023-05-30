@@ -1,0 +1,15 @@
+GRAMMAR ${
+    S*  ::= E ;
+    E   ::= E `-` T ;
+    E   ::= T ;
+    T   ::= T `*` F ;
+    T   ::= F ;
+    F   ::= `-` P ;
+    F   ::= P ;
+    P   ::= `(` E `)` ;
+    P   ::= $V ;
+$}
+
+MAPPING ${
+    $V     -->     @IDENTIFIER ;
+$}

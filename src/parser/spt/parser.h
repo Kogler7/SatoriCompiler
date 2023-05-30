@@ -15,7 +15,7 @@ class StackPredictiveTableParser
 {
     PredictiveGrammar grammar;
     cst_tree_ptr_t tree;
-    map<symbol_t, map<symbol_t, symstr_t>> predict;
+    table_t<symbol_t, symbol_t, symstr_t> predict;
     void calcPredictTable();
 
 public:

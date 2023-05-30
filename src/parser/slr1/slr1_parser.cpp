@@ -81,7 +81,7 @@ bool SimpleLR1Parser::parse(vector<token> &input)
         token &tok = viewer.current();
         state_id_t s = stateStk.top();
         symbol_t a = *(tok.type);
-        action_t &act = grammar.slr1Table[make_pair(s, a)];
+        action_t &act = grammar.slr1Table[mkcrd(s, a)];
         string act1, act2;
         tie(act1, act2) = descAction(act);
         new_row | Cell(descStack(symStk)) & AL_LFT | Cell(a) & AL_LFT | Cell(act1) & AL_LFT;
@@ -117,7 +117,7 @@ bool SimpleLR1Parser::parse(vector<token> &input)
                 *node << *it;
             symStk.push(left);
             cstStk.push(node);
-            action_t &nAct = grammar.slr1Table[make_pair(stateStk.top(), left)];
+            action_t &nAct = grammar.slr1Table[mkcrd(stateStk.top(), left)];
             if (holds_alternative<shift_t>(nAct))
                 stateStk.push(get<shift_t>(nAct));
             else if (holds_alternative<accept_t>(nAct) && get<accept_t>(nAct))

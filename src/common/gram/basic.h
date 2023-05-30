@@ -29,6 +29,18 @@ typedef set<symbol_t> symset_t;
 typedef vector<symbol_t> symstr_t;
 typedef pair<symbol_t, symstr_t> product_t;
 
+template <typename row_t, typename col_t, typename val_t>
+using table_t = map<pair<row_t, col_t>, val_t>;
+
+template <typename row_t, typename col_t>
+using coord_t = pair<row_t, col_t>;
+
+template <typename row_t, typename col_t>
+constexpr coord_t<row_t, col_t> mkcrd(const row_t &a, const col_t &b)
+{
+    return coord_t<row_t, col_t>(a, b);
+}
+
 class Grammar
 {
 

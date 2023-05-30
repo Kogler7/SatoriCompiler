@@ -106,6 +106,15 @@ void OperatorPrecedenceGrammar::calcLastVT()
     }
 }
 
+inline void checkConflict(table_t<symbol_t, symbol_t, int> &opt, const coord_t<symbol_t, symbol_t> &crd, OP op)
+{
+    assert(
+        opt[crd] == OP::NL || opt[crd] == op,
+        format(
+            "OperatorPrecedenceGrammar: Conflict found in opt[$][$]. (oOp = $, nOp = $)\n",
+            crd.first, crd.second, opt[crd], op));
+}
+
 void OperatorPrecedenceGrammar::calcOPT()
 {
     info << "calcOPT()" << endl;
@@ -114,7 +123,7 @@ void OperatorPrecedenceGrammar::calcOPT()
     {
         for (auto &s : terminals)
         {
-            opt[t][s] = OP::NL;
+            opt[mkcrd(t, s)] = OP::NL;
         }
     }
     for (auto &t : nonTerms)
@@ -125,18 +134,24 @@ void OperatorPrecedenceGrammar::calcOPT()
             {
                 if (_isVT(right[i]) && _isVT(right[i + 1]))
                 {
-                    opt[right[i]][right[i + 1]] = OP::EQ;
+                    auto crd = mkcrd(right[i], right[i + 1]);
+                    checkConflict(opt, crd, OP::EQ);
+                    opt[crd] = OP::EQ;
                 }
                 if (i < right.size() - 2 && _isVT(right[i]) && _isVN(right[i + 1]) && _isVT(right[i + 2]))
                 {
-                    opt[right[i]][right[i + 2]] = 0;
+                    auto crd = mkcrd(right[i], right[i + 2]);
+                    checkConflict(opt, crd, OP::LT);
+                    opt[crd] = 0;
                 }
                 if (_isVT(right[i]) && _isVN(right[i + 1]))
                 {
                     symset_t tmp = calcFirstVTOf(right[i + 1]);
                     for (auto &s : tmp)
                     {
-                        opt[right[i]][s] = OP::LT;
+                        auto crd = mkcrd(right[i], s);
+                        checkConflict(opt, crd, OP::LT);
+                        opt[crd] = OP::LT;
                     }
                 }
                 if (_isVN(right[i]) && _isVT(right[i + 1]))
@@ -144,7 +159,9 @@ void OperatorPrecedenceGrammar::calcOPT()
                     symset_t tmp = calcLastVTOf(right[i]);
                     for (auto &s : tmp)
                     {
-                        opt[s][right[i + 1]] = OP::GT;
+                        auto crd = mkcrd(s, right[i + 1]);
+                        checkConflict(opt, crd, OP::GT);
+                        opt[crd] = OP::GT;
                     }
                 }
             }
@@ -193,7 +210,7 @@ void OperatorPrecedenceGrammar::printOPT()
         new_row | t;
         for (auto &t2 : terminals)
         {
-            int opt_val = opt[t][t2] + 2;
+            int opt_val = opt[mkcrd(t, t2)] + 2;
             assert(
                 opt_val >= 0 && opt_val <= 3,
                 format("OperatorPrecedenceGrammar: Invalid opt_val: $.\n", opt_val));

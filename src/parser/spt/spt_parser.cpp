@@ -27,7 +27,7 @@ void StackPredictiveTableParser::calcPredictTable()
         {
             if (t != EPSILON)
             {
-                predict[p.first][t] = p.second;
+                predict[mkcrd(p.first, t)] = p.second;
             }
         }
         if (_find(first, EPSILON))
@@ -36,7 +36,7 @@ void StackPredictiveTableParser::calcPredictTable()
             for (auto t : follow)
             {
                 if (_find(grammar.terminals, t))
-                    predict[p.first][t] = p.second;
+                    predict[mkcrd(p.first, t)] = p.second;
             }
         }
     }
@@ -61,10 +61,10 @@ void StackPredictiveTableParser::printPredictTable()
         {
             if (terminal != EPSILON)
             {
-                auto it = predict[nonTerm].find(terminal);
-                if (it != predict[nonTerm].end())
+                auto crd = mkcrd(nonTerm, terminal);
+                if (predict.find(crd) != predict.end())
                 {
-                    std::string production = nonTerm + " -> " + compact(it->second);
+                    std::string production = nonTerm + " -> " + compact(predict[crd]);
                     tb_cont | production;
                 }
                 else
@@ -125,13 +125,14 @@ bool StackPredictiveTableParser::parse(vector<token> input)
         }
         else if (_find(grammar.nonTerms, curSym))
         {
-            auto it = predict[curSym].find(curType);
-            if (it != predict[curSym].end())
+            auto crd = mkcrd(curSym, curType);
+            if (predict.find(crd) != predict.end())
             {
+                symstr_t &right = predict[crd];
                 cst_node_ptr_t topNode = s.top();
                 s.pop();
                 vector<cst_node_ptr_t> children;
-                for (auto it1 = it->second.rbegin(); it1 != it->second.rend(); it1++)
+                for (auto it1 = right.rbegin(); it1 != right.rend(); it1++)
                 {
                     node_type type = _find(grammar.terminals, *it1) ? TERMINAL : NON_TERM;
                     cst_node_ptr_t newNode = cst_tree_t::createNode(type, *it1, 0, 0);
@@ -148,7 +149,7 @@ bool StackPredictiveTableParser::parse(vector<token> input)
                     // 空串
                     *(topNode) << cst_tree_t::createNode(TERMINAL, EPSILON, 0, 0);
                 }
-                actionDesc = it->first + " -> " + compact(it->second);
+                actionDesc = curType + " -> " + compact(right);
             }
             else
             {
@@ -162,8 +163,8 @@ bool StackPredictiveTableParser::parse(vector<token> input)
         else
         {
             error << format(
-                    "StackPredictiveTableParser: Unexpected token: $ at <$, $>.\n",
-                    cur.value, cur.line, cur.col);
+                "StackPredictiveTableParser: Unexpected token: $ at <$, $>.\n",
+                cur.value, cur.line, cur.col);
             cout << tb_view();
             return false;
         }

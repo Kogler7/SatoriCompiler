@@ -8,7 +8,7 @@
  *
  */
 
-#define TEST_UNIT prdTest
+#define TEST_UNIT opgTest
 
 #ifndef TEST_UNIT
 
