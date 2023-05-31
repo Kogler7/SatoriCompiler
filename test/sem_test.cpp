@@ -1,13 +1,11 @@
 #include "test.h"
-#include "def.h"
+#include "irgen/sem.h"
 
 using namespace std;
 
-std::map<std::string, std::function<std::shared_ptr<ASTNode>()>> astNodeFactories;
-
 #include "test.sem"
 
-void defTest()
+void semTest()
 {
     reg_nodes();
     auto node = MAKE_NODE("ExprNode");

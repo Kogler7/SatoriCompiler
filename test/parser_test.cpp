@@ -14,9 +14,9 @@
 
 void parserTest()
 {
-    EBNFParser ebnfParser("./assets/syntax.lex");
+    EBNFParser ebnfParser("./assets/lex/syntax.lex");
     // Grammar G = ebnfParser.parse("./assets/lab3.stx");
-    Grammar G = ebnfParser.parse("./assets/select.stx");
+    Grammar G = ebnfParser.parse("./assets/stx/select.stx");
     G.printRules();
     G.extractLeftCommonFactor();
     G.printRules();

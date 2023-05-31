@@ -13,8 +13,8 @@
 
 void lexerTest()
 {
-    Lexer lexer("./assets/cpp.lex");
-    // auto tokens = lexer.tokenize("./assets/code.cpp");
-    auto tokens = lexer.tokenize("./assets/error.cpp");
+    Lexer lexer("./assets/lex/cpp.lex");
+    // auto tokens = lexer.tokenize("./assets/src/code.cpp");
+    auto tokens = lexer.tokenize("./assets/src/error.cpp");
     lexer.printTokens(tokens);
 }

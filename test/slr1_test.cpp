@@ -16,8 +16,8 @@
 
 void slr1Test()
 {
-    EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/lab5r.stx");
+    EBNFParser ebnfParser("./assets/lex/syntax.lex");
+    Grammar g = ebnfParser.parse("./assets/stx/lab5r.stx");
     SLR1Grammar G = SLR1Grammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
@@ -26,8 +26,8 @@ void slr1Test()
     G.printNonTerms();
     G.printFollow();
     SLR1Parser slr1(G);
-    Lexer lexer("./assets/lab3.lex");
-    auto tokens = lexer.tokenize("./assets/lab5.txt");
+    Lexer lexer("./assets/lex/lab3.lex");
+    auto tokens = lexer.tokenize("./assets/src/lab5.txt");
     lexer.printTokens(tokens);
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);

@@ -24,6 +24,7 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/test)
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/assets/sem)
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES})
 

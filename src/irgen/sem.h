@@ -1,3 +1,13 @@
+/**
+ * @file sem.h
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Semantic Definition
+ * @date 2023-06-01
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "utils/log.h"
 #include "utils/apply.h"
 #include <map>
@@ -38,16 +48,3 @@ extern std::map<std::string, std::function<std::shared_ptr<ASTNode>()>> astNodeF
     {                                                  \
         _EXPAND(_APPLY_X(x, , _REG_NODE, __VA_ARGS__)) \
     }
-
-DECL_NODE(
-    ExprNode, Expr,
-    {
-        info << 2;
-    },
-    2);
-DECL_NODE(
-    Expr1Node, Expr1, { info << 3; }, 2);
-DECL_NODE(
-    Expr2Node, Expr2, { info << 4; }, 2);
-
-REG_NODES(3, ExprNode, Expr1Node, Expr2Node);

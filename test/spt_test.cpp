@@ -16,8 +16,8 @@
 
 void sptTest()
 {
-    EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/lab3.stx");
+    EBNFParser ebnfParser("./assets/lex/syntax.lex");
+    Grammar g = ebnfParser.parse("./assets/stx/lab3.stx");
     // Grammar g = ebnfParser.parse("./assets/wjy.stx");
     PredictiveGrammar G = PredictiveGrammar(g);
     G.printRules();
@@ -32,8 +32,8 @@ void sptTest()
     cout << G.isLL1Grammar() << endl;
     StackPredictiveTableParser stp(G);
     stp.printPredictTable();
-    Lexer lexer("./assets/lab3.lex");
-    auto tokens = lexer.tokenize("./assets/lab3.txt");
+    Lexer lexer("./assets/lex/lab3.lex");
+    auto tokens = lexer.tokenize("./assets/src/lab3.txt");
     lexer.printTokens(tokens);
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);

@@ -17,8 +17,8 @@
 
 void opgTest()
 {
-    EBNFParser ebnfParser("./assets/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/lab4.stx");
+    EBNFParser ebnfParser("./assets/lex/syntax.lex");
+    Grammar g = ebnfParser.parse("./assets/stx/lab4.stx");
     OperatorPrecedenceGrammar G = OperatorPrecedenceGrammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
@@ -29,8 +29,8 @@ void opgTest()
     G.printLastVT();
     G.printOPT();
     OperatorPrecedenceGrammarParser parser(G);
-    Lexer lexer("./assets/lab3.lex");
-    vector<token> tokens = lexer.tokenize("./assets/lab4.txt");
+    Lexer lexer("./assets/lex/lab3.lex");
+    vector<token> tokens = lexer.tokenize("./assets/src/lab4.txt");
     lexer.printTokens(tokens);
     tokens = G.transferTokens(tokens);
     lexer.printTokens(tokens);

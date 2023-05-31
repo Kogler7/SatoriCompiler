@@ -18,4 +18,4 @@ void prdTest();
 void opgTest();
 void tblTest();
 void slr1Test();
-void defTest();
+void semTest();
