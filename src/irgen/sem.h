@@ -3,9 +3,9 @@
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Semantic Definition
  * @date 2023-06-01
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #include "utils/log.h"
@@ -19,7 +19,11 @@
 class ASTNode
 {
 public:
-    virtual void act() const { info << 1; }
+    virtual void act() const
+    {
+        error << "Action Not Implemented.";
+        exit(1);
+    }
     ASTNode() {}
 };
 

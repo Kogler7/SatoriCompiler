@@ -15,6 +15,7 @@ PATTERN ${
     GRAMMAR_DEF ::=
     MAPPING_DEF -->
     COMMENT     //[^\r\n]*
+    COMMENT     /\*([^\*]|\*[^/])*\*/
 $}
 
 IGNORE ${

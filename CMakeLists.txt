@@ -7,6 +7,7 @@ file(GLOB_RECURSE SRC_FILES
     "${PROJECT_SOURCE_DIR}/src/*.h"
     "${PROJECT_SOURCE_DIR}/test/*.cpp"
     "${PROJECT_SOURCE_DIR}/test/*.h"
+    "${PROJECT_SOURCE_DIR}/assets/sem/*.sem"
 )
 
 if(MSVC)

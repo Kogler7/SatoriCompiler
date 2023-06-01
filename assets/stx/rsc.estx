@@ -1,0 +1,86 @@
+/**
+* Extended Syntax Definition for the Reduced Language for Satori Compiler
+* (c) 2023 Satori Compiler Project, Beijing Jiaotong University
+*/
+
+GRAMMAR ${
+    Program*    ::=     { VarDecl | FuncDef }
+                    ;
+    VarDecl     ::=     VarType VarDef { `,` VarDef } `;`
+                    ;
+    VarDef      ::=     $Ident { `[` $Integer `]` }
+                    |   $Ident { `[` $Integer `]` } `=` Expr
+                    ;
+    VarType     ::=     `int` | `real` | `bool` | `str`
+                    ;
+    FuncType    ::=     `int` | `real` | `bool` | `str` | `void`
+                    ;
+    FuncDef     ::=     Type $Ident `(` [ ParamList ] `)` Block
+                    ;
+    Stmt        ::=     LVal `=` Expr `;`
+                    |   `if` `(` BoolExpr `)` Stmt [ `else` Stmt ]
+                    |   `while` `(` BoolExpr `)` Stmt
+                    |   `for` `(` Expr `;` BoolExpr `;` Expr `)` Stmt
+                    |   `break` `;`
+                    |   `continue` `;`
+                    |   `print` Expr `;`
+                    |   `return` [ Expr ] `;`
+                    |   [ Expr ] `;`
+                    |   Block
+                    ;
+    Block       ::=     `{` { BlockItem } `}`
+                    ;
+    BlockItem   ::=     VarDecl | Stmt
+                    ;
+    Expr        ::=     AddExpr
+                    ;
+    UnaryExpr   ::=     ( `+` | `-` | `!` ) UnaryExpr
+                    |   Factor
+                    ;
+    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr
+                    |   UnaryExpr
+                    ;
+    AddExpr     ::=     AddExpr ( `+` | `-` ) MulExpr
+                    |   MulExpr
+                    ;
+    BoolExpr    ::=     OrExpr
+                    ;
+    RelExpr     ::=     Expr ( `<` | `<=` | `>` | `>=` ) Expr
+                    ;
+    EqExpr      ::=     EqExpr ( `==` | `!=` ) RelExpr
+                    |   RelExpr
+                    ;
+    AndExpr     ::=     AndExpr `&&` EqExpr
+                    |   EqExpr
+                    ;
+    OrExpr      ::=     OrExpr `||` AndExpr
+                    |   AndExpr
+                    ;
+    Factor      ::=     LVal
+                    |   FuncCall
+                    |   `(` Expr `)`
+                    |   Number
+                    |   $String
+                    |   `true`
+                    |   `false`
+                    ;
+    Number      ::=     $Integer | $Real
+                    ;
+    FuncCall    ::=     $Ident `(` [ ArgList ] `)`
+                    ;
+    ArgList     ::=     Expr { `,` Expr }
+                    ;
+    ParamList   ::=     Param { `,` Param }
+                    ;
+    Param       ::=     Type $Ident
+                    ;
+    LVal        ::=     $Ident { `[` Expr `]` }
+                    ;
+$}
+
+MAPPING ${
+    $Ident     -->     @IDENTIFIER ;
+    $Integer   -->     @INTEGER ;
+    $Real      -->     @REAL ;
+    $String    -->     @STRING ;
+$}
