@@ -23,7 +23,7 @@ public:
     SLR1Grammar() : LRGrammar(){};
     SLR1Grammar(const Grammar &g) : LRGrammar(g)
     {
-        // assert(checkSLR1(), "Not SLR(1) grammar!");
+        assert(checkSLR1(), "Not SLR(1) grammar!");
         calcSLR1Table();
     }
     SLR1Grammar(const SLR1Grammar &g) : LRGrammar(g)

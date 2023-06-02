@@ -17,24 +17,27 @@ void semTest()
 
     EBNFParser ebnfParser("./assets/lex/syntax.lex");
     Grammar g = ebnfParser.parse("./assets/stx/rsc.estx");
+    g.printRules();
+    g.extractLeftCommonFactor();
+    g.printRules();
+    g.printTerminals();
+    g.printNonTerms();
     SLR1Grammar G = SLR1Grammar(g);
-    G.printRules();
-    G.extractLeftCommonFactor();
-    G.printRules();
-    G.printTerminals();
-    G.printNonTerms();
+    G.printFirst();
     G.printFollow();
-    // SLR1Parser slr1(G);
-    // Lexer lexer("./assets/lex/rsc.lex");
-    // auto tokens = lexer.tokenize("./assets/src/test.rsc");
-    // lexer.printTokens(tokens);
-    // tokens = G.transferTokens(tokens);
-    // lexer.printTokens(tokens);
+    G.printFirstS();
+    // G.printSLR1Table();
+    SLR1Parser slr1(G);
+    Lexer lexer("./assets/lex/rsc.lex");
+    auto tokens = lexer.tokenize("./assets/src/test.rsc");
+    lexer.printTokens(tokens);
+    tokens = G.transferTokens(tokens);
+    lexer.printTokens(tokens);
     // G.printItems();
     // G.printClusters();
     // G.printGoTrans();
     // G.printSLR1Table();
-    // info << "result: \n"
-    //      << slr1.parse(tokens) << endl;
-    // slr1.getTree()->print();
+    info << "result: \n"
+         << slr1.parse(tokens) << endl;
+    slr1.getTree()->print();
 }

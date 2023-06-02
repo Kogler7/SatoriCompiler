@@ -69,10 +69,10 @@ public:
     }
 };
 
-inline string descTokVecFrom(const vector<token> &v, int i)
+inline string descTokVecFrom(const vector<token> &v, int i, int limit = 10)
 {
     stringstream ss;
-    for (int j = i; j < v.size(); j++)
+    for (int j = i; j < v.size() && j < i + limit; j++)
     {
         ss << v[j].value;
         if (j != v.size() - 1)
