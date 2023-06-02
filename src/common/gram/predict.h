@@ -22,6 +22,7 @@ protected:
     void calcFirst();
     void calcFollow();
     void calcSelect();
+    void calcFirstWithLeftRecursion();
 
 public:
     map<symbol_t, symset_t> first;

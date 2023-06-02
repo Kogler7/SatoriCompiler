@@ -19,12 +19,13 @@ void prdTest()
 {
     EBNFParser ebnfParser("./assets/lex/syntax.lex");
     Grammar g = ebnfParser.parse("./assets/stx/rlcf.stx");
+    g.printRules();
+    g.extractLeftCommonFactor();
+    g.printRules();
+    // g.eliminateLeftRecursion();
+    g.printTerminals();
+    g.printNonTerms();
     PredictiveGrammar G = PredictiveGrammar(g);
-    G.printRules();
-    G.extractLeftCommonFactor();
-    G.printRules();
-    G.printTerminals();
-    G.printNonTerms();
     G.printFirst();
     G.printFollow();
     G.printFirstS();

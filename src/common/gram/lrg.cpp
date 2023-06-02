@@ -14,7 +14,7 @@
 
 using namespace table;
 
-#define DEBUG_LEVEL 0
+#define DEBUG_LEVEL -1
 
 #define _isVT(t) _find(terminals, t)
 #define _isVN(t) _find(nonTerms, t)
@@ -46,10 +46,9 @@ int findInClusters(const clusters_t &clusters, const cluster_t &c)
 
 void LRGrammar::calcClosure(cluster_t &c)
 {
-    info << "Calculating LR closure..." << endl;
+    debug(0) << "Calculating LR closure..." << endl;
     while (true)
     {
-        info << "new round" << endl;
         cluster_t c1;
         for (auto &item : c)
         {
@@ -66,7 +65,7 @@ void LRGrammar::calcClosure(cluster_t &c)
                 if (p.first != next)
                     continue;
                 lr_item_t item(p, 0);
-                debug(0) << "inserting " << item2str(item) << endl;
+                debug(1) << "inserting " << item2str(item) << endl;
                 if (c.find(item) != c.end())
                     continue;
                 c1.insert(item);

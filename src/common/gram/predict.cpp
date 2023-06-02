@@ -13,6 +13,13 @@
 #include "utils/table.h"
 #include "predict.h"
 
+#define insert_if_not_exist(A, s)               \
+    {                                           \
+        flag = false;                           \
+        tie(ignore, flag) = first[A].insert(s); \
+        changed = changed || flag;              \
+    }
+
 bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
 {
     info << "PredictiveGrammar: Checking LL(1)" << endl;
@@ -101,7 +108,13 @@ symset_t PredictiveGrammar::calcFirstOf(symbol_t t)
                 }
                 else
                 {
-                    assert(it != right.begin() || *it != t, "Direct left recursion detected.");
+                    if (it == right.begin() && *it == t)
+                    {
+                        // 直接左递归
+                        warn << "Direct left recursion detected. Trying to calculate First with Left Recursion..." << endl;
+                        calcFirstWithLeftRecursion();
+                        return first[t];
+                    }
                     symset_t resFirst = calcFirstOf(*it);
                     symset_t tmpFirst = resFirst;
                     tmpFirst.erase(EPSILON);
@@ -298,6 +311,67 @@ void PredictiveGrammar::calcSelect()
     for (auto pdt : products)
     {
         select[pdt] = calcSelectOf(pdt);
+    }
+}
+
+void PredictiveGrammar::calcFirstWithLeftRecursion()
+{
+    info << "Calculating First with Left Recursion..." << endl;
+    // 计算终结符的First集
+    for (auto &t : terminals)
+    {
+        first[t].insert(t);
+    }
+    // 计算非终结符的First集
+    bool flag, changed = true;
+    while (changed)
+    {
+        changed = false;
+        for (auto &A : nonTerms)
+        {
+            for (auto &right : rules[A])
+            {
+                if (right.size() == 0)
+                {
+                    insert_if_not_exist(A, EPSILON);
+                    continue;
+                }
+                bool allHaveEpsilon = true;
+                for (auto it = right.begin(); it != right.end(); it++)
+                {
+                    if (_find(terminals, *it))
+                    {
+                        insert_if_not_exist(A, *it);
+                        allHaveEpsilon = false;
+                        break;
+                    }
+                    else
+                    {
+                        symset_t resFirst = first[*it];
+                        symset_t tmpFirst = resFirst;
+                        tmpFirst.erase(EPSILON);
+                        for (auto &f : tmpFirst)
+                        {
+                            insert_if_not_exist(A, f);
+                        }
+                        if (!_find(resFirst, EPSILON))
+                        {
+                            allHaveEpsilon = false;
+                            break;
+                        }
+                    }
+                }
+                if (allHaveEpsilon)
+                {
+                    insert_if_not_exist(A, EPSILON);
+                }
+            }
+        }
+    }
+    // 计算符号串的First集
+    for (auto &p : products)
+    {
+        calcFirstOf(p.second);
     }
 }
 
