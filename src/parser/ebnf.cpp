@@ -35,7 +35,7 @@ token_iter_t findType(vector<token> &tokens, token_type_t type, token_iter_t sta
     return tokens.end();
 }
 
-token_iter_t findSep(vector<token> &tokens, string sep, token_iter_t start)
+token_iter_t findDeli(vector<token> &tokens, string sep, token_iter_t start)
 {
     token_type_t sepType = get_tok_type("DELIMITER");
     for (token_iter_t it = start; it != tokens.end(); it++)
@@ -64,7 +64,7 @@ void EBNFParser::tokenizeSyntax(string grammarPath)
     ebnfLexer.printTokens(tokens);
 }
 
-symbol_t getEndSep(symbol_t sep)
+symbol_t getEndDeli(symbol_t sep)
 {
     if (sep == "(")
     {
@@ -80,12 +80,71 @@ symbol_t getEndSep(symbol_t sep)
     }
     else
     {
-        error << "getEndSep: Expected (, [, or { ." << endl;
+        error << "getEndDeli: Expected (, [, or { ." << endl;
         exit(1);
     }
 }
 
-vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t product)
+void fullConnProducts(vector<tok_product_t> &dst, const vector<tok_product_t> &src, bool hasEpsilon = false)
+{
+    vector<tok_product_t> res;
+    for (const auto &srcPro : src)
+    {
+        for (const auto &dstPro : dst)
+        {
+            vector<token> newRight = dstPro.second;
+            newRight.insert(newRight.end(), srcPro.second.begin(), srcPro.second.end());
+            res.push_back(make_pair(dstPro.first, newRight));
+        }
+    }
+    if (hasEpsilon)
+    {
+        dst.insert(dst.end(), res.begin(), res.end());
+    }
+    else
+    {
+        dst = res;
+    }
+}
+
+void EBNFParser::parseDeliProducts(vector<tok_product_t> &dst, vector<tok_product_t> &tmp, const symbol_t &left, token_iter_t beginIt, token_iter_t endIt)
+{
+    vector<tok_product_t> subProducts;
+    tok_product_t tokProduct = make_pair(left, vector<token>(beginIt + 1, endIt));
+    subProducts = segmentProduct(tokProduct);
+    if (beginIt->value == "{")
+    {
+        // S -> A{B|D}C => S -> AB'C, B' -> B | ε, S -> AD'C, D' -> D | ε
+        for (auto &pro : subProducts)
+        {
+            // 构造新的非终结符
+            symbol_t newLeft = left + "_";
+            newLeft += to_string(++nonTermCount[left]);
+            token newLeftTok = token(get_tok_type("NON_TERM"), newLeft);
+            // 构造含新非终结符的新产生式
+            fullConnProducts(tmp, vector<tok_product_t>({make_pair(left, vector<token>({newLeftTok}))}));
+            // 构造含右递归的新产生式
+            vector<token> subRight = pro.second;
+            subRight.push_back(newLeftTok);
+            dst.push_back(make_pair(newLeft, subRight));
+            // 构造含空串的新产生式
+            dst.push_back(make_pair(newLeft, vector<token>()));
+        }
+    }
+    else if (beginIt->value == "(" || beginIt->value == "[")
+    {
+        // S -> A[B|D]C => S -> ABC, S -> ADC, S -> AC
+        // S -> A(B|D)C => S -> ABC, S -> ADC
+        fullConnProducts(tmp, subProducts, beginIt->value == "[");
+    }
+    else
+    {
+        error << "EBNFParser: EBNF syntax error: Expected (, [, or { ." << endl;
+        exit(1);
+    }
+}
+
+vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t &product)
 {
     info << "EBNFParser: Segmenting product: " << product.first << " -> ";
     for (auto it = product.second.begin(); it != product.second.end(); it++)
@@ -121,74 +180,32 @@ vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t product)
         else
         {
             // 如果是分组符，则需要递归拆分
-            symbol_t endDeli = getEndSep(deliBeginIt->value);
-            auto deliEndIt = findSep(right, endDeli, deliBeginIt);
-            assert(
-                deliEndIt != right.end(),
-                format(
-                    "EBNFParser: EBNF syntax error: Expected $, got EOF at <$, $>",
-                    endDeli, right.back().line, right.back().col));
-            nextIt = findType(right, get_tok_type("DELIMITER"), deliEndIt + 1);
-            assert( // 如果分组后面有非选择符的分隔符，则报错（不支持多种分隔符排列组合）
-                nextIt == right.end() || nextIt->value == "|",
-                format(
-                    "EBNFParser: EBNF syntax error: Expected |, got $ at <$, $>",
-                    nextIt->value, nextIt->line, nextIt->col));
-            vector<tok_product_t> subProducts;
-            subProducts = segmentProduct(make_pair(left, vector<token>(deliBeginIt + 1, deliEndIt)));
-            vector<token> head = vector<token>(lastIt, deliBeginIt);
-            vector<token> tail = vector<token>(deliEndIt + 1, nextIt);
-            if (deliBeginIt->value == "{")
+            vector<tok_product_t> resProducts({make_pair(left, vector<token>())});
+            vector<tok_product_t> leadProducts;
+
+            while (deliBeginIt != right.end() && deliBeginIt->value != "|")
             {
-                // S -> A{B|D}C => S -> AB'C, B' -> B | ε, S -> AD'C, D' -> D | ε
-                int nonTermCount = 0;
-                for (auto &pro : subProducts)
-                {
-                    // 构造新的非终结符
-                    symbol_t newLeft = left + "_";
-                    newLeft += to_string(++nonTermCount);
-                    token newLeftTok = token(get_tok_type("NON_TERM"), newLeft);
-                    // 构造含新非终结符的新产生式
-                    vector<token> newRight;
-                    newRight.insert(newRight.end(), head.begin(), head.end());
-                    newRight.push_back(newLeftTok);
-                    newRight.insert(newRight.end(), tail.begin(), tail.end());
-                    products.push_back(make_pair(left, newRight));
-                    // 构造含右递归的新产生式
-                    vector<token> subRight = pro.second;
-                    subRight.push_back(newLeftTok);
-                    products.push_back(make_pair(newLeft, subRight));
-                    // 构造含空串的新产生式
-                    products.push_back(make_pair(newLeft, vector<token>()));
-                }
+                leadProducts = vector<tok_product_t>({make_pair(left, vector<token>(lastIt, deliBeginIt))});
+                fullConnProducts(resProducts, leadProducts);
+
+                symbol_t endDeli = getEndDeli(deliBeginIt->value);
+                auto deliEndIt = findDeli(right, endDeli, deliBeginIt);
+                assert(
+                    deliEndIt != right.end(),
+                    format(
+                        "EBNFParser: EBNF syntax error: Expected $, got EOF at <$, $>",
+                        endDeli, right.back().line, right.back().col));
+
+                parseDeliProducts(products, resProducts, left, deliBeginIt, deliEndIt);
+                lastIt = deliEndIt + 1;
+                deliBeginIt = findType(right, get_tok_type("DELIMITER"), lastIt);
             }
-            else if (deliBeginIt->value == "(" || deliBeginIt->value == "[")
-            {
-                // S -> A[B|D]C => S -> ABC, S -> ADC, S -> AC
-                // S -> A(B|D)C => S -> ABC, S -> ADC
-                for (auto &pro : subProducts)
-                {
-                    // S -> ABC, S -> ADC
-                    vector<token> newRight;
-                    newRight.insert(newRight.end(), head.begin(), head.end());
-                    newRight.insert(newRight.end(), pro.second.begin(), pro.second.end());
-                    newRight.insert(newRight.end(), tail.begin(), tail.end());
-                    products.push_back(make_pair(left, newRight));
-                }
-                if (deliBeginIt->value == "[")
-                {
-                    // S -> AC
-                    vector<token> newRight;
-                    newRight.insert(newRight.end(), head.begin(), head.end());
-                    newRight.insert(newRight.end(), tail.begin(), tail.end());
-                    products.push_back(make_pair(left, newRight));
-                }
-            }
-            else
-            {
-                error << "EBNFParser: EBNF syntax error: Expected (, [, or { ." << endl;
-                exit(1);
-            }
+
+            leadProducts = vector<tok_product_t>({make_pair(left, vector<token>(lastIt, deliBeginIt))});
+            fullConnProducts(resProducts, leadProducts);
+
+            nextIt = deliBeginIt;
+            products.insert(products.end(), resProducts.begin(), resProducts.end());
         }
         if (nextIt == right.end())
         {
@@ -213,6 +230,136 @@ vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t product)
     }
     return products;
 }
+
+// vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t &product)
+// {
+//     static map<symbol_t, int> nonTermCount;
+//     info << "EBNFParser: Segmenting product: " << product.first << " -> ";
+//     for (auto it = product.second.begin(); it != product.second.end(); it++)
+//     {
+//         cout << it->value << " ";
+//     }
+//     cout << endl;
+//     vector<tok_product_t> products;
+//     symbol_t &left = product.first;
+//     vector<token> &right = product.second;
+//     auto lastIt = right.begin();
+//     auto nextIt = right.begin();
+//     auto deliBeginIt = findType(right, get_tok_type("DELIMITER"), right.begin());
+//     if (deliBeginIt == right.end())
+//     {
+//         products.push_back(product);
+//         info << "EBNFParser: No delimiter found, return directly." << endl;
+//         return products;
+//     }
+//     while (lastIt != right.end())
+//     {
+//         if (deliBeginIt == right.end()) // 无分隔符
+//         {
+//             products.push_back(make_pair(left, vector<token>(lastIt, right.end())));
+//             break;
+//         }
+//         else if (deliBeginIt->value == "|")
+//         {
+//             // 如果是选择符，则把左边的产生式直接加入到结果中
+//             products.push_back(make_pair(left, vector<token>(lastIt, deliBeginIt)));
+//             nextIt = deliBeginIt;
+//         }
+//         else
+//         {
+//             // 如果是分组符，则需要递归拆分
+//             symbol_t endDeli = getEndDeli(deliBeginIt->value);
+//             auto deliEndIt = findDeli(right, endDeli, deliBeginIt);
+//             assert(
+//                 deliEndIt != right.end(),
+//                 format(
+//                     "EBNFParser: EBNF syntax error: Expected $, got EOF at <$, $>",
+//                     endDeli, right.back().line, right.back().col));
+//             nextIt = findType(right, get_tok_type("DELIMITER"), deliEndIt + 1);
+//             assert( // 如果分组后面有非选择符的分隔符，则报错（不支持多种分隔符排列组合）
+//                 nextIt == right.end() || nextIt->value == "|",
+//                 format(
+//                     "EBNFParser: EBNF syntax error: Expected |, got $ at <$, $>",
+//                     nextIt->value, nextIt->line, nextIt->col));
+//             vector<tok_product_t> subProducts;
+//             tok_product_t tokProduct = make_pair(left, vector<token>(deliBeginIt + 1, deliEndIt));
+//             subProducts = segmentProduct(tokProduct);
+//             vector<token> head = vector<token>(lastIt, deliBeginIt);
+//             vector<token> tail = vector<token>(deliEndIt + 1, nextIt);
+//             if (deliBeginIt->value == "{")
+//             {
+//                 // S -> A{B|D}C => S -> AB'C, B' -> B | ε, S -> AD'C, D' -> D | ε
+//                 for (auto &pro : subProducts)
+//                 {
+//                     // 构造新的非终结符
+//                     symbol_t newLeft = left + "_";
+//                     newLeft += to_string(++nonTermCount[left]);
+//                     token newLeftTok = token(get_tok_type("NON_TERM"), newLeft);
+//                     // 构造含新非终结符的新产生式
+//                     vector<token> newRight;
+//                     newRight.insert(newRight.end(), head.begin(), head.end());
+//                     newRight.push_back(newLeftTok);
+//                     newRight.insert(newRight.end(), tail.begin(), tail.end());
+//                     products.push_back(make_pair(left, newRight));
+//                     // 构造含右递归的新产生式
+//                     vector<token> subRight = pro.second;
+//                     subRight.push_back(newLeftTok);
+//                     products.push_back(make_pair(newLeft, subRight));
+//                     // 构造含空串的新产生式
+//                     products.push_back(make_pair(newLeft, vector<token>()));
+//                 }
+//             }
+//             else if (deliBeginIt->value == "(" || deliBeginIt->value == "[")
+//             {
+//                 // S -> A[B|D]C => S -> ABC, S -> ADC, S -> AC
+//                 // S -> A(B|D)C => S -> ABC, S -> ADC
+//                 for (auto &pro : subProducts)
+//                 {
+//                     // S -> ABC, S -> ADC
+//                     vector<token> newRight;
+//                     newRight.insert(newRight.end(), head.begin(), head.end());
+//                     newRight.insert(newRight.end(), pro.second.begin(), pro.second.end());
+//                     newRight.insert(newRight.end(), tail.begin(), tail.end());
+//                     products.push_back(make_pair(left, newRight));
+//                 }
+//                 if (deliBeginIt->value == "[")
+//                 {
+//                     // S -> AC
+//                     vector<token> newRight;
+//                     newRight.insert(newRight.end(), head.begin(), head.end());
+//                     newRight.insert(newRight.end(), tail.begin(), tail.end());
+//                     products.push_back(make_pair(left, newRight));
+//                 }
+//             }
+//             else
+//             {
+//                 error << "EBNFParser: EBNF syntax error: Expected (, [, or { ." << endl;
+//                 exit(1);
+//             }
+//         }
+//         if (nextIt == right.end())
+//         {
+//             break;
+//         }
+//         lastIt = nextIt + 1;
+//         info << "EBNFParser: lastIt: " << lastIt->value << endl;
+//         if (nextIt != right.end())
+//         {
+//             deliBeginIt = findType(right, get_tok_type("DELIMITER"), lastIt);
+//         }
+//     }
+//     info << "EBNFParser: Segmented product: " << endl;
+//     for (auto &pro : products)
+//     {
+//         cout << pro.first << " -> ";
+//         for (auto &tok : pro.second)
+//         {
+//             cout << tok.value << " ";
+//         }
+//         cout << endl;
+//     }
+//     return products;
+// }
 
 vector<tok_product_t> EBNFParser::geneStxProducts(token_iter_t start, token_iter_t end)
 {

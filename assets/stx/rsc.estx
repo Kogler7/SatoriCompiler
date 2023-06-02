@@ -8,8 +8,7 @@ GRAMMAR ${
                     ;
     VarDecl     ::=     VarType VarDef { `,` VarDef } `;`
                     ;
-    VarDef      ::=     $Ident { `[` $Integer `]` }
-                    |   $Ident { `[` $Integer `]` } `=` Expr
+    VarDef      ::=     $Ident { `[` $Integer `]` } [ `=` Expr ]
                     ;
     VarType     ::=     `int` | `real` | `bool` | `str`
                     ;
