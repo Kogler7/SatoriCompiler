@@ -22,6 +22,8 @@ if(MSVC)
     add_compile_options(/EHsc) # 异常处理，启用展开语义
 endif()
 
+find_package(Threads)
+
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/test)
 include_directories(${PROJECT_SOURCE_DIR}/include)

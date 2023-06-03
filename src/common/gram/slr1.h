@@ -16,14 +16,13 @@
 
 class SLR1Grammar : public LRGrammar
 {
-    bool checkSLR1();
     void calcSLR1Table();
 
 public:
+    bool checkSLR1();
     SLR1Grammar() : LRGrammar(){};
     SLR1Grammar(const Grammar &g) : LRGrammar(g)
     {
-        assert(checkSLR1(), "Not SLR(1) grammar!");
         calcSLR1Table();
     }
     SLR1Grammar(const SLR1Grammar &g) : LRGrammar(g)
@@ -32,4 +31,6 @@ public:
     }
     table_t<state_id_t, symbol_t, action_t> slr1Table;
     void printSLR1Table();
+    void printSLR1Table(coord_t<state_id_t, symbol_t> c);
+    void printLargeSLR1Table();
 };

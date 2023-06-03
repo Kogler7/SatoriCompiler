@@ -23,7 +23,7 @@ bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol_
         if (right.size() == 0)
         {
             // 空产生式，即epsilon
-            debug(0) << format("Viewing null production: $ -> $\n", sym, str2str(right));
+            debug(0) << format("Viewing null production: $ -> $\n", sym, compact(right));
             symset_t &follow = grammar.follow[sym];
             debug(0) << format("Follow set: $.\n", set2str(follow));
             if (_find(follow, _cur_tok(viewer)))
@@ -39,7 +39,7 @@ bool PredictiveRecursiveDescentParser::parseNonTerm(TokenViewer &viewer, symbol_
             symset_t &first = grammar.firstS[right];
             if (_find(first, _cur_tok(viewer)))
             {
-                debug(0) << format("Viewing production: $ -> $\n", sym, str2str(right));
+                debug(0) << format("Viewing production: $ -> $\n", sym, compact(right));
                 debug(0) << format("First set: $.\n", set2str(first));
                 // 根据first集预测选择唯一一个产生式，若分析失败不再考察其他产生式
                 for (auto symIt = right.begin(); symIt != right.end(); symIt++)

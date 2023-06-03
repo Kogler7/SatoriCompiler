@@ -10,7 +10,6 @@
 
 #include "slr1.h"
 #include "utils/stl.h"
-#include "utils/table.h"
 #include <queue>
 
 using namespace table;
@@ -22,8 +21,17 @@ inline symset_t intersects(const symset_t &s1, const symset_t &s2)
     return inter;
 }
 
+inline void reportConflict(const cluster_t &c, const symset_t &s1, const symset_t &s2, int i)
+{
+    info << "Related cluster: " << endl;
+    printCluster(c, i);
+    info << "Set (1): " << set2str(s1) << endl;
+    info << "Set (2): " << set2str(s2) << endl;
+}
+
 bool SLR1Grammar::checkSLR1()
 {
+    bool flag = true;
     info << "Checking SLR(1) grammar..." << endl;
     for (size_t i = 0; i < clusters.size(); i++)
     {
@@ -54,7 +62,8 @@ bool SLR1Grammar::checkSLR1()
             if (intersects(s, shiftSet).size() > 0)
             {
                 warn << "Shift-reduce conflict found in cluster " << i << "!" << endl;
-                return false;
+                reportConflict(clusters[i], shiftSet, s, i);
+                flag = false;
             }
         }
         // 检查Reduce-reduce冲突
@@ -67,12 +76,13 @@ bool SLR1Grammar::checkSLR1()
                 if (intersects(s1, s2).size() > 0)
                 {
                     warn << "Reduce-reduce conflict found in cluster " << i << "!" << endl;
-                    return false;
+                    reportConflict(clusters[i], s1, s2, i);
+                    flag = false;
                 }
             }
         }
     }
-    return true;
+    return flag;
 }
 
 void SLR1Grammar::calcSLR1Table()
@@ -175,4 +185,14 @@ void SLR1Grammar::printSLR1Table()
         }
     }
     cout << tb_view(BDR_ALL);
+}
+
+void SLR1Grammar::printSLR1Table(coord_t<state_id_t, symbol_t> c)
+{
+    tb_head | "State" = AL_CTR;
+}
+
+void SLR1Grammar::printLargeSLR1Table()
+{
+    info << "SLR1 table:" << endl;
 }

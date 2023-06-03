@@ -9,7 +9,6 @@
  */
 
 #include "lrg.h"
-#include "utils/table.h"
 #include <queue>
 
 using namespace table;
@@ -205,18 +204,7 @@ void LRGrammar::printClusters()
     info << "LR clusters:" << endl;
     for (size_t i = 0; i < clusters.size(); i++)
     {
-        tb_head | TB_TAB | TB_TAB | TB_TAB | MD_TAB | "Cluster " + to_string(i);
-        set_col | AL_RGT | AL_CTR | AL_RGT | AL_CTR | AL_LFT;
-        for (auto &item : clusters[i])
-        {
-            symbol_t left = item.first.get().first;
-            symstr_t right = item.first.get().second;
-            size_t pos = item.second;
-            symstr_t r1 = symstr_t(right.begin(), right.begin() + pos);
-            symstr_t r2 = symstr_t(right.begin() + pos, right.end());
-            new_row | left | "->" | compact(r1) | "." | compact(r2);
-        }
-        cout << tb_view(BDR_RUD);
+        printCluster(clusters[i], i);
     }
 }
 

@@ -78,6 +78,10 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
 symset_t PredictiveGrammar::calcFirstOf(symbol_t t)
 {
     debug(0) << "Calculating First(" << t << ")" << endl;
+    if (hasLeftRecursion)
+    {
+        return first[t];
+    }
     if (first[t].size() > 0)
     {
         debug(1) << "First(" << t << ") has been calculated before" << endl;
@@ -112,6 +116,7 @@ symset_t PredictiveGrammar::calcFirstOf(symbol_t t)
                     {
                         // 直接左递归
                         warn << "Direct left recursion detected. Trying to calculate First with Left Recursion..." << endl;
+                        hasLeftRecursion = true;
                         calcFirstWithLeftRecursion();
                         return first[t];
                     }

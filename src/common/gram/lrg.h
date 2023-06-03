@@ -14,9 +14,11 @@
 #include "common/fa.h"
 #include "utils/stl.h"
 #include "utils/log.h"
+#include "utils/table.h"
 #include "predict.h"
 
 using namespace std;
+using namespace table;
 
 typedef reference_wrapper<product_t> product_ref;
 typedef product_ref reduce_t;
@@ -83,6 +85,22 @@ inline string cluster2str(cluster_t c)
     }
     s += "}";
     return s;
+}
+
+inline void printCluster(const cluster_t &c, int i = 0)
+{
+    tb_head | TB_TAB | TB_TAB | TB_TAB | MD_TAB | "Cluster " + to_string(i);
+    set_col | AL_RGT | AL_CTR | AL_RGT | AL_CTR | AL_LFT;
+    for (auto &item : c)
+    {
+        symbol_t left = item.first.get().first;
+        symstr_t right = item.first.get().second;
+        size_t pos = item.second;
+        symstr_t r1 = symstr_t(right.begin(), right.begin() + pos);
+        symstr_t r2 = symstr_t(right.begin() + pos, right.end());
+        new_row | left | "->" | compact(r1) | "." | compact(r2);
+    }
+    cout << tb_view(BDR_RUD);
 }
 
 class LRGrammar : public PredictiveGrammar

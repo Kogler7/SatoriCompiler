@@ -16,17 +16,19 @@
 using namespace table;
 
 template <typename T>
-string descStack(stack<T> s)
+string descStack(stack<T> s, int limit = 10)
 {
     stringstream ss;
     symstr_t v;
-    while (!s.empty())
+    while (!s.empty() && limit--)
     {
         stringstream t;
         t << s.top();
         v.push_back(t.str());
         s.pop();
     }
+    if (limit <= 0)
+        v.push_back("...");
     reverse(v.begin(), v.end());
     ss << container2str(v, " ", "");
     return ss.str();
@@ -59,6 +61,18 @@ pair<string, string> SimpleLR1Parser::descAction(const action_t &act)
         a = "Error";
     }
     return make_pair(a, ss.str());
+}
+
+inline void printRemainingTreeNodes(stack<cst_node_ptr_t> &cstStk)
+{
+    while (!cstStk.empty())
+    {
+        cst_node_ptr_t node = cstStk.top();
+        cstStk.pop();
+        node->print();
+        if (!cstStk.empty())
+            std::cout << endl;
+    }
 }
 
 bool SimpleLR1Parser::parse(vector<token> &input)
@@ -133,7 +147,8 @@ bool SimpleLR1Parser::parse(vector<token> &input)
 reject:
     error << "SimpleLR1Parser: Parsing failed!" << endl;
     new_row | TB_TAB | MD_TAB | Cell("Rejected") & FORE_RED;
-    cout << tb_view();
+    std::cout << tb_view();
+    printRemainingTreeNodes(cstStk);
     return false;
 accept:
     info << "SimpleLR1Parser: Parsing succeed!" << endl;
@@ -151,6 +166,6 @@ accept:
         *startNode << *it;
     tree = startNode;
     new_row | Cell(descStack(symStk)) & AL_LFT | MD_TAB | Cell("Accepted") & FORE_GRE;
-    cout << tb_view();
+    std::cout << tb_view();
     return true;
 }

@@ -122,7 +122,7 @@ bool OperatorPrecedenceGrammarParser::parse(vector<token> &input)
                     tb_cont | "Reduce" | left + "->" + compact(right);
                     if (left == "")
                     {
-                        error << "Product " << now << "->" << str2str(right) << " not found." << endl;
+                        error << "Product " << now << "->" << compact(right) << " not found." << endl;
                         cout << tb_view();
                         return false;
                     }
