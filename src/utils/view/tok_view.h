@@ -1,5 +1,5 @@
 /**
- * @file utils/tok_view.h
+ * @file utils/token_viewer.h
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Lightweight Token Viewer
  * @date 2023-04-27
@@ -12,7 +12,7 @@
 
 #include "common/token.h"
 #include "vector"
-#include "log.h"
+#include "utils/log.h"
 
 using namespace std;
 

@@ -11,7 +11,7 @@
 #include "parser.h"
 #include <stack>
 #include "utils/table.h"
-#include "utils/tok_view.h"
+#include "utils/view/tok_view.h"
 
 using namespace table;
 

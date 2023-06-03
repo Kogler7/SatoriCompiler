@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "utils/viewer.h"
+#include "utils/view/viewer.h"
 
 typedef int state_id_t;
 typedef pair<state_id_t, state_id_t> sub_nfa_t;

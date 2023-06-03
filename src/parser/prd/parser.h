@@ -11,7 +11,7 @@
 #include "common/tree/cst.h"
 #include "common/gram/predict.h"
 #include "common/token.h"
-#include "utils/tok_view.h"
+#include "utils/view/tok_view.h"
 
 class PredictiveRecursiveDescentParser
 {

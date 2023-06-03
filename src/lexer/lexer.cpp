@@ -16,6 +16,7 @@
 #include "utils/stl.h"
 #include "utils/log.h"
 #include "utils/table.h"
+#include "utils/view/ctx_view.h"
 
 #define DEBUG_LEVEL -1
 
@@ -71,7 +72,7 @@ vector<token> Lexer::tokenize(string fileName)
     cout << code << endl;
     info << "Tokenizing... " << endl;
     vector<token> tokens;
-    code_viewer vCode(code);
+    ContextViewer vCode(code);
     while (!vCode.ends())
     {
         bool matched = false;
