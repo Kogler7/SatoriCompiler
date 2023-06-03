@@ -89,6 +89,7 @@ inline string cluster2str(cluster_t c)
 
 inline void printCluster(const cluster_t &c, int i = 0)
 {
+    info << "Cluster " << i << ": " << endl;
     tb_head | TB_TAB | TB_TAB | TB_TAB | MD_TAB | "Cluster " + to_string(i);
     set_col | AL_RGT | AL_CTR | AL_RGT | AL_CTR | AL_LFT;
     for (auto &item : c)

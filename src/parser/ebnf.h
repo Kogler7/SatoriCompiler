@@ -20,9 +20,10 @@ class EBNFParser
     vector<token> tokens;
     Grammar grammar;
     map<symbol_t, int> nonTermCount;
+    vector<tok_product_t> tokProducts;
     void tokenizeSyntax(string grammarPath);
     vector<tok_product_t> segmentProduct(tok_product_t &product);
-    void parseDeliProducts(vector<tok_product_t> &dst, vector<tok_product_t> &tmp, const symbol_t &left, token_iter_t beginIt, token_iter_t endIt);
+    void parseDeliProducts(vector<tok_product_t> &tmp, const symbol_t &left, token_iter_t beginIt, token_iter_t endIt);
     vector<tok_product_t> geneStxProducts(token_iter_t start, token_iter_t end);
     vector<tok_product_t> geneMapProducts(token_iter_t start, token_iter_t end);
     void addRules(vector<tok_product_t> &products);

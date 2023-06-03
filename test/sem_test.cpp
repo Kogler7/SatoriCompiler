@@ -16,9 +16,9 @@ void semTest()
     node->act();
 
     EBNFParser ebnfParser("./assets/lex/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/stx/rsc expr.estx");
+    Grammar g = ebnfParser.parse("./assets/stx/rsc-1.estx");
     g.printRules();
-    g.extractLeftCommonFactor();
+    // g.extractLeftCommonFactor();
     g.printRules();
     g.printTerminals();
     g.printNonTerms();

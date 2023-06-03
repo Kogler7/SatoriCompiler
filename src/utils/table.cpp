@@ -57,7 +57,7 @@ TableRender &TableRender::reset()
     tabAlign = AL_CTR;
     lineSetting = false;
     horizDirected = true;
-    widths.clear();
+    widths.assign(colMax, 1);
     hLines.assign(rowMax, false);
     vLines.assign(colMax, false);
     table.clear();
@@ -70,7 +70,7 @@ void TableRender::resize()
     if (colCur >= colMax)
     {
         colMax = colCur + 1;
-        widths.resize(colMax, 0);
+        widths.resize(colMax, 1);
         for (auto &row : table)
             row.resize(colMax);
         vLines.resize(colMax, false);
@@ -254,7 +254,7 @@ TableRender &TableRender::operator=(const std::string &field)
     {
         widths[colCur] = std::max(
             widths[colCur],
-            leadWidth >= fSize ? 0 : fSize - leadWidth);
+            leadWidth >= fSize ? 1 : fSize - leadWidth);
     }
     else
     {

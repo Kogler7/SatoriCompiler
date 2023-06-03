@@ -1,33 +1,51 @@
-var int x = 10;                // integer variable
-var int y = +3e10;             // integer variable in scientific notation
+var x : int = 10;                // integer variable
+var y : bool = true;             // integer variable in scientific notation
 
-func int main()
+decl func add(x : int, y : int) : int;
+
+func main() : int
 {
-    var int x = 10;                // integer variable
-    var int y = +3e10;             // integer variable in scientific notation
-    var int z = 0x3f;              // integer variable in hexadecimal notation
-    var real o = 3.14;             // float variable
-    var real p = -2.71828;         // double variable
-    var real q = 1.0e-10;          // double variable in scientific notation
-    var str s = "Hello World!"; // string variable
+    var a : int = 10, b : int[10] = {1, 2, 3}, c : bool = false;
+    var d : int = +3e10;                    // integer variable in scientific notation
+    var e : int = 0x3f;                     // integer variable in hexadecimal notation
+    var o : real = 3.14;                    // float variable
+    var p : real = -2.71828;                // double variable
+    var q : real = 1.0e-10;                 // double variable in scientific notation
+    var s : str = "Hello World!";           // string variable
 
-    var int result = x + 2 * (y - z);
+    var result : int = a + 2 * (d - e);
 
-    if (x > y)
+    if (d > e && a < b || c == true)
     {
-        1 + 1;
+        print "Hello World!";
     }
 
     /*
     block comment 1
     */
 
-    for (var int i = 0; i < x; i++)
+    for (var i : int = 0; i < 10; i = i + 1)
     {
-        print i;
+        var flag : bool = true;
+        while (flag)
+        {
+            if (b[i] == 0)
+            {
+                flag = false;
+            }
+            //else
+            //{
+            //    b[i] = b[i] - 1;
+            //}
+        }
     }
 
     // line comment
 
     return 0;
+}
+
+func add(x : int, y : int) : int
+{
+    return x + y;
 }

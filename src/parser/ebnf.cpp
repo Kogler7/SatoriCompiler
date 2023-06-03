@@ -107,7 +107,7 @@ void fullConnProducts(vector<tok_product_t> &dst, const vector<tok_product_t> &s
     }
 }
 
-void EBNFParser::parseDeliProducts(vector<tok_product_t> &dst, vector<tok_product_t> &tmp, const symbol_t &left, token_iter_t beginIt, token_iter_t endIt)
+void EBNFParser::parseDeliProducts(vector<tok_product_t> &tmp, const symbol_t &left, token_iter_t beginIt, token_iter_t endIt)
 {
     vector<tok_product_t> subProducts;
     tok_product_t tokProduct = make_pair(left, vector<token>(beginIt + 1, endIt));
@@ -126,9 +126,9 @@ void EBNFParser::parseDeliProducts(vector<tok_product_t> &dst, vector<tok_produc
             // 构造含右递归的新产生式
             vector<token> subRight = pro.second;
             subRight.push_back(newLeftTok);
-            dst.push_back(make_pair(newLeft, subRight));
+            tokProducts.push_back(make_pair(newLeft, subRight));
             // 构造含空串的新产生式
-            dst.push_back(make_pair(newLeft, vector<token>()));
+            tokProducts.push_back(make_pair(newLeft, vector<token>()));
         }
     }
     else if (beginIt->value == "(" || beginIt->value == "[")
@@ -196,7 +196,7 @@ vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t &product)
                         "EBNFParser: EBNF syntax error: Expected $, got EOF at <$, $>",
                         endDeli, right.back().line, right.back().col));
 
-                parseDeliProducts(products, resProducts, left, deliBeginIt, deliEndIt);
+                parseDeliProducts(resProducts, left, deliBeginIt, deliEndIt);
                 lastIt = deliEndIt + 1;
                 deliBeginIt = findType(right, get_tok_type("DELIMITER"), lastIt);
             }
@@ -233,7 +233,7 @@ vector<tok_product_t> EBNFParser::segmentProduct(tok_product_t &product)
 
 vector<tok_product_t> EBNFParser::geneStxProducts(token_iter_t start, token_iter_t end)
 {
-    vector<tok_product_t> products;
+    vector<tok_product_t> &products = tokProducts;
     token_type_t grammarDef = get_tok_type("GRAMMAR_DEF");
     token_type_t sepType = get_tok_type("SEPARATOR");
     token_type_t nonTermType = get_tok_type("NON_TERM");

@@ -4,22 +4,37 @@
 */
 
 GRAMMAR ${
-    Program*    ::=     { VarDecl | FuncDef }
+    Program*    ::=     { VarDeclStmt | FuncDeclStmt | FuncDef }
                     ;
-    VarDecl     ::=     `var` VarType VarDef { `,` VarDef } `;`
+    VarDeclStmt ::=     VarDecl `;`
+                    ;
+    VarDecl     ::=     `var` VarDef { `,` VarDef }
                     ;
     VarType     ::=     `int` | `real` | `bool` | `str`
                     ;
-    VarDef      ::=     $Ident { `[` $Integer `]` } [ `=` Expr ]
+    VarDef      ::=     $Ident `:` VarType { `[` $Integer `]` } [ `=` InitVal ]
                     ;
-    FuncType    ::=     `int` | `real` | `bool` | `str` | `void`
+    InitVal     ::=     Expr | `{` [ InitVal { `,` InitVal } ] `}`
                     ;
-    FuncDef     ::=     `func` FuncType $Ident `(` [ ParamList ] `)` Block
+    FuncDeclStmt::=     `decl` FuncDecl `;`
                     ;
-    Stmt        ::=     LVal `=` Expr `;`
+    FuncDecl    ::=     `func` $Ident `(` [ ParamList ] `)` [ `:` VarType ]
+                    ;
+    FuncDef     ::=     FuncDecl Block
+                    ;
+    FuncCall    ::=     $Ident `(` [ ArgList ] `)`
+                    ;
+    ArgList     ::=     Expr { `,` Expr }
+                    ;
+    ParamList   ::=     Param { `,` Param }
+                    ;
+    Param       ::=     $Ident `:` VarType { `[` $Integer `]` }
+                    ;
+    Stmt        ::=     Assignment `;`
+                    |   VarDeclStmt
                     |   `if` `(` BoolExpr `)` Stmt
                     |   `while` `(` BoolExpr `)` Stmt
-                    |   `for` `(` Expr `;` BoolExpr `;` Expr `)` Stmt
+                    |   `for` `(` ( VarDecl | Expr ) `;` BoolExpr `;` Assignment `)` Stmt
                     |   `break` `;`
                     |   `continue` `;`
                     |   `print` Expr `;`
@@ -27,9 +42,9 @@ GRAMMAR ${
                     |   [ Expr ] `;`
                     |   Block
                     ;
-    Block       ::=     `{` { BlockItem } `}`
+    Assignment  ::=     LVal `=` Expr
                     ;
-    BlockItem   ::=     VarDecl | Stmt
+    Block       ::=     `{` { Stmt } `}`
                     ;
     UnaryExpr   ::=     ( `+` | `-` | `!` ) UnaryExpr
                     |   Factor
@@ -40,9 +55,8 @@ GRAMMAR ${
     Expr        ::=     Expr ( `+` | `-` ) MulExpr
                     |   MulExpr
                     ;
-    BoolExpr    ::=     OrExpr
-                    ;
-    RelExpr     ::=     Expr ( `<` | `<=` | `>` | `>=` ) Expr
+    RelExpr     ::=     RelExpr ( `<` | `<=` | `>` | `>=` ) Expr
+                    |   Expr
                     ;
     EqExpr      ::=     EqExpr ( `==` | `!=` ) RelExpr
                     |   RelExpr
@@ -53,6 +67,8 @@ GRAMMAR ${
     OrExpr      ::=     OrExpr `||` AndExpr
                     |   AndExpr
                     ;
+    BoolExpr    ::=     OrExpr
+                    ;
     Factor      ::=     LVal
                     |   FuncCall
                     |   `(` Expr `)`
@@ -62,14 +78,6 @@ GRAMMAR ${
                     |   `false`
                     ;
     Number      ::=     $Integer | $Real
-                    ;
-    FuncCall    ::=     $Ident `(` [ ArgList ] `)`
-                    ;
-    ArgList     ::=     Expr { `,` Expr }
-                    ;
-    ParamList   ::=     Param { `,` Param }
-                    ;
-    Param       ::=     Type $Ident
                     ;
     LVal        ::=     $Ident { `[` Expr `]` }
                     ;
