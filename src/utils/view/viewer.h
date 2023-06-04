@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <fstream>
 #include <iostream>
 
 using namespace std;
@@ -21,11 +22,23 @@ using namespace std;
  */
 class Viewer
 {
+protected:
 	string str;
-	int pos = 0;
+	size_t pos = 0;
 
 public:
+	static Viewer fromFile(string filename)
+	{
+		ifstream ifs(filename);
+		string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+		return Viewer(str);
+	}
 	Viewer(string &str) : str(str) {}
+	Viewer(Viewer &v)
+	{
+		str = v.str;
+		pos = v.pos;
+	}
 	void operator=(Viewer v)
 	{
 		str = v.str;
@@ -40,21 +53,21 @@ public:
 		return pos >= v.pos;
 	}
 	// 获取第i个字符
-	char operator[](int i)
+	char operator[](size_t i)
 	{
-		if (i < 0 || i >= str.size())
+		if (i >= str.size())
 		{
 			return '\0';
 		}
 		return str[i];
 	}
 	// 获取字符串大小
-	int size()
+	size_t size()
 	{
 		return str.size();
 	}
 	// 获取当前字符
-	char peek(int i = 0)
+	char peek(size_t i = 0)
 	{
 		return (*this)[pos + i];
 	}
@@ -78,6 +91,11 @@ public:
 	{
 		pos += i;
 	}
+	// 跳转到指定位置
+	void jump(size_t i)
+	{
+		pos = i;
+	}
 	// 获取当前位置
 	int getPos()
 	{
@@ -89,4 +107,3 @@ public:
 		return str;
 	}
 };
-

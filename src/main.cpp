@@ -8,7 +8,7 @@
  *
  */
 
-#define TEST_UNIT semTest
+#define TEST_UNIT metaTest
 
 #ifndef TEST_UNIT
 

@@ -57,7 +57,7 @@ public:
 		}
 		return lineNo;
 	}
-	void printCodeCtx()
+	void printContext()
 	{
 		int lineNo = getLineNo();
 		int startLine = lineNo - 1 > 0 ? lineNo - 1 : 1;

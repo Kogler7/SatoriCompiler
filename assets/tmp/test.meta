@@ -1,0 +1,26 @@
+//sfdse
+
+#meta SEMANTIC {{}}
+#meta PATTERN ${$}
+#meta MAPPING ${$}
+#meta IGNORE %{%}
+
+MAPPING ${
+    qwertyu {{
+        zxcvb
+    }}
+
+    uiyt {{
+        ftt
+    }}
+$}
+
+PATTERN ${
+    afghjkl {{
+        sefesf
+    }}
+$}
+
+%{
+    usihduieuashiu
+%}

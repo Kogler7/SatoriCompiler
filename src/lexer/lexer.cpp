@@ -119,7 +119,7 @@ vector<token> Lexer::tokenize(string fileName)
             auto lc = vCode.getCurLineCol();
             error << "Tokenize failed at <" << lc.first << ", " << lc.second << ">" << endl;
             // 打印出错位置的上下文
-            vCode.printCodeCtx();
+            vCode.printContext();
             vCode.skipToNextLine();
         }
     }
