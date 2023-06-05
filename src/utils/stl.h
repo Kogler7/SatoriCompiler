@@ -18,7 +18,7 @@
 std::string trim(const std::string &str, const std::string &whitespace = " \t\0");
 
 template <typename T>
-std::string container2str(T s, std::string sep = ", ", std::string lr = "{}")
+std::string container2str(const T &s, std::string sep = ", ", std::string lr = "{}")
 {
     std::stringstream ss;
     if (lr.size() > 0)

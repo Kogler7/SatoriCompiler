@@ -49,7 +49,7 @@ public:
         lastVT = g.lastVT;
         opt = g.opt;
     }
-    void printFirstVT();
-    void printLastVT();
-    void printOPT();
+    void printFirstVT() const;
+    void printLastVT() const;
+    void printOPT() const;
 };

@@ -33,7 +33,7 @@ public:
 		string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 		return Viewer(str);
 	}
-	Viewer(string &str) : str(str) {}
+	Viewer(const string &str) : str(str) {}
 	Viewer(const Viewer &v)
 	{
 		str = v.str;
@@ -44,16 +44,16 @@ public:
 		str = v.str;
 		pos = v.pos;
 	}
-	bool operator>(Viewer &v)
+	bool operator>(Viewer &v) const
 	{
 		return pos > v.pos;
 	}
-	bool operator>=(Viewer &v)
+	bool operator>=(Viewer &v) const
 	{
 		return pos >= v.pos;
 	}
 	// 获取第i个字符
-	char operator[](size_t i)
+	char operator[](size_t i) const
 	{
 		if (i >= str.size())
 		{
@@ -67,7 +67,7 @@ public:
 		return str.size();
 	}
 	// 获取当前字符
-	char peek(size_t i = 0)
+	char peek(size_t i = 0) const
 	{
 		return (*this)[pos + i];
 	}
@@ -82,7 +82,7 @@ public:
 		return (*this)[++pos];
 	}
 	// 判断是否到达末尾
-	bool ends()
+	bool ends() const
 	{
 		return pos >= str.size();
 	}
@@ -97,7 +97,7 @@ public:
 		pos = i;
 	}
 	// 获取当前位置
-	size_t getPos()
+	size_t getPos() const
 	{
 		return pos;
 	}

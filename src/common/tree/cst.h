@@ -45,7 +45,7 @@ public:
 
     static cst_node_ptr_t createNode(node_type type, const string &symbol, size_t line, size_t col);
 
-    cst_node_t &operator[](size_t index);
+    cst_node_t &operator[](size_t index) const;
     cst_node_t &operator<<(const cst_node_ptr_t node);
 
     string desc() const override;

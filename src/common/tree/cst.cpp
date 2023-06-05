@@ -22,7 +22,7 @@ cst_node_ptr_t ConcreteSyntaxTreeNode::createNode(node_type type, const string &
     return make_shared<cst_node_t>(type, symbol, line, col);
 }
 
-cst_node_t &ConcreteSyntaxTreeNode::operator[](size_t index)
+cst_node_t &ConcreteSyntaxTreeNode::operator[](size_t index) const
 {
     return static_cast<cst_node_t &>(AbstractTreeNode<ast_node_data>::operator[](index));
 }

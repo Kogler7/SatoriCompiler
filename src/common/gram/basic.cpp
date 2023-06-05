@@ -149,7 +149,7 @@ void Grammar::extractLeftCommonFactor()
     }
 }
 
-void Grammar::printRules()
+void Grammar::printRules() const
 {
     info << "Grammar: Rules:" << endl;
     for (auto it = rules.begin(); it != rules.end(); it++)
@@ -166,19 +166,19 @@ void Grammar::printRules()
     }
 }
 
-void Grammar::printTerminals()
+void Grammar::printTerminals() const
 {
     info << "Terminals:" << endl;
     cout << set2str(terminals) << endl;
 }
 
-void Grammar::printNonTerms()
+void Grammar::printNonTerms() const
 {
     info << "Non-terminals:" << endl;
     cout << set2str(nonTerms) << endl;
 }
 
-vector<token> Grammar::transferTokens(vector<token> tokens)
+vector<token> Grammar::transferTokens(const vector<token> &tokens) const
 {
     info << "Transferring tokens..." << endl;
     vector<token> res;
@@ -198,7 +198,7 @@ vector<token> Grammar::transferTokens(vector<token> tokens)
             debug(0) << "tok2sym: " << t.value << endl;
             res.push_back(
                 token(
-                    make_shared<symbol_t>(tok2sym[t.type]),
+                    make_shared<symbol_t>(tok2sym.at(t.type)),
                     t.value,
                     t.line,
                     t.col));

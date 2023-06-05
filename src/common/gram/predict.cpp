@@ -20,7 +20,7 @@
         changed = changed || flag;              \
     }
 
-bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
+bool PredictiveGrammar::isLL1Grammar() const // 判断是否为LL(1)文法
 {
     info << "PredictiveGrammar: Checking LL(1)" << endl;
     // 假定First集、Follow集、Select集已经计算完毕
@@ -28,25 +28,25 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
     {
         debug(0) << "Processing Non-Terminal " << A << endl;
         // 对于每个产生式A->α
-        for (auto &alpha : rules[A])
+        for (auto &alpha : rules.at(A))
         {
             product_t pA(A, alpha);
             debug(1) << format("Processing Production $->$", A, vec2str(alpha)) << endl;
             // 计算Select集
-            symset_t selectA = select[pA];
+            symset_t selectA = select.at(pA);
             debug(1) << format("Select($->$) = $", A, vec2str(alpha), set2str(selectA)) << endl;
             // 检查是否有空产生式
-            bool aHasEpsilon = _find(firstS[alpha], EPSILON);
+            bool aHasEpsilon = _find(firstS.at(alpha), EPSILON);
             // 检查是否有多个产生式的Select集相交
             for (auto &B : nonTerms)
             {
                 if (A == B)
                     continue;
-                for (auto &beta : rules[B])
+                for (auto &beta : rules.at(B))
                 {
                     symset_t resSet;
                     product_t pB(B, beta);
-                    bool bHasEpsilon = _find(firstS[beta], EPSILON);
+                    bool bHasEpsilon = _find(firstS.at(beta), EPSILON);
                     if (aHasEpsilon && bHasEpsilon)
                     {
                         debug(1) << format(
@@ -54,7 +54,7 @@ bool PredictiveGrammar::isLL1Grammar() // 判断是否为LL(1)文法
                             A, vec2str(alpha), B, vec2str(beta));
                         return false;
                     }
-                    symset_t selectB = select[pB];
+                    symset_t selectB = select.at(pB);
                     set_intersection(
                         selectA.begin(),
                         selectA.end(),
@@ -380,47 +380,47 @@ void PredictiveGrammar::calcFirstWithLeftRecursion()
     }
 }
 
-void PredictiveGrammar::printFirst()
+void PredictiveGrammar::printFirst() const
 {
     info << "First:" << endl;
     tb_head | "NonTerm" | "First" = table::AL_LFT;
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
-        new_row | *it | set2str(first[*it]);
+        new_row | *it | set2str(first.at(*it));
     }
     cout << tb_view();
 }
 
-void PredictiveGrammar::printFollow()
+void PredictiveGrammar::printFollow() const
 {
     info << "Follow:" << endl;
     tb_head | "NonTerm" | "Follow" = table::AL_LFT;
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
-        new_row | *it | set2str(follow[*it]);
+        new_row | *it | set2str(follow.at(*it));
     }
     cout << tb_view();
 }
 
-void PredictiveGrammar::printFirstS()
+void PredictiveGrammar::printFirstS() const
 {
     info << "First of Symstr: " << endl;
     tb_head | "Symstr" | "First" = table::AL_LFT;
     for (auto it = products.begin(); it != products.end(); it++)
     {
-        symstr_t &s = it->second;
-        new_row | vec2str(s) | set2str(firstS[s]);
+        const symstr_t &s = it->second;
+        new_row | vec2str(s) | set2str(firstS.at(s));
     }
     cout << tb_view();
 }
 
-void PredictiveGrammar::printSelect()
+void PredictiveGrammar::printSelect() const
 {
     info << "Select: " << endl;
     tb_head | "Product" | "Select" = table::AL_LFT;
     for (auto it = products.begin(); it != products.end(); it++)
     {
-        new_row | it->first + "->" + vec2str(it->second) | set2str(select[*it]);
+        new_row | it->first + "->" + vec2str(it->second) | set2str(select.at(*it));
     }
     cout << tb_view();
 }

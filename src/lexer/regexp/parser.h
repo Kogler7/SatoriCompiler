@@ -3,9 +3,9 @@
  * @author Zhenjie Wei (2024108@bjtu.edu.cn)
  * @brief Regular Expression to Finite Automaton
  * @date 2023-04-22
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #pragma once
@@ -36,10 +36,10 @@ public:
 	void regexpPreproc();
 	void tmpReg2postfix();
 	void postfix2FA();
-	string getStackDesc();
-	string getRawReg() { return rawReg; }
-	string getTmpReg() { return tmpReg; }
-	string getPostfix() { return postfix; }
-	FiniteAutomaton getNFA() { return nfa; }
+	string getStackDesc() const;
+	string getRawReg() const { return rawReg; }
+	string getTmpReg() const { return tmpReg; }
+	string getPostfix() const { return postfix; }
+	FiniteAutomaton getNFA() const { return nfa; }
 	FiniteAutomaton parse();
 };

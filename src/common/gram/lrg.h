@@ -73,7 +73,7 @@ struct item_less
 typedef set<lr_item_t, item_less> cluster_t;
 typedef vector<cluster_t> clusters_t;
 
-inline string cluster2str(cluster_t c)
+inline string cluster2str(const cluster_t &c)
 {
     string s = "{";
     for (int i = 0; i < c.size(); i++)
@@ -155,7 +155,7 @@ public:
     clusters_t clusters;
     vector<lr_item_t> items;
     table_t<state_id_t, symbol_t, state_id_t> goTrans;
-    void printItems();
-    void printClusters();
-    void printGoTrans();
+    void printItems() const;
+    void printClusters() const;
+    void printGoTrans() const;
 };

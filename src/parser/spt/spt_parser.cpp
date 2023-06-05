@@ -42,7 +42,7 @@ void StackPredictiveTableParser::calcPredictTable()
     }
 }
 
-void StackPredictiveTableParser::printPredictTable()
+void StackPredictiveTableParser::printPredictTable() const
 {
     info << "Predictive Table: " << std::endl;
     tb_head | "Non-Term";
@@ -64,7 +64,7 @@ void StackPredictiveTableParser::printPredictTable()
                 auto crd = mkcrd(nonTerm, terminal);
                 if (predict.find(crd) != predict.end())
                 {
-                    std::string production = nonTerm + " -> " + compact(predict[crd]);
+                    std::string production = nonTerm + " -> " + compact(predict.at(crd));
                     tb_cont | production;
                 }
                 else

@@ -34,7 +34,7 @@ string descStack(stack<T> s, int limit = 8)
     return ss.str();
 }
 
-pair<string, string> SimpleLR1Parser::descAction(const action_t &act)
+pair<string, string> SimpleLR1Parser::descAction(const action_t &act) const
 {
     string a, b;
     stringstream ss;
@@ -54,7 +54,7 @@ pair<string, string> SimpleLR1Parser::descAction(const action_t &act)
     else if (holds_alternative<accept_t>(act) && get<accept_t>(act))
     {
         a = "Reduce";
-        ss << grammar.symStart << " -> " << compact(*(grammar.rules[grammar.symStart].begin()));
+        ss << grammar.symStart << " -> " << compact(*(grammar.rules.at(grammar.symStart).begin()));
     }
     else
     {

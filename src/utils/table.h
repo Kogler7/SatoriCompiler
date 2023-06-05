@@ -136,8 +136,8 @@ namespace table
         void resize();
         void resetTabLayout();
         std::pair<size_t, align_t> calcTabLayout(const Cell &cell, size_t i, bool V);
-        std::string geneField(const std::string &field, size_t width, size_t c, align_t align, l_sign style);
-        std::string geneHorizLine(int r, bool L, bool R, bool V);
+        std::string geneField(const std::string &field, size_t width, size_t c, align_t align, l_sign style) const;
+        std::string geneHorizLine(int r, bool L, bool R, bool V) const;
     };
 }
 

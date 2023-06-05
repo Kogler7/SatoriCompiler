@@ -134,7 +134,7 @@ void SLR1Grammar::calcSLR1Table()
     }
 }
 
-void SLR1Grammar::printSLR1Table()
+void SLR1Grammar::printSLR1Table() const
 {
     info << "SLR1 table:" << endl;
     tb_head | "State" = AL_CTR;
@@ -151,14 +151,14 @@ void SLR1Grammar::printSLR1Table()
         tb_cont | t = AL_CTR;
     for (int i = 0; i < clusters.size(); i++)
     {
-        cluster_t &c = clusters[i];
+        const cluster_t &c = clusters.at(i);
         new_row | "S" + to_string(i);
         for (auto &t : terminals)
         {
             coord_t coord(i, t);
             if (_find(slr1Table, coord))
             {
-                action_t action = slr1Table[coord];
+                action_t action = slr1Table.at(coord);
                 if (action.index() == 0)
                     tb_cont | Cell("ACC") & (FORE_GRE | FONT_BOL);
                 else if (action.index() == 1)
@@ -174,7 +174,7 @@ void SLR1Grammar::printSLR1Table()
             coord_t coord(i, t);
             if (_find(slr1Table, coord))
             {
-                action_t action = slr1Table[coord];
+                action_t action = slr1Table.at(coord);
                 if (action.index() == 2)
                     tb_cont | "S" + to_string(get<2>(action));
                 else
@@ -187,12 +187,12 @@ void SLR1Grammar::printSLR1Table()
     cout << tb_view(BDR_ALL);
 }
 
-void SLR1Grammar::printSLR1Table(coord_t<state_id_t, symbol_t> c)
+void SLR1Grammar::printSLR1Table(coord_t<state_id_t, symbol_t> c) const
 {
     tb_head | "State" = AL_CTR;
 }
 
-void SLR1Grammar::printLargeSLR1Table()
+void SLR1Grammar::printLargeSLR1Table() const
 {
     info << "SLR1 table:" << endl;
 }

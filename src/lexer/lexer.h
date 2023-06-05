@@ -40,8 +40,8 @@ public:
     void configLexer(const meta_t &pattern, const meta_t &ignored = meta_null);
     void addTokenType(string typeName, string regExp);
     void addIgnoredType(string typeName);
-    vector<token> tokenize(const Viewer &viewer);
-    vector<token> tokenizeFile(const string &fileName)
+    vector<token> tokenize(const Viewer &viewer) const;
+    vector<token> tokenizeFile(const string &fileName) const
     {
         return tokenize(Viewer::fromFile(fileName));
     }

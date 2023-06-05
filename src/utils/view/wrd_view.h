@@ -19,7 +19,7 @@ static constexpr inline const word_loc_t word_end = make_pair(-1, 0);
 
 class WordViewer : public Viewer
 {
-    bool isWord(word_loc_t loc)
+    bool isWord(word_loc_t loc) const
     {
         if (loc.first > 0 && !isspace(str[loc.first - 1]))
             return false;
@@ -36,13 +36,13 @@ public:
     WordViewer(string str) : Viewer(str) {}
     WordViewer(Viewer &v) : Viewer(v) {}
 
-    string operator[](word_loc_t loc)
+    string operator[](word_loc_t loc) const
     {
         assert(loc != word_npos && loc != word_end, "Invalid word location!");
         return str.substr(loc.first, loc.second - loc.first);
     }
 
-    word_loc_t find(const string &word, word_loc_t start = word_npos)
+    word_loc_t find(const string &word, word_loc_t start = word_npos) const
     {
         // 找到并返回第一个是单词且值为word的位置，否则返回word_npos
         size_t _pos;
@@ -57,7 +57,7 @@ public:
         return word_npos;
     }
 
-    word_loc_t current()
+    word_loc_t current() const
     {
         // 返回当前单词的位置
         size_t start = pos;
@@ -95,7 +95,7 @@ public:
         return current();
     }
 
-    word_loc_t advance(word_loc_t loc)
+    word_loc_t advance(word_loc_t loc) const
     {
         // 如果当前位置不是空白，向前找到当前单词的结尾空白
         while (loc.first < str.length() && !isspace(str[loc.first]))
@@ -126,7 +126,7 @@ public:
         return current();
     }
 
-    word_loc_t retreat(word_loc_t loc)
+    word_loc_t retreat(word_loc_t loc) const
     {
         // 如果当前位置不是空白，向后找到当前单词的前导空白
         while (loc.first > 0 && !isspace(str[loc.first]))
@@ -174,7 +174,7 @@ public:
         return *this;
     }
 
-    bool terminate()
+    bool terminate() const
     {
         // 判断是否已经到达末尾
         return pos >= str.length();

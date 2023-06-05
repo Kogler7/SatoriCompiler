@@ -26,7 +26,7 @@ void FiniteAutomaton::setStartState(state_id_t id)
  * @return true		匹配成功
  * @return false	匹配失败
  */
-bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start)
+bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start) const
 {
 	if (start == -1) // 未指定起始状态，使用默认起始状态
 		start = startState;
@@ -38,7 +38,7 @@ bool FiniteAutomaton::accepts(Viewer &view, string &result, state_id_t start)
 	if (transitions.find(start) != transitions.end())
 	{
 		char c = subView.step(); // 获取当前字符，视图向后移动一位
-		transition_map_t available = transitions[start];
+		transition_map_t available = transitions.at(start);
 		bool resFlag = false;
 		string tmpRes;			  // 保存当前匹配结果
 		Viewer tmpView = subView; // 保存当前视图，用于回溯
@@ -95,10 +95,9 @@ void FiniteAutomaton::setState(state_id_t id, bool isFinal)
 	states[id].isFinal = isFinal;
 }
 
-void FiniteAutomaton::print()
+void FiniteAutomaton::printStates() const
 {
-	// 打印状态
-	info << "States: ";
+	info << "FiniteAutomaton: States: ";
 	for (const auto &state : states)
 	{
 		cout << state.id;
@@ -113,9 +112,11 @@ void FiniteAutomaton::print()
 		cout << " ";
 	}
 	cout << endl;
+}
 
-	// 打印转移关系
-	info << "Transitions:" << endl;
+void FiniteAutomaton::printTransitions() const
+{
+	info << "FiniteAutomaton: Transitions:" << endl;
 	for (const auto &transition : transitions)
 	{
 		state_id_t from = transition.first;

@@ -60,7 +60,7 @@ string &zTrim(string &s)
     return s;
 }
 
-vector<token> Lexer::tokenize(const Viewer &viewer)
+vector<token> Lexer::tokenize(const Viewer &viewer) const
 {
     info << "Tokenizing... " << endl;
     vector<token> tokens;
@@ -73,7 +73,7 @@ vector<token> Lexer::tokenize(const Viewer &viewer)
         Viewer matchedView = vCode;
         for (auto typ : typeOrder) // 按序遍历所有的状态自动机
         {
-            const auto &faVec = faMap[typ];
+            const auto &faVec = faMap.at(typ);
             for (auto nfa : faVec)
             {
                 Viewer vTmp = vCode;
@@ -99,7 +99,7 @@ vector<token> Lexer::tokenize(const Viewer &viewer)
             if (!_find(ignoredTypes, matchedType))
             {
                 // 忽略空白和注释，其他的都作为词法单元
-                int line, col;
+                size_t line, col;
                 tie(line, col) = vCode.getCurLineCol();
                 tokens.push_back(
                     token(matchedType, matchedToken, line, col));

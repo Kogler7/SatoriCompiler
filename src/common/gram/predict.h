@@ -44,9 +44,9 @@ public:
         follow = g.follow;
         select = g.select;
     }
-    void printFirst();
-    void printFollow();
-    void printFirstS();
-    void printSelect();
-    bool isLL1Grammar();
+    void printFirst() const;
+    void printFollow() const;
+    void printFirstS() const;
+    void printSelect() const;
+    bool isLL1Grammar() const;
 };

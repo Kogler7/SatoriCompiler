@@ -24,9 +24,9 @@ public:
         tree = cst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
         calcPredictTable();
     }
-    void printPredictTable();
+    void printPredictTable() const;
     bool parse(vector<token> input);
-    cst_tree_ptr_t getTree() { return tree; }
+    cst_tree_ptr_t getTree() const { return tree; }
 };
 
 typedef StackPredictiveTableParser SPTParser;

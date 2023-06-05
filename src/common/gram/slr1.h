@@ -30,7 +30,7 @@ public:
         slr1Table = g.slr1Table;
     }
     table_t<state_id_t, symbol_t, action_t> slr1Table;
-    void printSLR1Table();
-    void printSLR1Table(coord_t<state_id_t, symbol_t> c);
-    void printLargeSLR1Table();
+    void printSLR1Table() const;
+    void printSLR1Table(coord_t<state_id_t, symbol_t> c) const;
+    void printLargeSLR1Table() const;
 };

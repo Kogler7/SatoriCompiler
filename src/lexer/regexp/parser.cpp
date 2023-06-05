@@ -13,7 +13,7 @@
 #include "utils/log.h"
 #include "define.h"
 
-string RegexpParser::getStackDesc()
+string RegexpParser::getStackDesc() const
 {
 	stack<sub_nfa_t> tmpStack = nfaStack;
 	vector<sub_nfa_t> tmpVec;
@@ -29,8 +29,8 @@ string RegexpParser::getStackDesc()
 		sub_nfa_t state = *it;
 		int st = state.first;
 		int ed = state.second;
-		bool stFinal = nfa.getStates()[st].isFinal;
-		bool edFinal = nfa.getStates()[ed].isFinal;
+		bool stFinal = nfa.getStates().at(st).isFinal;
+		bool edFinal = nfa.getStates().at(ed).isFinal;
 		char buf[16];
 		sprintf_s(buf, "(%d%s, %d%s) ", st, stFinal ? "*" : "", ed, edFinal ? "*" : "");
 		desc += buf;

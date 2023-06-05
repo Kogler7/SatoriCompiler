@@ -182,7 +182,7 @@ void LRGrammar::calcItems()
     }
 }
 
-void LRGrammar::printItems()
+void LRGrammar::printItems() const
 {
     info << "LR items:" << endl;
     tb_head | TB_TAB | TB_TAB | TB_TAB | MD_TAB | "Items";
@@ -199,7 +199,7 @@ void LRGrammar::printItems()
     cout << tb_view(BDR_RUD);
 }
 
-void LRGrammar::printClusters()
+void LRGrammar::printClusters() const
 {
     info << "LR clusters:" << endl;
     for (size_t i = 0; i < clusters.size(); i++)
@@ -208,7 +208,7 @@ void LRGrammar::printClusters()
     }
 }
 
-void LRGrammar::printGoTrans()
+void LRGrammar::printGoTrans() const
 {
     info << "LR go transitions:" << endl;
     tb_head | "State";
@@ -230,7 +230,7 @@ void LRGrammar::printGoTrans()
         {
             coord_t crd(i, t);
             if (_find(goTrans, crd))
-                tb_cont | "C" + to_string(goTrans[crd]);
+                tb_cont | "C" + to_string(goTrans.at(crd));
             else
                 tb_cont | "";
         }
@@ -238,7 +238,7 @@ void LRGrammar::printGoTrans()
         {
             coord_t crd(i, v);
             if (_find(goTrans, crd))
-                tb_cont | "C" + to_string(goTrans[crd]);
+                tb_cont | "C" + to_string(goTrans.at(crd));
             else
                 tb_cont | "";
         }

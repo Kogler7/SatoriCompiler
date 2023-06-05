@@ -63,7 +63,7 @@ public:
         return it == tree_childs<data_t>::end() ? -1 : it - tree_childs<data_t>::begin();
     }
 
-    tree_node_t<data_t> &operator[](size_t index)
+    tree_node_t<data_t> &operator[](size_t index) const
     {
         const auto &child = this->at(index);
         return static_cast<tree_node_t<data_t> &>(*child);

@@ -45,7 +45,7 @@ public:
 		initialize();
 	}
 
-	pair<size_t, size_t> getCurLineCol()
+	pair<size_t, size_t> getCurLineCol() const
 	{
 		size_t ln = getLineNo();
 		size_t col = getPos() - (ln > 1 ? lineNoVec[ln - 2] + 1 : 0);
@@ -74,14 +74,14 @@ public:
 		return lineNo;
 	}
 
-	code_loc_t getLnAndCol()
+	code_loc_t getLnAndCol() const
 	{
 		size_t lineNo = getLineNo();
 		size_t start = lineNo > 1 ? lineNoVec[lineNo - 2] : 0;
 		return make_pair(lineNo, pos - start);
 	}
 
-	void printContext()
+	void printContext() const
 	{
 		size_t ln, col;
 		tie(ln, col) = getLnAndCol();

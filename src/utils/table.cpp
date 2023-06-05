@@ -307,7 +307,7 @@ std::pair<size_t, align_t> TableRender::calcTabLayout(const Cell &cell, size_t i
     return res;
 }
 
-std::string TableRender::geneField(const std::string &field, size_t width, size_t c, align_t align, l_sign style)
+std::string TableRender::geneField(const std::string &field, size_t width, size_t c, align_t align, l_sign style) const
 {
     std::stringstream ss;
     std::string pre, post;
@@ -341,7 +341,7 @@ std::string TableRender::geneField(const std::string &field, size_t width, size_
     return ss.str();
 }
 
-std::string TableRender::geneHorizLine(int r, bool L, bool R, bool V)
+std::string TableRender::geneHorizLine(int r, bool L, bool R, bool V) const
 {
     assert(r < int(rowMax), "Table Render: Row index out of range.");
     static std::vector<bool> flags;

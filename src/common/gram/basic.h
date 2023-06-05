@@ -65,10 +65,10 @@ public:
     }
     void eliminateLeftRecursion();
     void extractLeftCommonFactor();
-    void printRules();
-    void printTerminals();
-    void printNonTerms();
-    vector<token> transferTokens(vector<token> tokens);
+    void printRules() const;
+    void printTerminals() const;
+    void printNonTerms() const;
+    vector<token> transferTokens(const vector<token> &tokens) const;
 };
 
 class TermTreeNode;
@@ -114,7 +114,7 @@ public:
             static_pointer_cast<AbstractTreeNode<tt_node_data>>(node)));
     }
 
-    TermTreeNode &operator[](size_t index)
+    TermTreeNode &operator[](size_t index) const
     {
         return static_cast<TermTreeNode &>(AbstractTreeNode<tt_node_data>::operator[](index));
     }

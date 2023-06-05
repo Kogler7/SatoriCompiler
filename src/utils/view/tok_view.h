@@ -28,24 +28,24 @@ public:
         tokens = v.tokens;
         index = v.index;
     }
-    token &operator[](size_t i)
+    token &operator[](size_t i) const
     {
         assert(i >= 0 && i < tokens.size());
         return tokens[i];
     }
-    size_t pos()
+    size_t pos() const
     {
         return index;
     }
-    size_t size()
+    size_t size() const
     {
         return tokens.size();
     }
-    bool ends()
+    bool ends() const
     {
         return index >= tokens.size();
     }
-    token &current()
+    token &current() const
     {
         return (*this)[index];
     }
@@ -53,14 +53,14 @@ public:
     {
         index++;
     }
-    vector<token> rest()
+    vector<token> rest() const
     {
         vector<token> ret;
         for (size_t i = index; i < tokens.size(); i++)
             ret.push_back(tokens[i]);
         return ret;
     }
-    vector<string> restTypes()
+    vector<string> restTypes() const
     {
         vector<string> ret;
         for (size_t i = index; i < tokens.size(); i++)

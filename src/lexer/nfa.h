@@ -36,14 +36,15 @@ class FiniteAutomaton
 
 public:
     FiniteAutomaton() {}
-    int addState(bool isFinal = false);                                // 添加状态
-    void setStartState(state_id_t id);                                 // 设置开始状态
-    void setState(state_id_t id, bool isFinal);                        // 设置状态（是否为终态）
-    void addTransition(state_id_t from, state_id_t to, char symbol);   // 添加转移
-    bool accepts(Viewer &view, string &result, state_id_t start = -1); // 从指定状态开始匹配，递归地匹配每个字符，直到无法匹配为止
-    void print();                                                      // 打印自动机的状态和转移函数
+    int addState(bool isFinal = false);                              // 添加状态
+    void setStartState(state_id_t id);                               // 设置开始状态
+    void setState(state_id_t id, bool isFinal);                      // 设置状态（是否为终态）
+    void addTransition(state_id_t from, state_id_t to, char symbol); // 添加转移
+    bool accepts(Viewer &view, string &result, state_id_t start = -1) const; // 从指定状态开始匹配，递归地匹配每个字符，直到无法匹配为止
+    void printStates() const;                                          // 打印状态集合
+    void printTransitions() const;                                     // 打印转移函数
 
-    vector<State> getStates()
+    vector<State> getStates() const
     {
         return states;
     }

@@ -169,33 +169,33 @@ void OperatorPrecedenceGrammar::calcOPT()
     }
 }
 
-void OperatorPrecedenceGrammar::printFirstVT()
+void OperatorPrecedenceGrammar::printFirstVT() const
 {
     info << "FirstVT: " << endl;
     tb_head | "Symbol" | "FirstVT" = table::AL_CTR;
     set_col | table::AL_CTR;
     for (auto &t : nonTerms)
     {
-        new_row | t + ":" | set2str(firstVT[t]);
+        new_row | t + ":" | set2str(firstVT.at(t));
         tb_cont = table::AL_LFT;
     }
     cout << tb_view(table::BDR_RUD);
 }
 
-void OperatorPrecedenceGrammar::printLastVT()
+void OperatorPrecedenceGrammar::printLastVT() const
 {
     info << "LastVT: " << endl;
     tb_head | "Symbol" | "LastVT" = table::AL_CTR;
     set_col | table::AL_CTR;
     for (auto &t : nonTerms)
     {
-        new_row | t + ":" | set2str(lastVT[t]);
+        new_row | t + ":" | set2str(lastVT.at(t));
         tb_cont = table::AL_LFT;
     }
     cout << tb_view(table::BDR_RUD);
 }
 
-void OperatorPrecedenceGrammar::printOPT()
+void OperatorPrecedenceGrammar::printOPT() const
 {
     info << "Operator Precedence Table:" << endl;
     string ops[4] = {"", "<", "=", ">"};
@@ -210,7 +210,7 @@ void OperatorPrecedenceGrammar::printOPT()
         new_row | t;
         for (auto &t2 : terminals)
         {
-            int opt_val = opt[mkcrd(t, t2)] + 2;
+            int opt_val = opt.at(mkcrd(t, t2)) + 2;
             assert(
                 opt_val >= 0 && opt_val <= 3,
                 format("OperatorPrecedenceGrammar: Invalid opt_val: $.\n", opt_val));

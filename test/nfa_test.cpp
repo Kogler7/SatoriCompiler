@@ -22,7 +22,8 @@ void nfaTest()
     convertor.tmpReg2postfix();
     convertor.postfix2FA();
     FiniteAutomaton nfa = convertor.getNFA();
-    nfa.print();
+    nfa.printStates();
+    nfa.printTransitions();
     string word;
     while (true)
     {
