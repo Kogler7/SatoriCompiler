@@ -14,7 +14,8 @@
 void lexerTest()
 {
     Lexer lexer("./assets/lex/cpp.lex");
-    // auto tokens = lexer.tokenize("./assets/src/code.cpp");
-    auto tokens = lexer.tokenize("./assets/src/error.cpp");
-    lexer.printTokens(tokens);
+    // Viewer codeViewer = Viewer::fromFile("./assets/src/code.cpp");
+    Viewer codeViewer = Viewer::fromFile("./assets/src/error.cpp");
+    auto tokens = lexer.tokenize(codeViewer);
+    Lexer::printTokens(tokens);
 }

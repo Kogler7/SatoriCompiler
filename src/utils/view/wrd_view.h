@@ -11,9 +11,11 @@
 #pragma once
 
 #include "viewer.h"
+#include "utils/log.h"
 
 using word_loc_t = pair<size_t, size_t>;
 static constexpr inline const word_loc_t word_npos = make_pair(-1, -1);
+static constexpr inline const word_loc_t word_end = make_pair(-1, 0);
 
 class WordViewer : public Viewer
 {
@@ -36,6 +38,7 @@ public:
 
     string operator[](word_loc_t loc)
     {
+        assert(loc != word_npos && loc != word_end, "Invalid word location!");
         return str.substr(loc.first, loc.second - loc.first);
     }
 
@@ -63,6 +66,8 @@ public:
             // 如果当前位置是空白，向前找到下一个单词的开头
             while (isspace(str[start]) && start < str.length())
                 start++;
+            if (start == str.length())
+                return word_end;
         }
         else
         {
@@ -70,7 +75,6 @@ public:
             while (start > 0 && !isspace(str[start - 1]))
                 start--;
         }
-        pos = start;
         // 向后找到当前单词的结尾
         size_t end = start;
         while (end < str.length() && !isspace(str[end]))
@@ -86,6 +90,8 @@ public:
         // 如果当前位置是空白，向前找到下一个单词的开头
         while (isspace(str[pos]) && pos < str.length())
             pos++;
+        if (pos == str.length())
+            return word_end;
         return current();
     }
 
@@ -97,6 +103,8 @@ public:
         // 如果当前位置是空白，向前找到下一个单词的开头
         while (isspace(str[loc.first]) && loc.first < str.length())
             loc.first++;
+        if (loc.first == str.length())
+            return word_end;
         loc.second = loc.first;
         // 向后找到下一个单词的结尾
         while (loc.second < str.length() && !isspace(str[loc.second]))
@@ -164,6 +172,12 @@ public:
                 pos = l1.first + word.length();
         }
         return *this;
+    }
+
+    bool terminate()
+    {
+        // 判断是否已经到达末尾
+        return pos >= str.length();
     }
 
     WordViewer &jumpToLoc(word_loc_t loc)

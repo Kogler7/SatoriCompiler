@@ -10,15 +10,15 @@
 
 #include "test.h"
 #include "lexer/lexer.h"
-#include "parser/ebnf.h"
+#include "parser/syntax.h"
 #include "parser/slr1/parser.h"
 #include "utils/log.h"
 
 void slr1Test()
 {
-    EBNFParser ebnfParser("./assets/lex/syntax.lex");
-    // Grammar g = ebnfParser.parse("./assets/stx/lab5r.stx");
-    Grammar g = ebnfParser.parse("./assets/tmp/wjy.stx");
+    SyntaxParser syntax("./assets/lex/syntax.lex");
+    Grammar g = syntax.parse("./assets/stx/lab5r.stx");
+    // Grammar g = syntax.parse("./assets/tmp/wjy.stx");
     SLR1Grammar G = SLR1Grammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
@@ -28,10 +28,10 @@ void slr1Test()
     G.printFollow();
     SLR1Parser slr1(G);
     Lexer lexer("./assets/lex/lab3.lex");
-    auto tokens = lexer.tokenize("./assets/src/lab5.txt");
-    lexer.printTokens(tokens);
+    auto tokens = lexer.tokenizeFile("./assets/src/lab5.txt");
+    Lexer::printTokens(tokens);
     tokens = G.transferTokens(tokens);
-    lexer.printTokens(tokens);
+    Lexer::printTokens(tokens);
     G.printItems();
     G.printClusters();
     G.printGoTrans();

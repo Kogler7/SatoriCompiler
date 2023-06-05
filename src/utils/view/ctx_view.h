@@ -15,6 +15,15 @@
 class ContextViewer : public Viewer
 {
 	vector<int> lineNoVec;
+	void initialize()
+	{
+		auto pos = str.find('\n');
+		while (pos != string::npos)
+		{
+			lineNoVec.push_back(pos);
+			pos = str.find('\n', pos + 1);
+		}
+	}
 
 public:
 	void operator=(Viewer &v)
@@ -23,12 +32,11 @@ public:
 	}
 	ContextViewer(string str) : Viewer(str)
 	{
-		auto pos = str.find('\n');
-		while (pos != string::npos)
-		{
-			lineNoVec.push_back(pos);
-			pos = str.find('\n', pos + 1);
-		}
+		initialize();
+	}
+	ContextViewer(const Viewer &v) : Viewer(v)
+	{
+		initialize();
 	}
 	pair<int, int> getCurLineCol()
 	{

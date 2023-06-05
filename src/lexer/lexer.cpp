@@ -11,12 +11,12 @@
 #include "lexer.h"
 #include "nfa.h"
 #include "regexp/parser.h"
-#include <fstream>
 #include <sstream>
 #include "utils/stl.h"
 #include "utils/log.h"
 #include "utils/table.h"
 #include "utils/view/ctx_view.h"
+#include "utils/view/wrd_view.h"
 
 #define DEBUG_LEVEL -1
 
@@ -60,19 +60,11 @@ string &zTrim(string &s)
     return s;
 }
 
-vector<token> Lexer::tokenize(string fileName)
+vector<token> Lexer::tokenize(const Viewer &viewer)
 {
-    ifstream ifs(fileName);
-    assert(ifs.is_open(), "File not found: " + fileName);
-    string code(
-        (istreambuf_iterator<char>(ifs)),
-        (istreambuf_iterator<char>()));
-    ifs.close();
-    info << "Code: " << endl;
-    cout << code << endl;
     info << "Tokenizing... " << endl;
     vector<token> tokens;
-    ContextViewer vCode(code);
+    ContextViewer vCode(viewer);
     while (!vCode.ends())
     {
         bool matched = false;
@@ -126,7 +118,7 @@ vector<token> Lexer::tokenize(string fileName)
     return tokens;
 }
 
-void Lexer::printTokens(vector<token> tokens)
+void Lexer::printTokens(const vector<token> &tokens)
 {
     info << "Tokens: " << endl;
     tb_head | "Type" | "Value";
@@ -166,41 +158,41 @@ vector<string> split(const string &s, char delimiter)
     return move(tokens);
 }
 
-void Lexer::readLexerDef(string fileName)
+void Lexer::configLexer(const meta_t &pattern, const meta_t &ignored)
 {
-    ifstream ifs(fileName);
-    assert(ifs.is_open(), "File not found: " + fileName);
-    vector<string> tokens;
-    // 读取关键字，使用cin循环读入，并存到vector中
-    string token;
-    while (ifs >> token)
-    {
-        tokens.push_back(token);
-    }
-    for (auto tok : tokens)
-    {
-        debug(1) << tok << endl;
-    }
     // 解析PATTERN
-    auto patternIt = find(tokens.begin(), tokens.end(), "PATTERN");
-    if (patternIt != tokens.end())
+    assert(pattern.size() > 0, "Lexer: PATTERN is empty!");
+    for (auto &content : pattern)
     {
-        auto ptnStart = find(patternIt, tokens.end(), "${");
-        auto ptnEnd = find(patternIt, tokens.end(), "$}");
-        for (auto it = ptnStart + 1; it != ptnEnd; it += 2)
+        WordViewer viewer(content);
+        while (!viewer.terminate())
         {
-            addTokenType(*it, *(it + 1));
+            word_loc_t typeLoc = viewer.current();
+            string typeName = viewer[typeLoc];
+            word_loc_t regLoc = viewer.advance();
+            assert(regLoc != word_npos, "Lexer: Regexp not found!");
+            string regExp = viewer[regLoc];
+            addTokenType(typeName, regExp);
+            viewer.advance();
         }
     }
     // 解析IGNORE
-    auto ignoreIt = find(tokens.begin(), tokens.end(), "IGNORE");
-    if (ignoreIt != tokens.end())
+    if (ignored != meta_null)
     {
-        auto ignStart = find(ignoreIt, tokens.end(), "${");
-        auto ignEnd = find(ignoreIt, tokens.end(), "$}");
-        for (auto it = ignStart + 1; it != ignEnd; it++)
+        for (auto &content : ignored)
         {
-            addIgnoredType(*it);
+            WordViewer viewer(content);
+            while (!viewer.terminate())
+            {
+                word_loc_t typeLoc = viewer.current();
+                string typeName = viewer[typeLoc];
+                addIgnoredType(typeName);
+                viewer.advance();
+            }
         }
+    }
+    else
+    {
+        warn << "Lexer: IGNORED not found!" << endl;
     }
 }

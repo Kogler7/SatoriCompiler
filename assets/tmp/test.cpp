@@ -20,8 +20,8 @@ void lexerMain()
 	// lexer.readCodeFile("./assets/code.cpp");
 	lexer.readCodeFile("./assets/error.cpp");
 	// lexer.readCodeFile("./assets/lexer.cpp");
-	lexer.tokenize();
-	lexer.printTokens();
+	lexer.tokenizeFile();
+	Lexer::printTokens();
 }
 
 void lexerTest()
@@ -48,8 +48,8 @@ void lexerTest()
 	lexer.addTokenType(INTEGER, "(\\-|\\+|\\e)[0-9]+");
 	lexer.addTokenType(REAL, "(\\-|\\+|\\e)[0-9]+\\.[0-9]+");
 	lexer.addTokenType(CHARACTER, "\'[\\x0a-\\x0d\\x20-x21\\0x23-\\x7e]*\'");
-	lexer.tokenize("int main() { int a = 1; int b = 2; int c = a + b; return 0; }");
-	lexer.printTokens();
+	lexer.tokenizeFile("int main() { int a = 1; int b = 2; int c = a + b; return 0; }");
+	Lexer::printTokens();
 }
 
 void nfaTest() // test for regexp2FA

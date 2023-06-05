@@ -11,14 +11,14 @@
 #include "test.h"
 #include "common/gram/predict.h"
 #include "lexer/lexer.h"
-#include "parser/ebnf.h"
+#include "parser/syntax.h"
 #include "parser/prd/parser.h"
 #include "utils/log.h"
 
 void prdTest()
 {
-    EBNFParser ebnfParser("./assets/lex/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/stx/rlcf.stx");
+    SyntaxParser syntax("./assets/lex/syntax.lex");
+    Grammar g = syntax.parse("./assets/stx/rlcf.stx");
     g.printRules();
     g.extractLeftCommonFactor();
     g.printRules();
@@ -33,10 +33,10 @@ void prdTest()
     cout << G.isLL1Grammar() << endl;
     PredictiveRecursiveDescentParser prd(G);
     Lexer lexer("./assets/lex/lab3.lex");
-    auto tokens = lexer.tokenize("./assets/src/lab3.txt");
-    lexer.printTokens(tokens);
+    auto tokens = lexer.tokenizeFile("./assets/src/lab3.txt");
+    Lexer::printTokens(tokens);
     tokens = G.transferTokens(tokens);
-    lexer.printTokens(tokens);
+    Lexer::printTokens(tokens);
     info << "result: \n"
          << prd.parse(tokens) << endl;
     prd.getTree()->print();

@@ -28,7 +28,9 @@
 using meta_name_t = string;
 using meta_mark_t = string;
 using meta_content_t = string;
-using meta_t = pair<meta_name_t, vector<meta_content_t>>;
+using meta_t = vector<meta_content_t>;
+
+static inline const meta_t meta_null = vector<meta_content_t>();
 
 inline bool operator<(const word_loc_t &a, const word_loc_t &b)
 {
@@ -56,14 +58,6 @@ class MetaParser
     map<meta_name_t, meta_t> metas;
     map<meta_mark_t, set<meta_name_t>> metaMap;
 
-public:
-    MetaParser(Viewer &v) : viewer(v)
-    {
-        parseMetaMarks();
-        parseMetas(viewer.getStr());
-        printMetas();
-    }
-
     void parseMetaMarks()
     {
         word_loc_t metaDefLoc;
@@ -83,9 +77,8 @@ public:
             metaDefLoc = viewer.find("#meta", metaDefLoc);
             assert(metaMark.length() == 4, "MetaParser: Invalid meta mark.");
             metaMap[metaMark].insert(metaName);
-            metas[metaName] = meta_t(metaName, vector<meta_content_t>());
+            metas[metaName] = vector<meta_content_t>();
         }
-        info << viewer.getStr() << endl;
     }
 
     meta_content_t parseMetas(string text)
@@ -107,16 +100,14 @@ public:
         }
         while (nextLoc != word_npos)
         {
-            info << "find" << vTmp[nextLoc] << endl;
             meta_name_t hintName = vTmp[vTmp.retreat(nextLoc)];
-            info << "Hint name: " << hintName << endl;
             meta_name_t metaName;
             metaName = metaNameSet.find(hintName) != metaNameSet.end() ? hintName : *metaNameSet.begin();
             lastLoc = vTmp.find(metaMark.substr(2, 2), nextLoc);
             assert(lastLoc != word_npos, "MetaParser: Invalid meta mark.");
             meta_content_t metaContent = parseMetas(
                 vTmp.getStr().substr(nextLoc.second, lastLoc.first - nextLoc.second));
-            metas[metaName].second.push_back(trim(metaContent));
+            metas[metaName].push_back(trim(metaContent));
             vTmp.replace(nextLoc, lastLoc, metaName);
             lastLoc = nextLoc;
             nextLoc = word_npos;
@@ -134,13 +125,31 @@ public:
         return vTmp.getStr();
     }
 
+public:
+    MetaParser(Viewer &v) : viewer(v)
+    {
+        parseMetaMarks();
+        parseMetas(viewer.getStr());
+    }
+
+    static MetaParser fromFile(string filename)
+    {
+        Viewer v = Viewer::fromFile(filename);
+        return MetaParser(v);
+    }
+
+    meta_t &operator[](meta_name_t name)
+    {
+        return metas[name];
+    }
+
     void printMetas()
     {
         info << "MetaParser: Printing metas ..." << endl;
         for (auto &meta : metas)
         {
             info << "MetaParser: Meta " << meta.first << " defined as:" << endl;
-            for (auto &content : meta.second.second)
+            for (auto &content : meta.second)
                 std::cout << content << endl;
         }
     }

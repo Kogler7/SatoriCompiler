@@ -10,15 +10,15 @@
 
 #include "test.h"
 #include "lexer/lexer.h"
-#include "parser/ebnf.h"
+#include "parser/syntax.h"
 #include "parser/spt/parser.h"
 #include "utils/log.h"
 
 void sptTest()
 {
-    EBNFParser ebnfParser("./assets/lex/syntax.lex");
-    Grammar g = ebnfParser.parse("./assets/stx/lab3.stx");
-    // Grammar g = ebnfParser.parse("./assets/wjy.stx");
+    SyntaxParser syntax("./assets/lex/syntax.lex");
+    Grammar g = syntax.parse("./assets/stx/lab3.stx");
+    // Grammar g = syntax.parse("./assets/wjy.stx");
     PredictiveGrammar G = PredictiveGrammar(g);
     G.printRules();
     G.extractLeftCommonFactor();
@@ -33,10 +33,10 @@ void sptTest()
     StackPredictiveTableParser stp(G);
     stp.printPredictTable();
     Lexer lexer("./assets/lex/lab3.lex");
-    auto tokens = lexer.tokenize("./assets/src/lab3.txt");
-    lexer.printTokens(tokens);
+    auto tokens = lexer.tokenizeFile("./assets/src/lab3.txt");
+    Lexer::printTokens(tokens);
     tokens = G.transferTokens(tokens);
-    lexer.printTokens(tokens);
+    Lexer::printTokens(tokens);
     info << "result: \n" << stp.parse(tokens) << endl;
     stp.getTree()->print();
 }

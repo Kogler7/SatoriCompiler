@@ -1,3 +1,6 @@
+#meta GRAMMAR ${$}
+#meta MAPPING ${$}
+
 GRAMMAR ${
     Stmt*       ::=     `if` Exp `then` Stmt [`else` Stmt]
                         | `while` Exp `do` Stmt

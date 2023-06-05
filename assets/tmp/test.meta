@@ -3,7 +3,7 @@
 #meta SEMANTIC {{}}
 #meta PATTERN ${$}
 #meta MAPPING ${$}
-#meta IGNORE %{%}
+#meta IGNORED %{%}
 
 MAPPING ${
     qwertyu {{

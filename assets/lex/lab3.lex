@@ -1,3 +1,6 @@
+#meta PATTERN ${$}
+#meta IGNORED ${$}
+
 PATTERN ${
     BLANK       \s+
     LIN_CMT     //[^\r\n]*
@@ -5,7 +8,7 @@ PATTERN ${
     SEPARATOR   [\+\-\*/=\(\)]
 $}
 
-IGNORE ${
+IGNORED ${
     BLANK
     LIN_CMT
 $}

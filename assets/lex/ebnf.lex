@@ -1,3 +1,6 @@
+#meta PATTERN ${$}
+#meta IGNORED ${$}
+
 PATTERN ${
     BLANK       \s+
     START       \*
@@ -11,7 +14,7 @@ PATTERN ${
     SEPARATOR   [\(\){}\[\]\|;]
 $}
 
-IGNORE ${
+IGNORED ${
     BLANK
     COMMENT
 $}

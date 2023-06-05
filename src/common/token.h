@@ -17,6 +17,7 @@ using namespace std;
 
 typedef shared_ptr<string> token_type_t;
 #define token_iter_t vector<token>::iterator
+#define token_const_iter_t vector<token>::const_iterator
 
 #define type_less owner_less<token_type_t>
 #define make_tok_type(x) make_shared<string>(x)

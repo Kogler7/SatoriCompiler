@@ -34,7 +34,7 @@ public:
 		return Viewer(str);
 	}
 	Viewer(string &str) : str(str) {}
-	Viewer(Viewer &v)
+	Viewer(const Viewer &v)
 	{
 		str = v.str;
 		pos = v.pos;

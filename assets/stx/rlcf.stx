@@ -1,3 +1,6 @@
+#meta GRAMMAR ${$}
+#meta MAPPING ${$}
+
 GRAMMAR ${
     Program*    ::=     StmtList ;
     StmtList    ::=     Stmt { `;` Stmt } ;

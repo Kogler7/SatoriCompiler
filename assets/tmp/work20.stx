@@ -1,3 +1,6 @@
+#meta GRAMMAR ${$}
+#meta MAPPING ${$}
+
 GRAMMAR ${
     S*  ::= E ;
     E   ::= E `-` T ;

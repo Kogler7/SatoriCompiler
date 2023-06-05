@@ -9,11 +9,14 @@
  */
 
 #pragma once
+
 #include <map>
 #include <string>
 #include <vector>
 #include "nfa.h"
 #include "common/token.h"
+#include "utils/view/viewer.h"
+#include "utils/meta.h"
 
 using namespace std;
 
@@ -22,17 +25,25 @@ class Lexer
     set<token_type_t, type_less> ignoredTypes;
     vector<token_type_t> typeOrder;                              // 词法单元类型顺序
     map<token_type_t, vector<FiniteAutomaton>, type_less> faMap; // 状态自动机对照表
-    void readLexerDef(string fileName);
 
 public:
     Lexer() {}
-    Lexer(string lexPath)
+    Lexer(const meta_t &pattern, const meta_t &ignored = meta_null)
     {
-        readLexerDef(lexPath);
+        configLexer(pattern, ignored);
     }
+    Lexer(const string &metaFile)
+    {
+        MetaParser parser = MetaParser::fromFile(metaFile);
+        configLexer(parser["PATTERN"], parser["IGNORED"]);
+    }
+    void configLexer(const meta_t &pattern, const meta_t &ignored = meta_null);
     void addTokenType(string typeName, string regExp);
     void addIgnoredType(string typeName);
-    vector<token> tokenize(string fileName);
-    void printTokens(vector<token> tokens);
-    void clear();
+    vector<token> tokenize(const Viewer &viewer);
+    vector<token> tokenizeFile(const string &fileName)
+    {
+        return tokenize(Viewer::fromFile(fileName));
+    }
+    static void printTokens(const vector<token> &tokens);
 };
