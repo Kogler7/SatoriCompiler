@@ -75,7 +75,7 @@ inline void printRemainingTreeNodes(stack<cst_node_ptr_t> &cstStk)
     }
 }
 
-bool SimpleLR1Parser::parse(vector<token> &input)
+bool SimpleLR1Parser::parse(vector<token> &input, const ContextViewer &code)
 {
     info << "SimpleLR1Parser: Parsing..." << endl;
     // 初始化状态
@@ -90,9 +90,10 @@ bool SimpleLR1Parser::parse(vector<token> &input)
     // 初始化表格
     tb_head | "Symbol/State" | "Input" | "Action";
     set_row | AL_CTR;
+    token &tok = viewer.current();
     while (!stateStk.empty() && !symStk.empty() && !viewer.ends())
     {
-        token &tok = viewer.current();
+        tok = viewer.current();
         state_id_t s = stateStk.top();
         symbol_t a = *(tok.type);
         action_t &act = grammar.slr1Table[mkcrd(s, a)];
@@ -148,6 +149,10 @@ reject:
     error << "SimpleLR1Parser: Parsing failed!" << endl;
     new_row | TB_TAB | MD_TAB | Cell("Rejected") & FORE_RED;
     std::cout << tb_view();
+    info << "SimpleLR1Parser: Related context:" << endl;
+    tok = viewer.current();
+    code.printContext(tok.line, tok.col);
+    info << "SimpleLR1Parser: Remaining tree nodes:" << endl;
     printRemainingTreeNodes(cstStk);
     return false;
 accept:

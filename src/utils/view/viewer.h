@@ -62,7 +62,7 @@ public:
 		return str[i];
 	}
 	// 获取字符串大小
-	size_t size()
+	size_t size() const
 	{
 		return str.size();
 	}
@@ -97,12 +97,12 @@ public:
 		pos = i;
 	}
 	// 获取当前位置
-	int getPos()
+	size_t getPos()
 	{
 		return pos;
 	}
 	// 获取字符串
-	string getStr()
+	string getStr() const
 	{
 		return str;
 	}

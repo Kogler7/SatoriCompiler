@@ -33,11 +33,12 @@ void semTest()
     assert(G.checkSLR1(), "Not SLR(1) grammar!");
     SLR1Parser slr1(G);
     Lexer lexer("./assets/lex/rsc.lex");
-    auto tokens = lexer.tokenizeFile("./assets/src/test.rsc");
+    Viewer code = Viewer::fromFile("./assets/src/test.rsc");
+    auto tokens = lexer.tokenize(code);
     Lexer::printTokens(tokens);
     tokens = G.transferTokens(tokens);
     Lexer::printTokens(tokens);
     info << "result: \n"
-         << slr1.parse(tokens) << endl;
+         << slr1.parse(tokens, code) << endl;
     slr1.getTree()->print();
 }

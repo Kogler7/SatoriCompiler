@@ -34,8 +34,8 @@ struct token
 {
     token_type_t type;
     string value;
-    int line;
-    int col;
+    size_t line;
+    size_t col;
     token(token_type_t type, string value) : type(type), value(value), line(0), col(0) {}
     token(token_type_t type, string value, int line, int col) : type(type), value(value), line(line), col(col) {}
 };

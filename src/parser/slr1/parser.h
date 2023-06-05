@@ -10,6 +10,7 @@
 
 #include "common/tree/cst.h"
 #include "common/gram/slr1.h"
+#include "utils/view/ctx_view.h"
 
 class SimpleLR1Parser
 {
@@ -21,7 +22,7 @@ public:
     {
         tree = cst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
     }
-    bool parse(vector<token> &input);
+    bool parse(vector<token> &input, const ContextViewer &code);
     cst_tree_ptr_t getTree() { return tree; }
 };
 

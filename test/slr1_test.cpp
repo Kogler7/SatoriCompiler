@@ -28,7 +28,8 @@ void slr1Test()
     G.printFollow();
     SLR1Parser slr1(G);
     Lexer lexer("./assets/lex/lab3.lex");
-    auto tokens = lexer.tokenizeFile("./assets/src/lab5.txt");
+    Viewer code = Viewer::fromFile("./assets/src/lab5.txt");
+    auto tokens = lexer.tokenize(code);
     Lexer::printTokens(tokens);
     tokens = G.transferTokens(tokens);
     Lexer::printTokens(tokens);
@@ -37,6 +38,6 @@ void slr1Test()
     G.printGoTrans();
     G.printSLR1Table();
     info << "result: \n"
-         << slr1.parse(tokens) << endl;
+         << slr1.parse(tokens, code) << endl;
     slr1.getTree()->print();
 }
