@@ -17,8 +17,8 @@
 void slr1Test()
 {
     SyntaxParser syntax("./assets/lex/syntax.lex");
-    Grammar g = syntax.parse("./assets/stx/lab5r.stx");
-    // Grammar g = syntax.parse("./assets/tmp/wjy.stx");
+    // Grammar g = syntax.parse("./assets/stx/lab5r.stx");
+    Grammar g = syntax.parse("./assets/tmp/wjy.stx");
     SLR1Grammar G = SLR1Grammar(g);
     G.printRules();
     G.extractLeftCommonFactor();

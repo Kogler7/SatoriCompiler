@@ -20,3 +20,4 @@ void tblTest();
 void slr1Test();
 void semTest();
 void metaTest();
+void eslrTest();

@@ -1,0 +1,28 @@
+#meta GRAMMAR   ${$}
+#meta MAPPING   ${$}
+#meta SEMANTIC  {{}}
+
+GRAMMAR ${
+    Program*    ::=     { FuncDecl }
+                    ;
+    FuncDecl    ::=     `func` `[` ParamList `]` `=` Expr `;`
+                    ;
+    ParamList   ::=     $Ident { `,` $Ident }
+                    ;
+    UnaryExpr   ::=     ( `+` | `-` ) UnaryExpr
+                    |   Factor
+                    ;
+    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr
+                    |   UnaryExpr
+                    ;
+    Expr        ::=     Expr ( `+` | `-` ) MulExpr
+                    |   MulExpr
+                    ;
+    Factor      ::=     $Ident
+                    |   `(` Expr `)`
+                    ;
+$}
+
+MAPPING ${
+    $Ident     -->     @IDENTIFIER ;
+$}

@@ -386,6 +386,11 @@ void PredictiveGrammar::printFirst() const
     tb_head | "NonTerm" | "First" = table::AL_LFT;
     for (auto it = nonTerms.begin(); it != nonTerms.end(); it++)
     {
+        if (first.find(*it) == first.end())
+        {
+            warn << "First set of " << *it << " not found." << endl;
+            continue;
+        }
         new_row | *it | set2str(first.at(*it));
     }
     cout << tb_view();
@@ -409,6 +414,11 @@ void PredictiveGrammar::printFirstS() const
     for (auto it = products.begin(); it != products.end(); it++)
     {
         const symstr_t &s = it->second;
+        if (firstS.find(s) == firstS.end())
+        {
+            warn << "First set of " << vec2str(s) << " not found." << endl;
+            continue;
+        }
         new_row | vec2str(s) | set2str(firstS.at(s));
     }
     cout << tb_view();
