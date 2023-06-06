@@ -1,5 +1,5 @@
-#meta PATTERN ${$}
-#meta IGNORED ${$}
+#meta PATTERN ${ $}
+#meta IGNORED ${ $}
 
 PATTERN ${
     BLANK       \s+

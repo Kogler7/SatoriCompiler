@@ -30,17 +30,17 @@ enum node_type
     TERMINAL
 };
 
-struct ast_node_data
+struct cst_node_data
 {
     node_type type;
     string symbol;
     size_t line, col;
 };
 
-class ConcreteSyntaxTreeNode : public AbstractTreeNode<ast_node_data>
+class ConcreteSyntaxTreeNode : public AbstractTreeNode<cst_node_data>
 {
 public:
-    ConcreteSyntaxTreeNode(ast_node_data data) : AbstractTreeNode<ast_node_data>(data) {}
+    ConcreteSyntaxTreeNode(cst_node_data data) : AbstractTreeNode<cst_node_data>(data) {}
     ConcreteSyntaxTreeNode(node_type typ, string sym, size_t ln, size_t co);
 
     static cst_node_ptr_t createNode(node_type type, const string &symbol, size_t line, size_t col);

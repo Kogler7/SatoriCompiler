@@ -1,7 +1,12 @@
+/**
+ * block comment 1
+*/
+
+decl func add(x : int, y : int) : int;
+
 var x : int = 10;                // integer variable
 var y : bool = true;             // integer variable in scientific notation
 
-decl func add(x : int, y : int) : int;
 
 func main() : int
 {
@@ -21,7 +26,7 @@ func main() : int
     }
 
     /*
-    block comment 1
+    block comment 2
     */
 
     for (var i : int = 0; i < 10; i = i + 1)

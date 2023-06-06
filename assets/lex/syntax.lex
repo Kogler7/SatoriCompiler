@@ -1,11 +1,13 @@
-#meta EBNF      ${$}
-#meta MAPPING   ${$}
-#meta IGNORED   ${$}
+#meta EBNF      ${ $}
+#meta MAPPING   ${ $}
+#meta IGNORED   ${ $}
+#meta PREC      ${ $}
 
 EBNF ${
     BLANK       \s+
     EPSILON     \\e
     START_MRK   \*
+    SEMANTIC    SEMANTIC
     TERMINAL    `[^`]*`
     NON_TERM    [\a_][\w']*
     MUL_TERM    $[\a_][\w']*
@@ -31,4 +33,9 @@ $}
 IGNORED ${
     BLANK
     COMMENT
+$}
+
+PREC ${
+    BLANK       \s+
+    TERMINAL    `[^`]*`
 $}

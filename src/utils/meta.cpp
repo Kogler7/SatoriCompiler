@@ -37,14 +37,25 @@ void MetaParser::parseMetaMarks()
     }
     while (metaDefLoc != word_npos)
     {
-        viewer.jumpToLoc(metaDefLoc).advance();
-        metaName = viewer.swallow();
-        metaMark = viewer.swallow();
-        info << "MetaParser: Meta mark " << metaMark << " defined as " << metaName << endl;
-        metaDefLoc = viewer.find("#meta", metaDefLoc);
-        assert(metaMark.length() == 4, "MetaParser: Invalid meta mark.");
-        metaMap[metaMark].insert(metaName);
-        metas[metaName] = vector<meta_content_t>();
+        viewer.jumpToLoc(metaDefLoc);
+        vector<word_loc_t> metaDecls = viewer.wordsOfRestLine();
+        if (metaDecls.size() > 1)
+        {
+            meta_name_t name = viewer[metaDecls[1]];
+            meta_mark_t mark;
+            mark.first = metaDecls.size() > 2 ? viewer[metaDecls[2]] : name;
+            mark.second = metaDecls.size() > 3 ? viewer[metaDecls[3]] : "";
+            metaMap[mark].insert(name);
+            info << format(
+                "MetaParser: Meta mark <$, $> defined as [$].\n",
+                mark.first, mark.second, name);
+        }
+        else
+        {
+            warn << "MetaParser: Too few meta declaration marks." << endl;
+        }
+        viewer.swallowWords(metaDecls);
+        metaDefLoc = viewer.find("#meta");
     }
 }
 
@@ -55,14 +66,14 @@ meta_content_t MetaParser::parseMetas(string text)
     set<meta_name_t> metaNameSet;
     word_loc_t lastLoc = make_pair(0, 0);
     word_loc_t nextLoc = word_npos;
-    for (auto &mark : metaMap)
+    for (auto &mark_name : metaMap)
     {
-        word_loc_t tmp = vTmp.find(mark.first.substr(0, 2));
+        word_loc_t tmp = vTmp.find(mark_name.first.first);
         if (nextLoc > tmp)
         {
             nextLoc = tmp;
-            metaMark = mark.first;
-            metaNameSet = mark.second;
+            metaMark = mark_name.first;
+            metaNameSet = mark_name.second;
         }
     }
     while (nextLoc != word_npos)
@@ -70,7 +81,17 @@ meta_content_t MetaParser::parseMetas(string text)
         meta_name_t hintName = vTmp[vTmp.retreat(nextLoc)];
         meta_name_t metaName;
         metaName = metaNameSet.find(hintName) != metaNameSet.end() ? hintName : *metaNameSet.begin();
-        lastLoc = vTmp.find(metaMark.substr(2, 2), nextLoc);
+        if (metaMark.second.size() == 0)
+        {
+            lastLoc.first = vTmp.getStr().find('\n', nextLoc.second);
+            if (lastLoc.first == string::npos)
+                lastLoc.first = vTmp.getStr().length();
+            lastLoc.second = lastLoc.first;
+        }
+        else
+        {
+            lastLoc = vTmp.find(metaMark.second, nextLoc);
+        }
         assert(lastLoc != word_npos, "MetaParser: Invalid meta mark.");
         meta_content_t metaContent = parseMetas(
             vTmp.getStr().substr(nextLoc.second, lastLoc.first - nextLoc.second));
@@ -78,14 +99,14 @@ meta_content_t MetaParser::parseMetas(string text)
         vTmp.replace(nextLoc, lastLoc, metaName);
         lastLoc = nextLoc;
         nextLoc = word_npos;
-        for (auto &mark : metaMap)
+        for (auto &mark_name : metaMap)
         {
-            word_loc_t tmp = vTmp.find(mark.first.substr(0, 2), lastLoc);
+            word_loc_t tmp = vTmp.find(mark_name.first.first, lastLoc);
             if (nextLoc > tmp)
             {
                 nextLoc = tmp;
-                metaMark = mark.first;
-                metaNameSet = mark.second;
+                metaMark = mark_name.first;
+                metaNameSet = mark_name.second;
             }
         }
     }
@@ -95,6 +116,11 @@ meta_content_t MetaParser::parseMetas(string text)
 const meta_t &MetaParser::operator[](meta_name_t name) const
 {
     return metas.at(name);
+}
+
+const bool MetaParser::hasMeta(meta_name_t name) const
+{
+    return metas.find(name) != metas.end();
 }
 
 void MetaParser::printMetas() const

@@ -26,7 +26,7 @@
 #include <set>
 
 using meta_name_t = string;
-using meta_mark_t = string;
+using meta_mark_t = pair<string, string>;
 using meta_content_t = string;
 using meta_t = vector<meta_content_t>;
 
@@ -47,6 +47,7 @@ class MetaParser
     meta_content_t parseMetas(string text);
 
 public:
+    MetaParser() = default;
     MetaParser(Viewer &v) : viewer(v)
     {
         parseMetaMarks();
@@ -60,5 +61,6 @@ public:
     }
 
     const meta_t &operator[](meta_name_t name) const;
+    const bool hasMeta(meta_name_t name) const;
     void printMetas() const;
 };

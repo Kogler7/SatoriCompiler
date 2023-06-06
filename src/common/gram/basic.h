@@ -24,10 +24,19 @@
 
 using namespace std;
 
-typedef string symbol_t;
-typedef set<symbol_t> symset_t;
-typedef vector<symbol_t> symstr_t;
-typedef pair<symbol_t, symstr_t> product_t;
+using symbol_t = string;
+using symset_t = set<symbol_t>;
+using symstr_t = vector<symbol_t>;
+using product_t = pair<symbol_t, symstr_t>;
+using semantic_t = string;
+
+enum assoc_t {
+    ASSOC_LEFT,
+    ASSOC_RIGHT,
+    ASSOC_NONE
+};
+
+using prec_assoc_t = pair<size_t, assoc_t>;
 
 template <typename row_t, typename col_t, typename val_t>
 using table_t = map<pair<row_t, col_t>, val_t>;
@@ -51,6 +60,8 @@ public:
     vector<product_t> products;
     map<symbol_t, set<symstr_t>> rules;
     map<token_type_t, symbol_t> tok2sym;
+    map<product_t, semantic_t> semMap;
+    map<symbol_t, prec_assoc_t> precMap;
 
     Grammar(symbol_t start, symset_t terms, symset_t nonTerms, vector<product_t> products, map<symbol_t, set<symstr_t>> rules, map<token_type_t, symbol_t> tok2sym);
     Grammar() { terminals.insert(SYM_END); }

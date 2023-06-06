@@ -33,6 +33,7 @@ public:
     {
         Viewer::operator=(v);
     }
+    WordViewer() = default;
     WordViewer(string str) : Viewer(str) {}
     WordViewer(Viewer &v) : Viewer(v) {}
 
@@ -40,6 +41,25 @@ public:
     {
         assert(loc != word_npos && loc != word_end, "Invalid word location!");
         return str.substr(loc.first, loc.second - loc.first);
+    }
+
+    vector<word_loc_t> wordsOfRestLine() const
+    {
+        vector<word_loc_t> ret;
+        size_t start = current().first;
+        size_t end = str.find('\n', pos);
+        while (start < end)
+        {
+            word_loc_t loc = make_pair(start, start);
+            while (loc.second < end && !isspace(str[loc.second]))
+                loc.second++;
+            if (loc.second > loc.first)
+                ret.push_back(loc);
+            start = loc.second;
+            while (start < end && isspace(str[start]))
+                start++;
+        }
+        return ret;
     }
 
     word_loc_t find(const string &word, word_loc_t start = word_npos) const
@@ -57,10 +77,10 @@ public:
         return word_npos;
     }
 
-    word_loc_t current() const
+    word_loc_t current(size_t p = -1) const
     {
-        // 返回当前单词的位置
-        size_t start = pos;
+        // 返回loc指定的单词的位置
+        size_t start = p == -1 ? pos : p;
         if (isspace(str[start]))
         {
             // 如果当前位置是空白，向前找到下一个单词的开头
@@ -157,6 +177,19 @@ public:
         string ret = str.substr(loc.first, loc.second - loc.first);
         str.erase(loc.first, loc.second - loc.first);
         return ret;
+    }
+
+    void swallowWords(const vector<word_loc_t> &locs)
+    {
+        // 先排序
+        vector<word_loc_t> locs_ = locs;
+        sort(
+            locs_.begin(), locs_.end(),
+            [](const word_loc_t &a, const word_loc_t &b) -> bool
+            { return a.first < b.first; });
+        // 从后向前删掉locs指定的单词
+        for (auto rit = locs_.rbegin(); rit != locs_.rend(); rit++)
+            str.erase(rit->first, rit->second - rit->first);
     }
 
     WordViewer &replace(word_loc_t l1, word_loc_t l2, string word)

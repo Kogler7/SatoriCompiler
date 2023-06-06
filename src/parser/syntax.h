@@ -18,8 +18,10 @@ using tok_product_t = pair<symbol_t, vector<token>>;
 
 class SyntaxParser
 {
+    MetaParser syntaxMeta;
     Lexer ebnfLexer;
     Lexer mappingLexer;
+    Lexer precLexer;
     Grammar grammar;
     map<symbol_t, int> nonTermCount;
 
@@ -29,9 +31,7 @@ class SyntaxParser
 
     void addSyntaxRules(const vector<token> &tokens);
     void addTokenMappings(const vector<token> &tokens);
-    void addSemanticActions();
-    void addPrecRelations();
-    void addAssociativity();
+    void addPrecAndAssoc();
 
 public:
     SyntaxParser(const string syntaxLexPath);

@@ -1,25 +1,33 @@
-#meta GRAMMAR   ${$}
-#meta MAPPING   ${$}
-#meta SEMANTIC  {{}}
+#meta GRAMMAR   ${ $}
+#meta MAPPING   ${ $}
+#meta SEMANTIC  :
+#meta %LEFT
+#meta %RIGHT
+#meta %NONASSOC
+
+%LEFT   `+` `-`
+%LEFT   `*` `/`
+%RIGHT  `^`
+%NONASSOC    `!`
 
 GRAMMAR ${
-    Program*    ::=     { FuncDecl }
+    Program*    ::=     { FuncDecl }                            : SEM1
                     ;
-    FuncDecl    ::=     `func` `[` ParamList `]` `=` Expr `;`
+    FuncDecl    ::=     `func` `[` ParamList `]` `=` Expr `;`   : SEM2
                     ;
-    ParamList   ::=     $Ident { `,` $Ident }
+    ParamList   ::=     $Ident { `,` $Ident }                   : SEM3
                     ;
-    UnaryExpr   ::=     ( `+` | `-` ) UnaryExpr
-                    |   Factor
+    UnaryExpr   ::=     ( `+` | `-` ) UnaryExpr                 : SEM4
+                    |   Factor                                  : SEM5
                     ;
-    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr
-                    |   UnaryExpr
+    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr         : SEM6
+                    |   UnaryExpr                               : SEM7
                     ;
-    Expr        ::=     Expr ( `+` | `-` ) MulExpr
-                    |   MulExpr
+    Expr        ::=     Expr ( `+` | `-` ) MulExpr              : SEM8
+                    |   MulExpr                                 : SEM9
                     ;
-    Factor      ::=     $Ident
-                    |   `(` Expr `)`
+    Factor      ::=     $Ident                                  : SEM10
+                    |   `(` Expr `)`                            : SEM11
                     ;
 $}
 

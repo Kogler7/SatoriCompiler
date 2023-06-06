@@ -3,8 +3,8 @@
 * (c) 2023 Satori Compiler Project, Beijing Jiaotong University
 */
 
-#meta GRAMMAR ${$}
-#meta MAPPING ${$}
+#meta GRAMMAR ${ $}
+#meta MAPPING ${ $}
 
 GRAMMAR ${
     Program*    ::=     { VarDeclStmt | FuncDeclStmt | FuncDef }

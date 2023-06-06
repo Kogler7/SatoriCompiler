@@ -33,6 +33,7 @@ public:
 		string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 		return Viewer(str);
 	}
+	Viewer() = default;
 	Viewer(const string &str) : str(str) {}
 	Viewer(const Viewer &v)
 	{

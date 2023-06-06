@@ -1,9 +1,17 @@
 //sfdse
 
-#meta SEMANTIC {{}}
-#meta PATTERN ${$}
-#meta MAPPING ${$}
-#meta IGNORED %{%}
+#meta SEMANTIC {{ }}
+#meta SEMANTIC :
+#meta PATTERN ${ $}
+#meta MAPPING ${ $}
+#meta IGNORED %{ %}
+#meta %LEFT
+#meta %RIGHT
+#meta
+
+%LEFT a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p
+asd
+%RIGHT q, r, s, t, u, v,  %LEFT w, x, y, z
 
 MAPPING ${
     qwertyu {{
@@ -17,7 +25,7 @@ $}
 
 PATTERN ${
     afghjkl {{
-        sefesf
+        sefesf : qwertyu
     }}
 $}
 

@@ -53,9 +53,10 @@ string lrtri(string str)
 
 SyntaxParser::SyntaxParser(const string ebnfLexPath)
 {
-    MetaParser metaParser = MetaParser::fromFile(ebnfLexPath);
-    ebnfLexer = Lexer(metaParser["EBNF"], metaParser["IGNORED"]);
-    mappingLexer = Lexer(metaParser["MAPPING"], metaParser["IGNORED"]);
+    MetaParser lexMeta = MetaParser::fromFile(ebnfLexPath);
+    ebnfLexer = Lexer(lexMeta["EBNF"], lexMeta["IGNORED"]);
+    mappingLexer = Lexer(lexMeta["MAPPING"], lexMeta["IGNORED"]);
+    precLexer = Lexer(lexMeta["PREC"], lexMeta["IGNORED"]);
 }
 
 inline symbol_t getEndDeli(const symbol_t &deli)
@@ -95,22 +96,21 @@ void SyntaxParser::parseDeliProducts(vector<tok_product_t> &tmp, const symbol_t 
     subProducts = segmentProduct(tokProduct);
     if (beginIt->value == "{")
     {
-        // S -> A{B|D}C => S -> AB'C, B' -> B | ε, S -> AD'C, D' -> D | ε
+        // S -> A{B|D}C => S' -> B|D, S'' -> S'S'' | ε, S -> AS''C
+        // 构造代表花括号的新非终结符
+        symbol_t innerLeft = left + "_";
+        innerLeft += to_string(++nonTermCount[left]);
+        // 构造含新非终结符的新产生式
+        token innerLeftTok = token(get_tok_type("NON_TERM"), innerLeft);
+        fullConnProducts(tmp, vector<tok_product_t>({make_pair(left, vector<token>({innerLeftTok}))}));
         for (auto &pro : subProducts)
         {
-            // 构造新的非终结符
-            symbol_t newLeft = left + "_";
-            newLeft += to_string(++nonTermCount[left]);
-            token newLeftTok = token(get_tok_type("NON_TERM"), newLeft);
-            // 构造含新非终结符的新产生式
-            fullConnProducts(tmp, vector<tok_product_t>({make_pair(left, vector<token>({newLeftTok}))}));
-            // 构造含右递归的新产生式
             vector<token> subRight = pro.second;
-            subRight.push_back(newLeftTok);
-            tokProducts.push_back(make_pair(newLeft, subRight));
-            // 构造含空串的新产生式
-            tokProducts.push_back(make_pair(newLeft, vector<token>()));
+            subRight.push_back(innerLeftTok);
+            tokProducts.push_back(make_pair(innerLeft, subRight));
         }
+        // 构造含空串的新产生式
+        tokProducts.push_back(make_pair(innerLeft, vector<token>()));
     }
     else if (beginIt->value == "(" || beginIt->value == "[")
     {
@@ -221,6 +221,7 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
     token_type_t nonTermType = get_tok_type("NON_TERM");
     token_type_t mulTermType = get_tok_type("MUL_TERM");
     token_type_t epsilonType = get_tok_type("EPSILON");
+    token_type_t semanticType = get_tok_type("SEMANTIC");
     // 预处理，拆分 ; 表示的多个产生式
     vector<tok_product_t> rawProducts;
     for (auto it = tokens.cbegin(); it != tokens.cend(); it++)
@@ -273,37 +274,18 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
         }
         debug_u(0) << endl;
     }
-    // 删去tok_production中的token额外信息，转换为production
-    vector<product_t> &gProducts = grammar.products;
-    for (auto &pro : products)
-    {
-        product_t newPro;
-        newPro.first = pro.first;
-        for (auto &tok : pro.second)
-        {
-            if (tok.type == termType)
-            {
-                tok.value = lrtri(tok.value);
-                newPro.second.push_back(tok.value);
-            }
-            else if (tok.type == mulTermType)
-            {
-                tok.value = tok.value.substr(1);
-                newPro.second.push_back(tok.value);
-            }
-            else
-                newPro.second.push_back(tok.value);
-        }
-        gProducts.push_back(newPro);
-    }
-    // 将规则加入文法中
+    // 将终结符、非终结符、产生式、规则和语义动作加入文法中
     symset_t &nonTerms = grammar.nonTerms;
     symset_t &terminals = grammar.terminals;
+    vector<product_t> &gPros = grammar.products;
     map<symbol_t, set<symstr_t>> &rules = grammar.rules;
+    const vector<semantic_t> &semSeq = syntaxMeta["SEMANTIC"];
+    int semIdx = -1;
     for (auto &pro : products)
     {
         nonTerms.insert(pro.first);
         symstr_t right;
+        bool hasSemantic = false;
         for (auto &tok : pro.second)
         {
             if (tok.type == nonTermType)
@@ -312,15 +294,31 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
             }
             else if (tok.type == mulTermType)
             {
+                tok.value = tok.value.substr(1);
                 terminals.insert(tok.value);
             }
             else if (tok.type == termType)
             {
+                tok.value = lrtri(tok.value);
                 terminals.insert(tok.value);
             }
-            right.push_back(tok.value);
+            if (tok.type == semanticType)
+            {
+                hasSemantic = true;
+                semIdx++;
+            }
+            else
+            {
+                right.push_back(tok.value);
+            }
         }
-        rules[pro.first].insert(right);
+        rules[pro.first].insert(right); // 添加规则
+        product_t newPro = make_pair(pro.first, right);
+        gPros.push_back(newPro); // 添加产生式
+        if (hasSemantic && semIdx < semSeq.size())
+        {
+            grammar.semMap[newPro] = semSeq[semIdx]; // 添加语义动作
+        }
     }
 }
 
@@ -402,13 +400,63 @@ void SyntaxParser::addTokenMappings(const vector<token> &tokens)
     }
 }
 
+void SyntaxParser::addPrecAndAssoc()
+{
+    info << "SyntaxParser: Adding precedence and associativity ..." << endl;
+    map<symbol_t, prec_assoc_t> &precMap = grammar.precMap;
+    if (syntaxMeta.hasMeta("%LEFT"))
+    {
+        const vector<meta_content_t> &leftSeq = syntaxMeta["%LEFT"];
+        for (size_t i = 0; i < leftSeq.size(); i++)
+        {
+            vector<token> tokens = precLexer.tokenize(leftSeq[i]);
+            for (auto &tok : tokens)
+            {
+                precMap[lrtri(tok.value)] = make_pair(i, ASSOC_LEFT);
+            }
+        }
+    }
+    if (syntaxMeta.hasMeta("%RIGHT"))
+    {
+        const vector<meta_content_t> &rightSeq = syntaxMeta["%RIGHT"];
+        for (size_t i = 0; i < rightSeq.size(); i++)
+        {
+            vector<token> tokens = precLexer.tokenize(rightSeq[i]);
+            for (auto &tok : tokens)
+            {
+                precMap[lrtri(tok.value)] = make_pair(i, ASSOC_RIGHT);
+            }
+        }
+    }
+    if (syntaxMeta.hasMeta("%NONASSOC"))
+    {
+        const vector<meta_content_t> &nonSeq = syntaxMeta["%NONASSOC"];
+        for (size_t i = 0; i < nonSeq.size(); i++)
+        {
+            vector<token> tokens = precLexer.tokenize(nonSeq[i]);
+            for (auto &tok : tokens)
+            {
+                precMap[lrtri(tok.value)] = make_pair(i, ASSOC_NONE);
+            }
+        }
+    }
+    // 打印优先级和结合性
+    vector<string> precStrs = {"LEFT", "RIGHT", "NONASSOC"};
+    for (auto &pair : precMap)
+    {
+        std::cout << format(
+            "SyntaxParser: Prec and assoc of $ is $, $\n",
+            pair.first, pair.second.first, precStrs[pair.second.second]);
+    }
+}
+
 Grammar SyntaxParser::parse(const string grammarPath)
 {
     vector<token> tokens;
-    MetaParser metaParser = MetaParser::fromFile(grammarPath);
+    syntaxMeta = MetaParser::fromFile(grammarPath);
 
     // 解析EBNF定义的文法
-    tokens = ebnfLexer.tokenize(*metaParser["GRAMMAR"].begin());
+    tokens = ebnfLexer.tokenize(*syntaxMeta["GRAMMAR"].begin());
     info << "SyntaxParser: EBNF tokens: " << endl;
     ebnfLexer.printTokens(tokens);
 
@@ -426,12 +474,15 @@ Grammar SyntaxParser::parse(const string grammarPath)
     // 解析并添加产生式
     addSyntaxRules(tokens);
     // 解析MAPPING映射
-    tokens = mappingLexer.tokenize(*metaParser["MAPPING"].begin());
+    tokens = mappingLexer.tokenize(*syntaxMeta["MAPPING"].begin());
     info << "SyntaxParser: MAPPING tokens: " << endl;
     mappingLexer.printTokens(tokens);
 
     // 解析并添加映射
     addTokenMappings(tokens);
+
+    // 解析并添加优先级和结合性
+    addPrecAndAssoc();
 
     return grammar;
 }

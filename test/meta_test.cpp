@@ -15,4 +15,5 @@ void metaTest()
 {
     Viewer v = Viewer::fromFile("./assets/tmp/test.meta");
     MetaParser parser(v);
+    parser.printMetas();
 }

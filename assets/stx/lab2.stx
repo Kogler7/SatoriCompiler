@@ -1,5 +1,5 @@
-#meta GRAMMAR ${$}
-#meta MAPPING ${$}
+#meta GRAMMAR ${ $}
+#meta MAPPING ${ $}
 
 GRAMMAR ${
     Stmt*       ::=     `if` Exp `then` Stmt [`else` Stmt]
