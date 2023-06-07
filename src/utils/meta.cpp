@@ -118,6 +118,11 @@ const meta_t &MetaParser::operator[](meta_name_t name) const
     return metas.at(name);
 }
 
+const meta_t &MetaParser::getMeta(meta_name_t name, const meta_t init) const
+{
+    return hasMeta(name) ? metas.at(name) : init;
+}
+
 const bool MetaParser::hasMeta(meta_name_t name) const
 {
     return metas.find(name) != metas.end();

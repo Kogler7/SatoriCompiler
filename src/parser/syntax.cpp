@@ -279,7 +279,7 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
     symset_t &terminals = grammar.terminals;
     vector<product_t> &gPros = grammar.products;
     map<symbol_t, set<symstr_t>> &rules = grammar.rules;
-    const vector<semantic_t> &semSeq = syntaxMeta["SEMANTIC"];
+    const vector<semantic_t> &semSeq = syntaxMeta.getMeta("SEMANTIC", vector<semantic_t>());
     int semIdx = -1;
     for (auto &pro : products)
     {

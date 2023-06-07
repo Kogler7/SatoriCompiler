@@ -61,6 +61,7 @@ public:
     }
 
     const meta_t &operator[](meta_name_t name) const;
+    const meta_t &getMeta(meta_name_t name, const meta_t init) const;
     const bool hasMeta(meta_name_t name) const;
     void printMetas() const;
 };

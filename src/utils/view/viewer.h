@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <fstream>
 #include <iostream>
+#include "utils/log.h"
 
 using namespace std;
 
@@ -30,6 +31,9 @@ public:
 	static Viewer fromFile(string filename)
 	{
 		ifstream ifs(filename);
+		assert(
+			ifs.is_open(),
+			format("Cannot open file: $.", filename));
 		string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 		return Viewer(str);
 	}

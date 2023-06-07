@@ -17,16 +17,11 @@
 
 using namespace std;
 
-#include "test.sem"
-
 void eslrTest()
 {
-    reg_nodes();
-    auto node = MAKE_NODE("ExprNode");
-    node->act();
-
     SyntaxParser syntax("./assets/lex/syntax.lex");
-    Grammar g = syntax.parse("./assets/stx/func.stx");
+    // Grammar g = syntax.parse("./assets/stx/func.stx");
+    Grammar g = syntax.parse("./assets/stx/rsc-1.estx");
     g.printRules();
     // g.extractLeftCommonFactor();
     g.printRules();
@@ -40,8 +35,10 @@ void eslrTest()
     G.printSLR1Table();
     assert(G.checkSLR1(), "Not SLR(1) grammar!");
     ESLR1Parser slr1(G);
-    Lexer lexer("./assets/lex/func.lex");
-    Viewer code = Viewer::fromFile("./assets/src/func.txt");
+    // Lexer lexer("./assets/lex/func.lex");
+    // Viewer code = Viewer::fromFile("./assets/src/func.txt");
+    Lexer lexer("./assets/lex/rsc.lex");
+    Viewer code = Viewer::fromFile("./assets/src/test.rsc");
     auto tokens = lexer.tokenize(code);
     Lexer::printTokens(tokens);
     tokens = G.transferTokens(tokens);
