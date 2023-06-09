@@ -34,7 +34,7 @@ void eslrTest()
     // G.printGoTrans();
     // G.printSLR1Table();
     assert(G.checkSLR1(), "Not SLR(1) grammar!");
-    ESLR1Parser slr1(G);
+    ESLR1Parser eslr1(G);
     // Lexer lexer("./assets/lex/func.lex");
     // Viewer code = Viewer::fromFile("./assets/src/func.txt");
     Lexer lexer("./assets/lex/rsc.lex");
@@ -44,6 +44,7 @@ void eslrTest()
     tokens = G.transferTokens(tokens);
     Lexer::printTokens(tokens);
     info << "result: \n"
-         << slr1.parse(tokens, code) << endl;
-    slr1.getCST()->print();
+         << eslr1.parse(tokens, code) << endl;
+    eslr1.getCST()->print();
+    eslr1.reduceCST()->print();
 }

@@ -111,17 +111,8 @@ class LRGrammar : public PredictiveGrammar
 
 public:
     LRGrammar() : PredictiveGrammar(){};
-    LRGrammar(const Grammar &g)
+    LRGrammar(const Grammar &g) : PredictiveGrammar(g)
     {
-        symStart = g.symStart;
-        terminals = g.terminals;
-        nonTerms = g.nonTerms;
-        tok2sym = g.tok2sym;
-        products = g.products;
-        rules = g.rules;
-        // 显式地只计算follow集，因为LR分析表只需要follow集
-        // 同时，避免左递归对first集的影响
-        calcFollow();
         calcItems();
         cluster_t c0;
         for (auto &p : products)
@@ -135,18 +126,8 @@ public:
         clusters.push_back(c0);
         calcClusters();
     }
-    LRGrammar(const LRGrammar &g)
+    LRGrammar(const LRGrammar &g) : PredictiveGrammar(g)
     {
-        symStart = g.symStart;
-        terminals = g.terminals;
-        nonTerms = g.nonTerms;
-        tok2sym = g.tok2sym;
-        products = g.products;
-        rules = g.rules;
-        first = g.first;
-        firstS = g.firstS;
-        follow = g.follow;
-        select = g.select;
         items = g.items;
         clusters = g.clusters;
         goTrans = g.goTrans;

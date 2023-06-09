@@ -31,10 +31,10 @@ template <typename data_t>
 using tree_node_ptr_t = shared_ptr<AbstractTreeNode<data_t>>;
 
 template <typename data_t>
-using tree_childs = vector<tree_node_ptr_t<data_t>>;
+using tree_children_t = vector<tree_node_ptr_t<data_t>>;
 
 template <typename data_t>
-class AbstractTreeNode : public tree_childs<data_t>
+class AbstractTreeNode : public tree_children_t<data_t>
 {
 public:
     tree_node_t<data_t> *parent;
@@ -50,17 +50,22 @@ public:
     size_t find(data_t data) const
     {
         auto it = find_if(
-            tree_childs<data_t>::begin(), tree_childs<data_t>::end(),
+            tree_children_t<data_t>::begin(), tree_children_t<data_t>::end(),
             [=](tree_node_ptr_t<data_t> node)
             { return node->data == data; });
-        return it == tree_childs<data_t>::end() ? -1 : it - tree_childs<data_t>::begin();
+        return it == tree_children_t<data_t>::end() ? -1 : it - tree_children_t<data_t>::begin();
     }
 
     template <typename func_t>
     size_t find(func_t cmp) const
     {
-        auto it = find_if(tree_childs<data_t>::begin(), tree_childs<data_t>::end(), cmp);
-        return it == tree_childs<data_t>::end() ? -1 : it - tree_childs<data_t>::begin();
+        auto it = find_if(tree_children_t<data_t>::begin(), tree_children_t<data_t>::end(), cmp);
+        return it == tree_children_t<data_t>::end() ? -1 : it - tree_children_t<data_t>::begin();
+    }
+
+    void reverseChildren()
+    {
+        reverse(tree_children_t<data_t>::begin(), tree_children_t<data_t>::end());
     }
 
     tree_node_t<data_t> &operator[](size_t index) const
@@ -84,7 +89,7 @@ public:
 
     size_t size() const
     {
-        return tree_childs<data_t>::size();
+        return tree_children_t<data_t>::size();
     }
 
     virtual string descData() const
@@ -95,11 +100,11 @@ public:
     template <typename func_t>
     void foreach (func_t f) const
     {
-        auto nodeF = [=](tree_childs<data_t>::const_reference ref)
+        auto nodeF = [=](tree_children_t<data_t>::const_reference ref)
         {
             f(*ref);
         };
-        for_each(tree_childs<data_t>::begin(), tree_childs<data_t>::end(), nodeF);
+        for_each(tree_children_t<data_t>::begin(), tree_children_t<data_t>::end(), nodeF);
     }
 
     template <typename func_t>

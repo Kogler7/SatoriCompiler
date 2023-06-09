@@ -20,17 +20,6 @@ typedef pair<symbol_t, symstr_t> product_t;
 
 #define DEBUG_LEVEL 1
 
-Grammar::Grammar(symbol_t start, symset_t terms, symset_t nonTerms, vector<product_t> products, map<symbol_t, set<symstr_t>> rules, map<token_type_t, symbol_t> tok2sym)
-{
-    symStart = start;
-    terminals = terms;
-    terminals.insert(SYM_END); // SYM_END 用于表示输入串结束
-    nonTerms = nonTerms;
-    this->products = products;
-    this->rules = rules;
-    this->tok2sym = tok2sym;
-}
-
 void Grammar::updateStartProduct()
 {
     startProduct = make_pair(symStart, *rules.at(symStart).begin());

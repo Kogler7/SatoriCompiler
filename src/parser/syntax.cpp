@@ -274,7 +274,8 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
         }
         debug_u(0) << endl;
     }
-    // 将终结符、非终结符、产生式、规则和语义动作加入文法中
+    // 将终结符、映射终结符、非终结符、产生式、规则和语义动作加入文法中
+    symset_t &mulTerms = grammar.mulTerms;
     symset_t &nonTerms = grammar.nonTerms;
     symset_t &terminals = grammar.terminals;
     vector<product_t> &gPros = grammar.products;
@@ -296,6 +297,7 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
             {
                 tok.value = tok.value.substr(1);
                 terminals.insert(tok.value);
+                mulTerms.insert(tok.value);
             }
             else if (tok.type == termType)
             {

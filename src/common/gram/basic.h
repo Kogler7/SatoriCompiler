@@ -57,6 +57,7 @@ class Grammar
 
 public:
     symbol_t symStart;
+    symset_t mulTerms;
     symset_t nonTerms;
     symset_t terminals;
     product_t startProduct;
@@ -66,16 +67,19 @@ public:
     map<product_t, semantic_t> semMap;
     map<symbol_t, prec_assoc_t> precMap;
 
-    Grammar(symbol_t start, symset_t terms, symset_t nonTerms, vector<product_t> products, map<symbol_t, set<symstr_t>> rules, map<token_type_t, symbol_t> tok2sym);
     Grammar() { terminals.insert(SYM_END); }
     Grammar(const Grammar &g)
     {
         symStart = g.symStart;
-        terminals = g.terminals;
+        mulTerms = g.mulTerms;
         nonTerms = g.nonTerms;
-        tok2sym = g.tok2sym;
+        terminals = g.terminals;
+        startProduct = g.startProduct;
         products = g.products;
         rules = g.rules;
+        tok2sym = g.tok2sym;
+        semMap = g.semMap;
+        precMap = g.precMap;
     }
     void updateStartProduct();
     void eliminateLeftRecursion();
@@ -142,7 +146,7 @@ public:
     template <typename func_t>
     void foreach (func_t f) const
     {
-        auto nodeF = [=](tree_childs<tt_node_data>::const_reference ref)
+        auto nodeF = [=](tree_children_t<tt_node_data>::const_reference ref)
         {
             f(static_cast<TermTreeNode &>(*(ref)));
         };

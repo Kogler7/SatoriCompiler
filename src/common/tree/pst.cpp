@@ -23,6 +23,11 @@ pst_node_ptr_t ParseSyntaxTreeNode::createNode(node_type type, const string &sym
     return make_shared<pst_node_t>(type, symbol, line, col);
 }
 
+pst_node_ptr_t ParseSyntaxTreeNode::createNode(pst_node_data data)
+{
+    return make_shared<pst_node_t>(data);
+}
+
 pst_node_t &ParseSyntaxTreeNode::attachProduct(product_t &product)
 {
     data.product_opt = product_ref(product);

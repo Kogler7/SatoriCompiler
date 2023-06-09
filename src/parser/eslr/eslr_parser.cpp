@@ -121,16 +121,14 @@ bool ExtendedSimpleLR1Parser::parse(vector<token> &input, const ContextViewer &c
             size_t len = right.size();
             pst_node_ptr_t node = pst_tree_t::createNode(NON_TERM, left, 0, 0);
             node->attachProduct(reduce);
-            vector<pst_node_ptr_t> children;
             for (size_t i = 0; i < len; i++)
             {
                 symStk.pop();
                 stateStk.pop();
-                children.push_back(cstStk.top());
+                *node << cstStk.top();
                 cstStk.pop();
             }
-            for (auto it = children.rbegin(); it != children.rend(); it++)
-                *node << *it;
+            node->reverseChildren();
             symStk.push(left);
             cstStk.push(node);
             action_t &nAct = grammar.slr1Table[mkcrd(stateStk.top(), left)];
@@ -163,18 +161,78 @@ accept:
     symstr_t &right = startProduct.second;
     pst_node_ptr_t startNode = pst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
     startNode->attachProduct(startProduct);
-    vector<pst_node_ptr_t> children;
     for (size_t i = 0; i < right.size(); i++)
     {
         symStk.pop();
         stateStk.pop();
-        children.push_back(cstStk.top());
+        *startNode << cstStk.top();
         cstStk.pop();
     }
-    for (auto it = children.rbegin(); it != children.rend(); it++)
-        *startNode << *it;
+    startNode->reverseChildren();
     cst = startNode;
     new_row | Cell(descStack(symStk)) & AL_LFT | MD_TAB | Cell("Accepted") & FORE_GRE;
     std::cout << tb_view();
     return true;
+}
+
+pst_tree_ptr_t ExtendedSimpleLR1Parser::reduceCST()
+{
+    info << "ExtendedSimpleLR1Parser: Reducing CST... (CST->RST)" << endl;
+    symset_t &mulTerms = grammar.mulTerms;
+    symset_t &nonTerms = grammar.nonTerms;
+    symset_t &terminals = grammar.terminals;
+    stack<pst_node_ptr_t> rstStk;
+    cst->postorder(
+        [&](pst_node_t node)
+        {
+            // 如果当前节点代表非终结符，按照其产生式构造简化的RST节点
+            // 因为是后序遍历，所以子节点已经被压入栈中了
+            if (node.data.type == NON_TERM)
+            {
+                assert(node.data.product_opt.has_value());
+                product_t &product = node.data.product_opt.value().get();
+                symstr_t &right = product.second;
+                // 创建新的RST节点
+                pst_node_ptr_t rstNode = pst_tree_t::createNode(node.data);
+                // 如果产生式右部只有一个终结符，那么将其作为RST节点的数据保留
+                if (right.size() == 1 && _find(terminals, right[0]))
+                {
+                    pst_node_ptr_t child = rstStk.top();
+                    rstStk.pop();
+                    *rstNode << child;
+                }
+                else
+                {
+                    // 逆序遍历子节点，将其弹出栈并添加到新的RST节点中
+                    for (auto it = right.rbegin(); it != right.rend(); it++)
+                    {
+                        pst_node_ptr_t child = rstStk.top();
+                        rstStk.pop();
+                        // RST节点仅保留非终结符（non-term）和带有映射信息的字面量终结符（mul-term）
+                        if (_find(nonTerms, *it) || _find(mulTerms, *it))
+                        {
+                            *rstNode << child;
+                        }
+                    }
+                    // 逆转子节点顺序
+                    rstNode->reverseChildren();
+                }
+                // 将新的RST节点压入栈中
+                rstStk.push(rstNode);
+            }
+            // 如果当前节点代表终结符，直接压入栈中并返回即可
+            else
+            {
+                rstStk.push(make_shared<pst_node_t>(node));
+            }
+        });
+    // 最后栈中只剩下一个RST节点，即为最终的RST
+    rst = rstStk.top();
+    return rst;
+}
+
+pst_tree_ptr_t ExtendedSimpleLR1Parser::refactorRST()
+{
+    info << "ExtendedSimpleLR1Parser: Refactoring RST... (RST->AST)" << endl;
+    return ast;
 }
