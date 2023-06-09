@@ -11,6 +11,7 @@
 #pragma once
 
 #include <string>
+#include <optional>
 
 #include "tree.h"
 #include "utils/log.h"
@@ -37,8 +38,10 @@ struct pst_node_data
     node_type type;
     string symbol;
     size_t line, col;
-    product_t product;
+    optional<product_ref> product_opt;
 };
+
+extern const product_ref empty_product;
 
 class ParseSyntaxTreeNode : public AbstractTreeNode<pst_node_data>
 {
@@ -48,7 +51,7 @@ public:
 
     static pst_node_ptr_t createNode(node_type type, const string &symbol, size_t line, size_t col);
 
-    pst_node_t &attachProduct(const product_t &product);
+    pst_node_t &attachProduct(product_t &product);
 
     pst_node_t &operator[](size_t index) const;
     pst_node_t &operator<<(const pst_node_ptr_t node);

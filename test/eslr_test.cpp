@@ -45,5 +45,5 @@ void eslrTest()
     Lexer::printTokens(tokens);
     info << "result: \n"
          << slr1.parse(tokens, code) << endl;
-    slr1.getTree()->print();
+    slr1.getCST()->print();
 }

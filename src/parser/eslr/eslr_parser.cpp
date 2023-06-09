@@ -120,6 +120,7 @@ bool ExtendedSimpleLR1Parser::parse(vector<token> &input, const ContextViewer &c
             symstr_t right = reduce.second;
             size_t len = right.size();
             pst_node_ptr_t node = pst_tree_t::createNode(NON_TERM, left, 0, 0);
+            node->attachProduct(reduce);
             vector<pst_node_ptr_t> children;
             for (size_t i = 0; i < len; i++)
             {
@@ -152,13 +153,16 @@ reject:
     info << "ExtendedSimpleLR1Parser: Related context:" << endl;
     tok = viewer.current();
     code.printContext(tok.line, tok.col);
-    info << "ExtendedSimpleLR1Parser: Remaining tree nodes:" << endl;
+    info << "ExtendedSimpleLR1Parser: Remaining cst nodes:" << endl;
     printRemainingTreeNodes(cstStk);
     return false;
 accept:
     info << "ExtendedSimpleLR1Parser: Parsing succeed!" << endl;
-    symstr_t right = *(grammar.rules[grammar.symStart].begin());
+    grammar.updateStartProduct();
+    product_t &startProduct = grammar.startProduct;
+    symstr_t &right = startProduct.second;
     pst_node_ptr_t startNode = pst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
+    startNode->attachProduct(startProduct);
     vector<pst_node_ptr_t> children;
     for (size_t i = 0; i < right.size(); i++)
     {
@@ -169,7 +173,7 @@ accept:
     }
     for (auto it = children.rbegin(); it != children.rend(); it++)
         *startNode << *it;
-    tree = startNode;
+    cst = startNode;
     new_row | Cell(descStack(symStk)) & AL_LFT | MD_TAB | Cell("Accepted") & FORE_GRE;
     std::cout << tb_view();
     return true;

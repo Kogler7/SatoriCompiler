@@ -152,7 +152,7 @@ reject:
     info << "SimpleLR1Parser: Related context:" << endl;
     tok = viewer.current();
     code.printContext(tok.line, tok.col);
-    info << "SimpleLR1Parser: Remaining tree nodes:" << endl;
+    info << "SimpleLR1Parser: Remaining cst nodes:" << endl;
     printRemainingTreeNodes(cstStk);
     return false;
 accept:
@@ -169,7 +169,7 @@ accept:
     }
     for (auto it = children.rbegin(); it != children.rend(); it++)
         *startNode << *it;
-    tree = startNode;
+    cst = startNode;
     new_row | Cell(descStack(symStk)) & AL_LFT | MD_TAB | Cell("Accepted") & FORE_GRE;
     std::cout << tb_view();
     return true;

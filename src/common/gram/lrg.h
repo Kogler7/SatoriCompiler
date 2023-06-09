@@ -20,7 +20,6 @@
 using namespace std;
 using namespace table;
 
-typedef reference_wrapper<product_t> product_ref;
 typedef product_ref reduce_t;
 typedef state_id_t shift_t;
 typedef bool accept_t;

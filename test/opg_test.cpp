@@ -35,5 +35,5 @@ void opgTest()
     tokens = G.transferTokens(tokens);
     Lexer::printTokens(tokens);
     parser.parse(tokens);
-    parser.getTree()->print();
+    parser.getCST()->print();
 }

@@ -28,9 +28,11 @@ using symbol_t = string;
 using symset_t = set<symbol_t>;
 using symstr_t = vector<symbol_t>;
 using product_t = pair<symbol_t, symstr_t>;
+using product_ref = reference_wrapper<product_t>;
 using semantic_t = string;
 
-enum assoc_t {
+enum assoc_t
+{
     ASSOC_LEFT,
     ASSOC_RIGHT,
     ASSOC_NONE
@@ -57,6 +59,7 @@ public:
     symbol_t symStart;
     symset_t nonTerms;
     symset_t terminals;
+    product_t startProduct;
     vector<product_t> products;
     map<symbol_t, set<symstr_t>> rules;
     map<token_type_t, symbol_t> tok2sym;
@@ -74,6 +77,7 @@ public:
         products = g.products;
         rules = g.rules;
     }
+    void updateStartProduct();
     void eliminateLeftRecursion();
     void extractLeftCommonFactor();
     void printRules() const;

@@ -38,5 +38,5 @@ void sptTest()
     tokens = G.transferTokens(tokens);
     Lexer::printTokens(tokens);
     info << "result: \n" << stp.parse(tokens) << endl;
-    stp.getTree()->print();
+    stp.getCST()->print();
 }

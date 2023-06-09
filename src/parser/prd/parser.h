@@ -16,16 +16,16 @@
 class PredictiveRecursiveDescentParser
 {
     PredictiveGrammar grammar;
-    pst_tree_ptr_t tree;
+    pst_tree_ptr_t cst;
     bool parseNonTerm(TokenViewer &viewer, symbol_t sym, pst_node_ptr_t node);
 
 public:
     PredictiveRecursiveDescentParser(PredictiveGrammar &grammar) : grammar(grammar)
     {
-        tree = pst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
+        cst = pst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
     }
     bool parse(vector<token> &input);
-    pst_tree_ptr_t getTree() { return tree; }
+    pst_tree_ptr_t getCST() { return cst; }
 };
 
 typedef PredictiveRecursiveDescentParser PRDParser;

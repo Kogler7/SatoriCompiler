@@ -12,7 +12,7 @@
 
 void cstTest()
 {
-    pst_tree_ptr_t tree = pst_node_t::createNode(NON_TERM, "FUNCTION_DECL", 0, 0);
+    pst_tree_ptr_t cst = pst_node_t::createNode(NON_TERM, "FUNCTION_DECL", 0, 0);
     pst_node_ptr_t ndIdent = pst_node_t::createNode(NON_TERM, "IDENTIFIER_NODE", 0, 0);
     pst_node_ptr_t ndType = pst_node_t::createNode(NON_TERM, "TYPE", 0, 0);
     pst_node_ptr_t ndArgs = pst_node_t::createNode(NON_TERM, "DECL_ARGUMENTS", 0, 0);
@@ -24,7 +24,7 @@ void cstTest()
     pst_node_ptr_t ndIdent1 = pst_node_t::createNode(NON_TERM, "IDENTIFIER_NODE", 0, 0);
     pst_node_ptr_t ndIdent2 = pst_node_t::createNode(NON_TERM, "IDENTIFIER_NODE", 0, 0);
 
-    *tree << ndIdent << ndType << ndArgs << ndBody;
+    *cst << ndIdent << ndType << ndArgs << ndBody;
     *ndIdent << pst_node_t::createNode(TERMINAL, "add", 0, 0);
     *ndType << pst_node_t::createNode(NON_TERM, "TYPE", 0, 0);
     (*ndType)[0] << pst_node_t::createNode(TERMINAL, "int", 0, 0);
@@ -47,5 +47,5 @@ void cstTest()
     *ndIdent2 << pst_node_t::createNode(TERMINAL, "b", 0, 0);
     *ndBody << pst_node_t::createNode(TERMINAL, "}", 0, 0);
     ndBody->print();
-    tree->print();
+    cst->print();
 }

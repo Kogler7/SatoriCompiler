@@ -175,6 +175,6 @@ bool StackPredictiveTableParser::parse(vector<token> input)
     info << "Analyze finished." << std::endl;
     cout << tb_view();
     info << "Parse Tree: " << std::endl;
-    tree = startNode;
+    cst = startNode;
     return true;
 }

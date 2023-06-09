@@ -91,13 +91,13 @@ bool PredictiveRecursiveDescentParser::parse(vector<token> &input)
     if (parseNonTerm(viewer, grammar.symStart, root))
     {
         info << "PRDParser: parse succeed." << endl;
-        tree = root;
+        cst = root;
         return true;
     }
     else
     {
         error << "PRDParser: parse failed." << endl;
-        tree = root;
+        cst = root;
         return false;
     }
 }

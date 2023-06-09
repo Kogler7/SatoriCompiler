@@ -31,6 +31,11 @@ Grammar::Grammar(symbol_t start, symset_t terms, symset_t nonTerms, vector<produ
     this->tok2sym = tok2sym;
 }
 
+void Grammar::updateStartProduct()
+{
+    startProduct = make_pair(symStart, *rules.at(symStart).begin());
+}
+
 void Grammar::eliminateLeftRecursion() // 消除左递归
 {
     info << "Grammar: Eliminating Left Recursion" << endl;

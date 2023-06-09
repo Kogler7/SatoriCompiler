@@ -15,11 +15,11 @@ class OperatorPrecedenceGrammarParser
 {
 public:
     OperatorPrecedenceGrammar grammar;
-    pst_tree_ptr_t tree;
+    pst_tree_ptr_t cst;
     OperatorPrecedenceGrammarParser(OperatorPrecedenceGrammar &grammar) : grammar(grammar)
     {
-        tree = pst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
+        cst = pst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
     }
     bool parse(vector<token> &input);
-    pst_tree_ptr_t getTree() { return tree; }
+    pst_tree_ptr_t getCST() { return cst; }
 };

@@ -39,5 +39,5 @@ void prdTest()
     Lexer::printTokens(tokens);
     info << "result: \n"
          << prd.parse(tokens) << endl;
-    prd.getTree()->print();
+    prd.getCST()->print();
 }
