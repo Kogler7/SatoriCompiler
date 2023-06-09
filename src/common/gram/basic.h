@@ -155,7 +155,7 @@ public:
         f(*this);
     }
 
-    string desc() const override
+    string descData() const override
     {
         stringstream ss;
         ss << data.symbol << " " << data.index;

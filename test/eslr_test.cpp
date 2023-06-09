@@ -30,9 +30,9 @@ void eslrTest()
     SLR1Grammar G = SLR1Grammar(g);
     G.printFollow();
     G.printItems();
-    G.printClusters();
-    G.printGoTrans();
-    G.printSLR1Table();
+    // G.printClusters();
+    // G.printGoTrans();
+    // G.printSLR1Table();
     assert(G.checkSLR1(), "Not SLR(1) grammar!");
     ESLR1Parser slr1(G);
     // Lexer lexer("./assets/lex/func.lex");

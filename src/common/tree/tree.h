@@ -87,7 +87,7 @@ public:
         return tree_childs<data_t>::size();
     }
 
-    virtual string desc() const
+    virtual string descData() const
     {
         return "";
     }
@@ -160,7 +160,7 @@ public:
         f(self);
     }
 
-    string dump()
+    string dumpTree()
     {
         stringstream ss;
         vector<bool> visible;
@@ -190,7 +190,7 @@ public:
                     return ret;
                 };
                 ss << getHead(level);
-                ss << node.desc();
+                ss << node.descData();
                 ss << endl;
                 if (level > 0)
                     for (int i = level; i < visible.size(); i++)
@@ -202,6 +202,6 @@ public:
 
     void print()
     {
-        cout << this->dump();
+        cout << this->dumpTree();
     }
 };

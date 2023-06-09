@@ -80,7 +80,7 @@ void StackPredictiveTableParser::printPredictTable() const
 
 #define top_sym(s) ((s.top())->data.symbol)
 
-string descStack(stack<cst_node_ptr_t> s)
+string descStack(stack<pst_node_ptr_t> s)
 {
     stringstream ss;
     symstr_t v;
@@ -96,11 +96,11 @@ string descStack(stack<cst_node_ptr_t> s)
 
 bool StackPredictiveTableParser::parse(vector<token> input)
 {
-    stack<cst_node_ptr_t> s;
+    stack<pst_node_ptr_t> s;
     input.push_back(token(make_shared<symbol_t>(SYM_END), SYM_END, 0, 0));
     TokenViewer viewer(input);
-    s.push(cst_tree_t::createNode(TERMINAL, SYM_END, 0, 0));
-    cst_node_ptr_t startNode = cst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
+    s.push(pst_tree_t::createNode(TERMINAL, SYM_END, 0, 0));
+    pst_node_ptr_t startNode = pst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
     s.push(startNode);
     tb_head | "Analyze Stack" | "Remaining Input" | "Action";
     set_col | AL_LFT | AL_RGT | AL_RGT;
@@ -115,7 +115,7 @@ bool StackPredictiveTableParser::parse(vector<token> input)
         assert(_find(grammar.terminals, curType));
         if (curSym == curType)
         {
-            cst_node_ptr_t topNode = s.top();
+            pst_node_ptr_t topNode = s.top();
             topNode->data.symbol = cur.value;
             topNode->data.line = cur.line;
             topNode->data.col = cur.col;
@@ -129,13 +129,13 @@ bool StackPredictiveTableParser::parse(vector<token> input)
             if (predict.find(crd) != predict.end())
             {
                 symstr_t &right = predict[crd];
-                cst_node_ptr_t topNode = s.top();
+                pst_node_ptr_t topNode = s.top();
                 s.pop();
-                vector<cst_node_ptr_t> children;
+                vector<pst_node_ptr_t> children;
                 for (auto it1 = right.rbegin(); it1 != right.rend(); it1++)
                 {
                     node_type type = _find(grammar.terminals, *it1) ? TERMINAL : NON_TERM;
-                    cst_node_ptr_t newNode = cst_tree_t::createNode(type, *it1, 0, 0);
+                    pst_node_ptr_t newNode = pst_tree_t::createNode(type, *it1, 0, 0);
                     children.push_back(newNode);
                     s.push(newNode);
                 }
@@ -147,7 +147,7 @@ bool StackPredictiveTableParser::parse(vector<token> input)
                 if (children.size() == 0)
                 {
                     // 空串
-                    *(topNode) << cst_tree_t::createNode(TERMINAL, EPSILON, 0, 0);
+                    *(topNode) << pst_tree_t::createNode(TERMINAL, EPSILON, 0, 0);
                 }
                 actionDesc = curType + " -> " + compact(right);
             }

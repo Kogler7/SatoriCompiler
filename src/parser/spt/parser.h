@@ -8,25 +8,25 @@
  *
  */
 
-#include "common/tree/cst.h"
+#include "common/tree/pst.h"
 #include "common/gram/predict.h"
 
 class StackPredictiveTableParser
 {
     PredictiveGrammar grammar;
-    cst_tree_ptr_t tree;
+    pst_tree_ptr_t tree;
     table_t<symbol_t, symbol_t, symstr_t> predict;
     void calcPredictTable();
 
 public:
     StackPredictiveTableParser(PredictiveGrammar g) : grammar(g)
     {
-        tree = cst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
+        tree = pst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
         calcPredictTable();
     }
     void printPredictTable() const;
     bool parse(vector<token> input);
-    cst_tree_ptr_t getTree() const { return tree; }
+    pst_tree_ptr_t getTree() const { return tree; }
 };
 
 typedef StackPredictiveTableParser SPTParser;

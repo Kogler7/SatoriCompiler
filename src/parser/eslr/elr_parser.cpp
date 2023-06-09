@@ -63,11 +63,11 @@ pair<string, string> ExtendedSimpleLR1Parser::descAction(const action_t &act) co
     return make_pair(a, ss.str());
 }
 
-inline void printRemainingTreeNodes(stack<cst_node_ptr_t> &cstStk)
+inline void printRemainingTreeNodes(stack<pst_node_ptr_t> &cstStk)
 {
     while (!cstStk.empty())
     {
-        cst_node_ptr_t node = cstStk.top();
+        pst_node_ptr_t node = cstStk.top();
         cstStk.pop();
         node->print();
         if (!cstStk.empty())
@@ -84,7 +84,7 @@ bool ExtendedSimpleLR1Parser::parse(vector<token> &input, const ContextViewer &c
     // 初始化栈
     stack<symbol_t> symStk;       // 符号栈
     stack<state_id_t> stateStk;   // 状态栈
-    stack<cst_node_ptr_t> cstStk; // 语法树栈
+    stack<pst_node_ptr_t> cstStk; // 语法树栈
     symStk.push(SYM_END);
     stateStk.push(0);
     // 初始化表格
@@ -108,7 +108,7 @@ bool ExtendedSimpleLR1Parser::parse(vector<token> &input, const ContextViewer &c
             shift_t shift = get<shift_t>(act);
             symStk.push(a);
             stateStk.push(shift);
-            cst_node_ptr_t node = cst_tree_t::createNode(TERMINAL, tok.value, tok.line, tok.col);
+            pst_node_ptr_t node = pst_tree_t::createNode(TERMINAL, tok.value, tok.line, tok.col);
             cstStk.push(node);
             viewer.advance();
         }
@@ -119,8 +119,8 @@ bool ExtendedSimpleLR1Parser::parse(vector<token> &input, const ContextViewer &c
             symbol_t left = reduce.first;
             symstr_t right = reduce.second;
             size_t len = right.size();
-            cst_node_ptr_t node = cst_tree_t::createNode(NON_TERM, left, 0, 0);
-            vector<cst_node_ptr_t> children;
+            pst_node_ptr_t node = pst_tree_t::createNode(NON_TERM, left, 0, 0);
+            vector<pst_node_ptr_t> children;
             for (size_t i = 0; i < len; i++)
             {
                 symStk.pop();
@@ -158,8 +158,8 @@ reject:
 accept:
     info << "ExtendedSimpleLR1Parser: Parsing succeed!" << endl;
     symstr_t right = *(grammar.rules[grammar.symStart].begin());
-    cst_node_ptr_t startNode = cst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
-    vector<cst_node_ptr_t> children;
+    pst_node_ptr_t startNode = pst_tree_t::createNode(NON_TERM, grammar.symStart, 0, 0);
+    vector<pst_node_ptr_t> children;
     for (size_t i = 0; i < right.size(); i++)
     {
         symStk.pop();

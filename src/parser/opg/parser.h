@@ -9,17 +9,17 @@
  */
 
 #include "common/gram/opg.h"
-#include "common/tree/cst.h"
+#include "common/tree/pst.h"
 
 class OperatorPrecedenceGrammarParser
 {
 public:
     OperatorPrecedenceGrammar grammar;
-    cst_tree_ptr_t tree;
+    pst_tree_ptr_t tree;
     OperatorPrecedenceGrammarParser(OperatorPrecedenceGrammar &grammar) : grammar(grammar)
     {
-        tree = cst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
+        tree = pst_tree_t::createNode(TERMINAL, SYM_END, 0, 0);
     }
     bool parse(vector<token> &input);
-    cst_tree_ptr_t getTree() { return tree; }
+    pst_tree_ptr_t getTree() { return tree; }
 };
