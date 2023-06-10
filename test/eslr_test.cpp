@@ -47,4 +47,5 @@ void eslrTest()
          << eslr1.parse(tokens, code) << endl;
     eslr1.getCST()->print();
     eslr1.reduceCST()->print();
+    eslr1.refactorRST()->print();
 }

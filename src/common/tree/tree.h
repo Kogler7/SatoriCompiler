@@ -19,6 +19,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include "utils/log.h"
+
 using namespace std;
 
 template <typename data_t>
@@ -82,8 +84,8 @@ public:
 
     tree_node_t<data_t> &operator<<(const tree_node_ptr_t<data_t> node)
     {
+        node->parent = this;
         this->push_back(node);
-        this->back()->parent = this;
         return static_cast<tree_node_t<data_t> &>(*this);
     }
 
@@ -176,8 +178,17 @@ public:
             {
                 if (visible.size() <= level)
                     visible.push_back(true);
-                if (level > 0 && index == node.parent->size() - 1)
-                    visible[level - 1] = false;
+                if (level > 0)
+                {
+                    if (node.parent == nullptr)
+                    {
+                        warn << "DumpTree: Node <" << node.descData() << "> has no parent!" << endl;
+                    }
+                    else if (index == node.parent->size() - 1)
+                    {
+                        visible[level - 1] = false;
+                    }
+                }
                 auto getHead = [=](int level) -> string
                 {
                     int i = 0;

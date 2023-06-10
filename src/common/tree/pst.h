@@ -38,10 +38,8 @@ struct pst_node_data
     node_type type;
     string symbol;
     size_t line, col;
-    optional<product_ref> product_opt;
+    optional<product_t> product_opt;
 };
-
-extern const product_ref empty_product;
 
 class ParseSyntaxTreeNode : public AbstractTreeNode<pst_node_data>
 {
@@ -56,6 +54,24 @@ public:
 
     pst_node_t &operator[](size_t index) const;
     pst_node_t &operator<<(const pst_node_ptr_t node);
+
+    pst_node_ptr_t getChildAt(size_t index) const
+    {
+        auto child = this->at(index);
+        return dynamic_pointer_cast<ParseSyntaxTreeNode>(child);
+    }
+
+    vector<pst_node_ptr_t> &getChildren() const
+    {
+        tree_children_t<pst_node_data> *children = (tree_children_t<pst_node_data> *)this;
+        return *(vector<pst_node_ptr_t> *)children;
+    }
+
+    void replace(size_t index, pst_node_ptr_t node)
+    {
+        (this)->getChildren()[index] = node;
+        node->parent = this;
+    }
 
     template <typename func_t>
     void foreach (func_t f) const

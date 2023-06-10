@@ -30,7 +30,7 @@ pst_node_ptr_t ParseSyntaxTreeNode::createNode(pst_node_data data)
 
 pst_node_t &ParseSyntaxTreeNode::attachProduct(product_t &product)
 {
-    data.product_opt = product_ref(product);
+    data.product_opt = product;
     return *this;
 }
 
@@ -57,7 +57,8 @@ string ParseSyntaxTreeNode::descData() const
         ss << data.symbol;
         if (data.product_opt.has_value())
         {
-            ss << " -> " << compact(data.product_opt.value().get().second);
+            auto &pro = data.product_opt.value();
+            ss << " <" << pro.first << " -> " << compact(pro.second) << ">";
         }
     }
     return ss.str();

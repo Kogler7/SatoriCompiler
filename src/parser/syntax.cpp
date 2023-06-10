@@ -67,7 +67,7 @@ inline symbol_t getEndDeli(const symbol_t &deli)
     return string(1, endDelim[pos]);
 }
 
-void fullConnProducts(vector<tok_product_t> &dst, const vector<tok_product_t> &src, bool hasEpsilon = false)
+void fullConnProducts(vector<tok_product_t> &dst, const vector<tok_product_t> &src)
 {
     vector<tok_product_t> res;
     for (const auto &srcPro : src)
@@ -79,14 +79,7 @@ void fullConnProducts(vector<tok_product_t> &dst, const vector<tok_product_t> &s
             res.push_back(make_pair(dstPro.first, newRight));
         }
     }
-    if (hasEpsilon)
-    {
-        dst.insert(dst.end(), res.begin(), res.end());
-    }
-    else
-    {
-        dst = res;
-    }
+    dst = res;
 }
 
 void SyntaxParser::parseDeliProducts(vector<tok_product_t> &tmp, const symbol_t &left, token_const_iter_t beginIt, token_const_iter_t endIt)
@@ -94,29 +87,43 @@ void SyntaxParser::parseDeliProducts(vector<tok_product_t> &tmp, const symbol_t 
     vector<tok_product_t> subProducts;
     tok_product_t tokProduct = make_pair(left, vector<token>(beginIt + 1, endIt));
     subProducts = segmentProduct(tokProduct);
-    if (beginIt->value == "{")
+    if (beginIt->value == "(")
+    {
+        // S -> A(B|D)C => S -> ABC, S -> ADC
+        fullConnProducts(tmp, subProducts);
+    }
+    else if (beginIt->value == "{")
     {
         // S -> A{B|D}C => S' -> B|D, S'' -> S'S'' | ε, S -> AS''C
         // 构造代表花括号的新非终结符
-        symbol_t innerLeft = left + "_";
-        innerLeft += to_string(++nonTermCount[left]);
+        symbol_t starTerm = left + "_star_";
+        starTerm += to_string(++nonTermCount[left]);
         // 构造含新非终结符的新产生式
-        token innerLeftTok = token(get_tok_type("NON_TERM"), innerLeft);
+        token innerLeftTok = token(get_tok_type("NON_TERM"), starTerm);
         fullConnProducts(tmp, vector<tok_product_t>({make_pair(left, vector<token>({innerLeftTok}))}));
         for (auto &pro : subProducts)
         {
             vector<token> subRight = pro.second;
             subRight.push_back(innerLeftTok);
-            tokProducts.push_back(make_pair(innerLeft, subRight));
+            tokProducts.push_back(make_pair(starTerm, subRight));
         }
         // 构造含空串的新产生式
-        tokProducts.push_back(make_pair(innerLeft, vector<token>()));
+        tokProducts.push_back(make_pair(starTerm, vector<token>()));
     }
-    else if (beginIt->value == "(" || beginIt->value == "[")
+    else if (beginIt->value == "[")
     {
         // S -> A[B|D]C => S -> ABC, S -> ADC, S -> AC
-        // S -> A(B|D)C => S -> ABC, S -> ADC
-        fullConnProducts(tmp, subProducts, beginIt->value == "[");
+        symbol_t optiTerm = left + "_opti_";
+        optiTerm += to_string(++nonTermCount[left]);
+        // 构造含新非终结符的新产生式
+        token optiLeftTok = token(get_tok_type("NON_TERM"), optiTerm);
+        fullConnProducts(tmp, vector<tok_product_t>({make_pair(left, vector<token>({optiLeftTok}))}));
+        for (auto &pro : subProducts)
+        {
+            tokProducts.push_back(make_pair(optiTerm, pro.second));
+        }
+        // 构造含空串的新产生式
+        tokProducts.push_back(make_pair(optiTerm, vector<token>()));
     }
     else
     {

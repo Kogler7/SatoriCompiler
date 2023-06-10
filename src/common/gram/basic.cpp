@@ -20,6 +20,24 @@ typedef pair<symbol_t, symstr_t> product_t;
 
 #define DEBUG_LEVEL 1
 
+reduced_product_t Grammar::reduceProduct(const product_t &p) const
+{
+    // 如果产生式右部只有一个终结符，保留该信息，直接返回
+    if (p.second.size() == 1 && _find(terminals, p.second[0]))
+        return p;
+    // 否则仅保留非终结符（non-term）和带有映射信息的字面量终结符（mul-term）
+    reduced_product_t res;
+    res.first = p.first;
+    for (auto &s : p.second)
+    {
+        if (_find(nonTerms, s) || _find(mulTerms, s))
+        {
+            res.second.push_back(s);
+        }
+    }
+    return res;
+}
+
 void Grammar::updateStartProduct()
 {
     startProduct = make_pair(symStart, *rules.at(symStart).begin());

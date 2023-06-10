@@ -29,6 +29,7 @@ using symset_t = set<symbol_t>;
 using symstr_t = vector<symbol_t>;
 using product_t = pair<symbol_t, symstr_t>;
 using product_ref = reference_wrapper<product_t>;
+using reduced_product_t = product_t;
 using semantic_t = string;
 
 enum assoc_t
@@ -60,9 +61,11 @@ public:
     symset_t mulTerms;
     symset_t nonTerms;
     symset_t terminals;
+
     product_t startProduct;
     vector<product_t> products;
     map<symbol_t, set<symstr_t>> rules;
+
     map<token_type_t, symbol_t> tok2sym;
     map<product_t, semantic_t> semMap;
     map<symbol_t, prec_assoc_t> precMap;
@@ -81,6 +84,7 @@ public:
         semMap = g.semMap;
         precMap = g.precMap;
     }
+    reduced_product_t reduceProduct(const product_t &p) const;
     void updateStartProduct();
     void eliminateLeftRecursion();
     void extractLeftCommonFactor();

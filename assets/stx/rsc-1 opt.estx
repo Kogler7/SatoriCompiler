@@ -1,0 +1,109 @@
+/**
+* Extended Syntax Definition for the Reduced Language for Satori Compiler
+* (c) 2023 Satori Compiler Project, Beijing Jiaotong University
+*/
+
+#meta GRAMMAR ${ $}
+#meta MAPPING ${ $}
+
+GRAMMAR ${
+    Program*    ::=     { VarDeclStmt | FuncDeclStmt | FuncDef }
+                    ;
+    VarDeclStmt ::=     VarDecl `;`
+                    ;
+    VarDecl     ::=     `var` VarDef { `,` VarDef }
+                    ;
+    VarType     ::=     `int` | `real` | `bool` | `str`
+                    ;
+    VarDef      ::=     $Ident `:` VarType { `[` $Integer `]` } OptiInitDef
+                    ;
+    OptiInitDef ::=     `=` InitVal
+                    |   \e
+                    ;
+    InitVal     ::=     Expr | `{` OptiInitVal `}`
+                    ;
+    OptiInitVal ::=     InitVal { `,` InitVal }
+                    |   \e
+                    ;
+    FuncDeclStmt::=     `decl` FuncDecl `;`
+                    ;
+    FuncDecl    ::=     `func` $Ident `(` OptiPList `)` OptiVarType
+                    ;
+    OptiPList   ::=     ParamList
+                    |   \e
+                    ;
+    OptiVarType ::=     `:` VarType
+                    |   \e
+                    ;
+    FuncDef     ::=     FuncDecl Block
+                    ;
+    FuncCall    ::=     $Ident `(` OptiArgList `)`
+                    ;
+    OptiArgList ::=     ArgList
+                    |   \e
+                    ;
+    ArgList     ::=     Expr { `,` Expr }
+                    ;
+    ParamList   ::=     Param { `,` Param }
+                    ;
+    Param       ::=     $Ident `:` VarType { `[` $Integer `]` }
+                    ;
+    Stmt        ::=     Assignment `;`
+                    |   VarDeclStmt
+                    |   `if` `(` BoolExpr `)` Stmt
+                    |   `while` `(` BoolExpr `)` Stmt
+                    |   `for` `(` ( VarDecl | Expr ) `;` BoolExpr `;` Assignment `)` Stmt
+                    |   `break` `;`
+                    |   `continue` `;`
+                    |   `print` Expr `;`
+                    |   `return` [ Expr ] `;`
+                    |   [ Expr ] `;`
+                    |   Block
+                    ;
+    Assignment  ::=     LVal `=` Expr
+                    ;
+    Block       ::=     `{` { Stmt } `}`
+                    ;
+    UnaryExpr   ::=     ( `+` | `-` | `!` ) UnaryExpr
+                    |   Factor
+                    ;
+    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr
+                    |   UnaryExpr
+                    ;
+    Expr        ::=     Expr ( `+` | `-` ) MulExpr
+                    |   MulExpr
+                    ;
+    RelExpr     ::=     RelExpr ( `<` | `<=` | `>` | `>=` ) Expr
+                    |   Expr
+                    ;
+    EqExpr      ::=     EqExpr ( `==` | `!=` ) RelExpr
+                    |   RelExpr
+                    ;
+    AndExpr     ::=     AndExpr `&&` EqExpr
+                    |   EqExpr
+                    ;
+    OrExpr      ::=     OrExpr `||` AndExpr
+                    |   AndExpr
+                    ;
+    BoolExpr    ::=     OrExpr
+                    ;
+    Factor      ::=     LVal
+                    |   FuncCall
+                    |   `(` Expr `)`
+                    |   Number
+                    |   $String
+                    |   `true`
+                    |   `false`
+                    ;
+    Number      ::=     $Integer | $Real
+                    ;
+    LVal        ::=     $Ident { `[` Expr `]` }
+                    ;
+$}
+
+MAPPING ${
+    $Ident     -->     @IDENTIFIER ;
+    $Integer   -->     @INTEGER ;
+    $Real      -->     @REAL ;
+    $String    -->     @STRING ;
+$}

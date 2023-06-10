@@ -8,8 +8,10 @@
  *
  */
 
-#include "parser.h"
 #include <stack>
+#include <functional>
+
+#include "parser.h"
 #include "utils/table.h"
 #include "utils/view/tok_view.h"
 
@@ -178,6 +180,7 @@ accept:
 pst_tree_ptr_t ExtendedSimpleLR1Parser::reduceCST()
 {
     info << "ExtendedSimpleLR1Parser: Reducing CST... (CST->RST)" << endl;
+    const Grammar &g = this->grammar;
     symset_t &mulTerms = grammar.mulTerms;
     symset_t &nonTerms = grammar.nonTerms;
     symset_t &terminals = grammar.terminals;
@@ -185,15 +188,18 @@ pst_tree_ptr_t ExtendedSimpleLR1Parser::reduceCST()
     cst->postorder(
         [&](pst_node_t node)
         {
+            // 创建新的RST节点
+            pst_node_ptr_t rstNode = pst_tree_t::createNode(node.data);
             // 如果当前节点代表非终结符，按照其产生式构造简化的RST节点
             // 因为是后序遍历，所以子节点已经被压入栈中了
+            // 如果当前节点代表终结符，直接压入栈中并返回即可
             if (node.data.type == NON_TERM)
             {
                 assert(node.data.product_opt.has_value());
-                product_t &product = node.data.product_opt.value().get();
+                product_t &product = node.data.product_opt.value();
                 symstr_t &right = product.second;
-                // 创建新的RST节点
-                pst_node_ptr_t rstNode = pst_tree_t::createNode(node.data);
+                reduced_product_t reducedProduct = g.reduceProduct(product);
+                rstNode->attachProduct(reducedProduct);
                 // 如果产生式右部只有一个终结符，那么将其作为RST节点的数据保留
                 if (right.size() == 1 && _find(terminals, right[0]))
                 {
@@ -217,22 +223,137 @@ pst_tree_ptr_t ExtendedSimpleLR1Parser::reduceCST()
                     // 逆转子节点顺序
                     rstNode->reverseChildren();
                 }
-                // 将新的RST节点压入栈中
-                rstStk.push(rstNode);
             }
-            // 如果当前节点代表终结符，直接压入栈中并返回即可
-            else
-            {
-                rstStk.push(make_shared<pst_node_t>(node));
-            }
+            // 将新的RST节点压入栈中
+            rstStk.push(rstNode);
         });
     // 最后栈中只剩下一个RST节点，即为最终的RST
     rst = rstStk.top();
     return rst;
 }
 
+void refactorStarListNode(pst_node_ptr_t astNode, vector<size_t> indexes)
+{
+    for (auto idx : indexes)
+    {
+        pst_node_ptr_t target = astNode->getChildAt(idx);
+        // 创建一个新的AST节点，将原来的子节点遍历处理后添加到新的节点中
+        pst_node_ptr_t listNode = pst_tree_t::createNode(target->data);
+        listNode->data.symbol = "StarList";
+        // 递归遍历子节点
+        function<void(pst_node_ptr_t)> traverse = [&](pst_node_ptr_t node)
+        {
+            const vector<pst_node_ptr_t> &children = node->getChildren();
+            if (children.size() > 0)
+            {
+                for (int i = 0; i < children.size() - 1; i++)
+                {
+                    *listNode << children[i];
+                }
+                traverse(children.back());
+            }
+        };
+        traverse(target);
+        // 用新节点替换原来的节点
+        astNode->replace(idx, listNode);
+        // 下面进行AST简化整合
+        if (astNode->getChildren().size() == 1)
+        {
+            // 如果当前节点只有一个子节点，说明其只有一个ListNode节点
+            // 此时删掉ListNode节点，将其子节点提升到当前节点
+            const vector<pst_node_ptr_t> &children = listNode->getChildren();
+            astNode->pop_back();
+            for (auto &child : children)
+            {
+                *astNode << child;
+            }
+        }
+        else if (astNode->getChildren().size() == 2)
+        {
+            // 如果当前节点有两个子节点，说明其有一个ListNode节点和一个非ListNode节点
+            // 此时判断非ListNode节点是否与ListNode节点的子节点是同类型
+            // 如果是，则将ListNode子节点提升到当前节点，删掉ListNode节点
+            const vector<pst_node_ptr_t> &children = listNode->getChildren();
+            pst_node_ptr_t nonListNode = astNode->getChildAt(0);
+            if (children.size() == 0)
+            {
+                astNode->pop_back();
+                continue;
+            }
+            if (nonListNode->data.symbol == children[0]->data.symbol)
+            {
+                astNode->pop_back();
+                for (auto &child : children)
+                {
+                    *astNode << child;
+                }
+            }
+        }
+    }
+}
+
+void refactorOptionalNode(pst_node_ptr_t astNode, vector<size_t> indexes)
+{
+    vector<pst_node_ptr_t> &children = astNode->getChildren();
+    for (auto idx : indexes)
+    {
+        children[idx]->data.symbol = "Optional";
+    }
+}
+
 pst_tree_ptr_t ExtendedSimpleLR1Parser::refactorRST()
 {
     info << "ExtendedSimpleLR1Parser: Refactoring RST... (RST->AST)" << endl;
+    stack<pst_node_ptr_t> astStk;
+    rst->postorder(
+        [&](pst_node_t node)
+        {
+            // 创建新的AST节点
+            pst_node_ptr_t astNode = pst_tree_t::createNode(node.data);
+            // 如果当前节点代表非终结符，先将栈中的子节点弹出并添加到新的AST节点中
+            // 而后检查其产生式是否包含特殊非终结符（隐含有运算符信息）
+            // 如果包含，则调用相应的函数进行处理
+            // 如果当前节点代表终结符，直接压入栈中并返回即可
+            if (node.data.type == NON_TERM)
+            {
+                assert(node.data.product_opt.has_value());
+                product_t &product = node.data.product_opt.value();
+                symbol_t &left = product.first;
+                symstr_t &right = product.second;
+                static vector<size_t> starIndexes, optiIndexes;
+                starIndexes.clear();
+                optiIndexes.clear();
+                // 逆序遍历子节点，将其弹出栈并添加到新的AST节点中
+                for (size_t i = right.size() - 1; i != -1; i--)
+                {
+                    symbol_t &s = right[i];
+                    pst_node_ptr_t child = astStk.top();
+                    astStk.pop();
+                    *astNode << child;
+                    // 如果右部有特殊非终结符，记录其位置
+                    if (s.find("_star_") != string::npos)
+                    {
+                        starIndexes.push_back(i);
+                    }
+                    else if (s.find("_opti_") != string::npos)
+                    {
+                        optiIndexes.push_back(i);
+                    }
+                }
+                // 逆转子节点顺序
+                astNode->reverseChildren();
+                // 处理特殊非终结符
+                // 如果左部有特殊非终结符，说明不需要做额外处理
+                // 因为我们需要向上找到第一个不含特殊非终结符的左部产生式，再统一处理
+                if (optiIndexes.size() > 0)
+                    refactorOptionalNode(astNode, optiIndexes);
+                if (left.find("_star_") == string::npos && starIndexes.size() > 0)
+                    refactorStarListNode(astNode, starIndexes);
+            }
+            // 将新的RST节点压入栈中
+            astStk.push(astNode);
+        });
+    // 最后栈中只剩下一个AST节点，即为最终的AST
+    ast = astStk.top();
     return ast;
 }

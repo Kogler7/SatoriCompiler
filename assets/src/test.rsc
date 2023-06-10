@@ -3,6 +3,8 @@
 */
 
 decl func add(x : int, y : int) : int;
+decl func add(x : int, y : int, z : real, s : str) : int;
+decl func sub();
 
 var x : int = 10;                // integer variable
 var y : bool = true;             // integer variable in scientific notation
