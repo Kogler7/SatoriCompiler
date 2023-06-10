@@ -164,18 +164,17 @@ void Grammar::extractLeftCommonFactor()
 void Grammar::printRules() const
 {
     info << "Grammar: Rules:" << endl;
-    for (auto it = rules.begin(); it != rules.end(); it++)
+    using namespace table;
+    tb_head | TB_TAB | MD_TAB | "Rules";
+    set_col | AL_RGT | AL_LFT | AL_LFT;
+    for (auto &rule : rules)
     {
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
+        for (auto &alpha : rule.second)
         {
-            cout << it->first << " ::= ";
-            for (auto it3 = it2->begin(); it3 != it2->end(); it3++)
-            {
-                cout << *it3 << " ";
-            }
-            cout << endl;
+            new_row | rule.first | "::=" | compact(alpha);
         }
     }
+    cout << tb_view(BDR_RUD);
 }
 
 void Grammar::printTerminals() const
@@ -190,6 +189,21 @@ void Grammar::printNonTerms() const
     cout << set2str(nonTerms) << endl;
 }
 
+void Grammar::printSemanticMarks() const
+{
+    using namespace table;
+    info << "Grammar: Semantic Marks:" << endl;
+    tb_head | TB_TAB | MD_TAB | "Product" | "Semantic";
+    set_col | AL_RGT | AL_LFT | AL_LFT | AL_LFT;
+    for (auto &sem : semMap)
+    {
+        new_row | sem.first.first | "->" | compact(sem.first.second) | sem.second;
+    }
+    set_row;
+    tb_line(2);
+    cout << tb_view(BDR_RUD);
+}
+
 vector<token> Grammar::transferTokens(const vector<token> &tokens) const
 {
     info << "Transferring tokens..." << endl;
@@ -198,7 +212,6 @@ vector<token> Grammar::transferTokens(const vector<token> &tokens) const
     {
         if (_find(terminals, t.value))
         {
-            debug(0) << "terminals: " << t.value << endl;
             res.push_back(token(
                 make_shared<symbol_t>(t.value),
                 t.value,
@@ -207,7 +220,6 @@ vector<token> Grammar::transferTokens(const vector<token> &tokens) const
         }
         else if (_find(tok2sym, t.type))
         {
-            debug(0) << "tok2sym: " << t.value << endl;
             res.push_back(
                 token(
                     make_shared<symbol_t>(tok2sym.at(t.type)),

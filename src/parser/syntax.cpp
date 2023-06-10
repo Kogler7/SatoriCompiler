@@ -16,6 +16,8 @@
 #include "common/token.h"
 #include "syntax.h"
 #include "utils/log.h"
+#include "utils/table.h"
+#include "utils/stl.h"
 
 #define DEBUG_LEVEL 0
 
@@ -271,16 +273,20 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
             pro.second.clear();
         }
     }
-    info << "SyntaxParser::geneStxProducts: " << products.size() << " productions generated." << endl;
+    using namespace table;
+    info << "SyntaxParser::geneMapProducts: " << products.size() << " productions generated." << endl;
+    tb_head | TB_TAB | MD_TAB | "Generated Productions";
+    set_col | AL_RGT | AL_LFT | AL_LFT;
     for (auto &pro : products)
     {
-        debug(0) << pro.first << " -> ";
+        stringstream ss;
         for (auto &tok : pro.second)
         {
-            debug_u(0) << tok.value << " ";
+            ss << tok.value << " ";
         }
-        debug_u(0) << endl;
+        new_row | pro.first | "->" | ss.str();
     }
+    std::cout << tb_view(BDR_RUD);
     // 将终结符、映射终结符、非终结符、产生式、规则和语义动作加入文法中
     symset_t &mulTerms = grammar.mulTerms;
     symset_t &nonTerms = grammar.nonTerms;
@@ -370,16 +376,6 @@ void SyntaxParser::addTokenMappings(const vector<token> &tokens)
     {
         vector<tok_product_t> subProducts = segmentProduct(pro);
         products.insert(products.end(), subProducts.begin(), subProducts.end());
-    }
-    info << "SyntaxParser::geneMapProducts: " << products.size() << " productions generated." << endl;
-    for (auto &pro : products)
-    {
-        debug(0) << pro.first << " -> ";
-        for (auto &tok : pro.second)
-        {
-            debug_u(0) << tok.value << " ";
-        }
-        debug_u(0) << endl;
     }
     // 将映射加入文法中
     map<token_type_t, symbol_t> &tok2sym = grammar.tok2sym;

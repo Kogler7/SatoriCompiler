@@ -23,9 +23,10 @@ class ParseSyntaxTreeNode;
 
 typedef ParseSyntaxTreeNode pst_node_t;
 typedef ParseSyntaxTreeNode pst_tree_t;
-typedef shared_ptr<pst_node_t> pst_node_ptr_t;
-typedef shared_ptr<pst_node_t> pst_tree_ptr_t;
-typedef vector<pst_node_ptr_t> pst_children_t;
+
+using pst_node_ptr_t = shared_ptr<pst_node_t>;
+using pst_tree_ptr_t = shared_ptr<pst_tree_t>;
+using pst_children_t = vector<pst_node_ptr_t>;
 
 enum node_type
 {
@@ -39,6 +40,7 @@ struct pst_node_data
     string symbol;
     size_t line, col;
     optional<product_t> product_opt;
+    optional<semantic_t> semantic_opt;
 };
 
 class ParseSyntaxTreeNode : public AbstractTreeNode<pst_node_data>
@@ -51,6 +53,7 @@ public:
     static pst_node_ptr_t createNode(pst_node_data data);
 
     pst_node_t &attachProduct(product_t &product);
+    pst_node_t &attachSemantic(semantic_t &semantic);
 
     pst_node_t &operator[](size_t index) const;
     pst_node_t &operator<<(const pst_node_ptr_t node);

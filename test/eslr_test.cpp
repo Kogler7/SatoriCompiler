@@ -23,10 +23,9 @@ void eslrTest()
     // Grammar g = syntax.parse("./assets/stx/func.stx");
     Grammar g = syntax.parse("./assets/stx/rsc-1.estx");
     g.printRules();
-    // g.extractLeftCommonFactor();
-    g.printRules();
     g.printTerminals();
     g.printNonTerms();
+    g.printSemanticMarks();
     SLR1Grammar G = SLR1Grammar(g);
     G.printFollow();
     G.printItems();

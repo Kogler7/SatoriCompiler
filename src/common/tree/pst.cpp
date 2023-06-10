@@ -34,6 +34,12 @@ pst_node_t &ParseSyntaxTreeNode::attachProduct(product_t &product)
     return *this;
 }
 
+pst_node_t &ParseSyntaxTreeNode::attachSemantic(semantic_t &semantic)
+{
+    data.semantic_opt = semantic;
+    return *this;
+}
+
 pst_node_t &ParseSyntaxTreeNode::operator[](size_t index) const
 {
     return static_cast<pst_node_t &>(AbstractTreeNode<pst_node_data>::operator[](index));
@@ -55,7 +61,12 @@ string ParseSyntaxTreeNode::descData() const
     else
     {
         ss << data.symbol;
-        if (data.product_opt.has_value())
+        if (data.semantic_opt.has_value())
+        {
+            auto &sem = data.semantic_opt.value();
+            ss << " : " << sem;
+        }
+        else if (data.product_opt.has_value())
         {
             auto &pro = data.product_opt.value();
             ss << " <" << pro.first << " -> " << compact(pro.second) << ">";

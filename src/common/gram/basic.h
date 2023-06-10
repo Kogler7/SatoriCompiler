@@ -91,6 +91,7 @@ public:
     void printRules() const;
     void printTerminals() const;
     void printNonTerms() const;
+    void printSemanticMarks() const;
     vector<token> transferTokens(const vector<token> &tokens) const;
 };
 
