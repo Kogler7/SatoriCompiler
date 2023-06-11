@@ -18,7 +18,7 @@
 using namespace table;
 
 template <typename T>
-string descStack(stack<T> s, int limit = 8)
+string descStack(stack<T> s, int limit = 6)
 {
     stringstream ss;
     symstr_t v;

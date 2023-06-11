@@ -21,7 +21,7 @@ inline symset_t intersects(const symset_t &s1, const symset_t &s2)
     return inter;
 }
 
-inline void reportConflict(const cluster_t &c, const symset_t &s1, const symset_t &s2, int i)
+inline void reportConflict(const cluster_t &c, const symset_t &s1, const symset_t &s2, size_t i)
 {
     info << "Related cluster: " << endl;
     printCluster(c, i);
@@ -138,10 +138,10 @@ void SLR1Grammar::printSLR1Table() const
 {
     info << "SLR1 table:" << endl;
     tb_head | "State" = AL_CTR;
-    for (int i = 0; i < terminals.size() - 1; i++)
+    for (size_t i = 0; i < terminals.size() - 1; i++)
         tb_cont | TB_TAB;
     tb_cont | "Action" = AL_CTR;
-    for (int i = 0; i < nonTerms.size() - 1; i++)
+    for (size_t i = 0; i < nonTerms.size() - 1; i++)
         tb_cont | TB_TAB;
     tb_cont | "Goto" = AL_CTR;
     new_row | "";
@@ -149,7 +149,7 @@ void SLR1Grammar::printSLR1Table() const
         tb_cont | t = AL_CTR;
     for (auto &t : nonTerms)
         tb_cont | t = AL_CTR;
-    for (int i = 0; i < clusters.size(); i++)
+    for (size_t i = 0; i < clusters.size(); i++)
     {
         const cluster_t &c = clusters.at(i);
         new_row | "S" + to_string(i);

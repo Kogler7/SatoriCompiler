@@ -294,14 +294,30 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
     vector<product_t> &gPros = grammar.products;
     map<symbol_t, set<symstr_t>> &rules = grammar.rules;
     const vector<semantic_t> &semSeq = syntaxMeta.getMeta("SEMANTIC", vector<semantic_t>());
-    int semIdx = -1;
+    info << "semSeq size: " << semSeq.size() << endl;
+    map<size_t, semantic_t> semLocMap;
+    map<size_t, product_t> proLocMap;
+    size_t semIdx = 0;
     for (auto &pro : products)
     {
         nonTerms.insert(pro.first);
         symstr_t right;
-        bool hasSemantic = false;
         for (auto &tok : pro.second)
         {
+            if (tok.type == semanticType)
+            {
+                // 记录下语义动作及其对应的行数，便于后续挂载到对应的产生式中
+                assert(semIdx < semSeq.size(), "SyntaxParser: Semantic action index out of range.");
+                if (semLocMap.find(tok.line) == semLocMap.end())
+                {
+                    // 语义动作只匹配第一次出现的行数
+                    // 因为前面的处理会导致同一行的语义动作出现多次
+                    // 如果不加以考虑，这里会导致下标越界
+                    semLocMap[tok.line] = semSeq[semIdx++];
+                }
+                // 语义动作不加入到最后的产生式中
+                continue;
+            }
             if (tok.type == nonTermType)
             {
                 nonTerms.insert(tok.value);
@@ -317,22 +333,30 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
                 tok.value = lrtri(tok.value);
                 terminals.insert(tok.value);
             }
-            if (tok.type == semanticType)
-            {
-                hasSemantic = true;
-                semIdx++;
-            }
             else
             {
-                right.push_back(tok.value);
+                error << format(
+                    "SyntaxParser: EBNF token error: Expected terminal, non-terminal, or semantic action, got $ ($) at <$, $>.\n",
+                    tok.value, *tok.type, tok.line, tok.col);
             }
+            right.push_back(tok.value);
         }
+        // 获取产生式右部所在的行数
+        size_t proLine = right.size() ? pro.second.back().line : 0;
         rules[pro.first].insert(right); // 添加规则
         product_t newPro = make_pair(pro.first, right);
         gPros.push_back(newPro); // 添加产生式
-        if (hasSemantic && semIdx < semSeq.size())
+        proLocMap[proLine] = newPro;
+    }
+    // 重新遍历产生式，挂载语义动作
+    map<product_t, semantic_t> &semMap = grammar.semMap;
+    for (auto &pair : proLocMap)
+    {
+        size_t proLine = pair.first;
+        product_t &pro = pair.second;
+        if (semLocMap.find(proLine) != semLocMap.end())
         {
-            grammar.semMap[newPro] = semSeq[semIdx]; // 添加语义动作
+            semMap[pro] = semLocMap[proLine];
         }
     }
 }

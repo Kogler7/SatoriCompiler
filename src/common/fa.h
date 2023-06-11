@@ -16,6 +16,6 @@
 
 using namespace std;
 
-typedef int state_id_t;
+typedef size_t state_id_t;
 typedef pair<state_id_t, state_id_t> sub_fa_t;
 typedef unordered_map<char, set<state_id_t>> transition_map_t;

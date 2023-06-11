@@ -8,82 +8,82 @@
 #meta SEMANTIC :
 
 GRAMMAR ${
-    Program*    ::=     { VarDeclStmt | FuncDeclStmt | FuncDef }    : SemProgram
+    Program*    ::=     { VarDeclStmt | FuncDeclStmt | FuncDef }                            : SemProgram
                     ;
-    VarDeclStmt ::=     VarDecl `;`                                 : SemVarDeclStmt
+    VarDeclStmt ::=     VarDecl `;`                                                         : SemVarDeclStmt
                     ;
-    VarDecl     ::=     `var` VarDef { `,` VarDef }                : SemVarDecl
+    VarDecl     ::=     `var` VarDef { `,` VarDef }                                         : SemVarDecl
                     ;
-    VarType     ::=     `int` | `real` | `bool` | `str`          : SemVarType
+    VarType     ::=     `int` | `real` | `bool` | `str`                                     : SemVarType
                     ;
-    VarDef      ::=     $Ident `:` VarType { `[` $Integer `]` } [ `=` InitVal ] : SemVarDef
+    VarDef      ::=     $Ident `:` VarType { `[` $Integer `]` } [ `=` InitVal ]             : SemVarDef
                     ;
-    InitVal     ::=     Expr | `{` [ InitVal { `,` InitVal } ] `}` : SemInitVal
+    InitVal     ::=     Expr | `{` [ InitVal { `,` InitVal } ] `}`                          : SemInitVal
                     ;
-    FuncDeclStmt::=     `decl` FuncDecl `;`                        : SemFuncDeclStmt
+    FuncDeclStmt::=     `decl` FuncDecl `;`                                                 : SemFuncDeclStmt
                     ;
-    FuncDecl    ::=     `func` $Ident `(` [ ParamList ] `)` [ `:` VarType ] : SemFuncDecl
+    FuncDecl    ::=     `func` $Ident `(` [ ParamList ] `)` [ `:` VarType ]                 : SemFuncDecl
                     ;
-    FuncDef     ::=     FuncDecl Block                            : SemFuncDef
+    FuncDef     ::=     FuncDecl Block                                                      : SemFuncDef
                     ;
-    FuncCall    ::=     $Ident `(` [ ArgList ] `)`                : SemFuncCall
+    FuncCall    ::=     $Ident `(` [ ArgList ] `)`                                          : SemFuncCall
                     ;
-    ArgList     ::=     Expr { `,` Expr }                         : SemArgList
+    ArgList     ::=     Expr { `,` Expr }                                                   : SemArgList
                     ;
-    ParamList   ::=     Param { `,` Param }                      : SemParamList
+    ParamList   ::=     Param { `,` Param }                                                 : SemParamList
                     ;
-    Param       ::=     $Ident `:` VarType { `[` $Integer `]` } : SemParam
+    Param       ::=     $Ident `:` VarType { `[` $Integer `]` }                             : SemParam
                     ;
-    Stmt        ::=     Assignment `;`                           : SemAssignmentStmt
-                    |   VarDeclStmt                            : SemVarDeclStmt
-                    |   `if` `(` BoolExpr `)` Stmt           : SemIfStmt
-                    |   `while` `(` BoolExpr `)` Stmt     : SemWhileStmt
-                    |   `for` `(` ( VarDecl | Expr ) `;` BoolExpr `;` Assignment `)` Stmt : SemForStmt
-                    |   `break` `;`                            : SemBreakStmt
-                    |   `continue` `;`                       : SemContinueStmt
-                    |   `print` Expr `;`                   : SemPrintStmt
-                    |   `return` [ Expr ] `;`           : SemReturnStmt
-                    |   [ Expr ] `;`                  : SemExprStmt
-                    |   Block                                : SemBlockStmt
+    Stmt        ::=     Assignment `;`                                                      : SemAssignmentStmt
+                    |   VarDeclStmt                                                         : SemVarDeclStmt
+                    |   `if` `(` BoolExpr `)` Stmt                                          : SemIfStmt
+                    |   `while` `(` BoolExpr `)` Stmt                                       : SemWhileStmt
+                    |   `for` `(` ( VarDecl | Expr ) `;` BoolExpr `;` Assignment `)` Stmt   : SemForStmt
+                    |   `break` `;`                                                         : SemBreakStmt
+                    |   `continue` `;`                                                      : SemContinueStmt
+                    |   `print` Expr `;`                                                    : SemPrintStmt
+                    |   `return` [ Expr ] `;`                                               : SemReturnStmt
+                    |   [ Expr ] `;`                                                        : SemExprStmt
+                    |   Block                                                               : SemBlockStmt
                     ;
-    Assignment  ::=     LVal `=` Expr                         : SemAssignment
+    Assignment  ::=     LVal `=` Expr                                                       : SemAssignment
                     ;
-    Block       ::=     `{` { Stmt } `}`                  : SemBlock
+    Block       ::=     `{` { Stmt } `}`                                                    : SemBlock
                     ;
-    UnaryExpr   ::=     ( `+` | `-` | `!` ) UnaryExpr       : SemUnaryExpr
-                    |   Factor                            : SemFactor
+    UnaryExpr   ::=     ( `+` | `-` | `!` ) UnaryExpr                                       : SemUnaryExpr
+                    |   Factor                                                              : SemFactor
                     ;
-    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr    : SemMulExpr
-                    |   UnaryExpr                      : SemUnaryExpr
+    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr                                     : SemMulExpr
+                    |   UnaryExpr                                                           : SemUnaryExpr
                     ;
-    Expr        ::=     Expr ( `+` | `-` ) MulExpr        : SemExpr
-                    |   MulExpr                       : SemMulExpr
+    Expr        ::=     Expr ( `+` | `-` ) MulExpr                                          : SemExpr
+                    |   MulExpr                                                             : SemMulExpr
                     ;
-    RelExpr     ::=     RelExpr ( `<` | `<=` | `>` | `>=` ) Expr    : SemRelExpr
-                    |   Expr                                : SemExpr
+    RelExpr     ::=     RelExpr ( `<` | `<=` | `>` | `>=` ) Expr                            : SemRelExpr
+                    |   Expr                                                                : SemExpr
                     ;
-    EqExpr      ::=     EqExpr ( `==` | `!=` ) RelExpr  : SemEqExpr
-                    |   RelExpr                        : SemRelExpr
+    EqExpr      ::=     EqExpr ( `==` | `!=` ) RelExpr                                      : SemEqExpr
+                    |   RelExpr                                                             : SemRelExpr
                     ;
-    AndExpr     ::=     AndExpr `&&` EqExpr           : SemAndExpr
-                    |   EqExpr                     : SemEqExpr
+    AndExpr     ::=     AndExpr `&&` EqExpr                                                 : SemAndExpr
+                    |   EqExpr                                                              : SemEqExpr
                     ;
-    OrExpr      ::=     OrExpr `||` AndExpr           : SemOrExpr
-                    |   AndExpr                   : SemAndExpr
+    OrExpr      ::=     OrExpr `||` AndExpr                                                 : SemOrExpr
+                    |   AndExpr                                                             : SemAndExpr
                     ;
-    BoolExpr    ::=     OrExpr                   : SemBoolExpr
+    BoolExpr    ::=     OrExpr                                                              : SemBoolExpr
                     ;
-    Factor      ::=     LVal                            : SemLVal
-                    |   FuncCall                    : SemFuncCall
-                    |   `(` Expr `)`            : SemExpr
-                    |   Number                    : SemNumber
-                    |   $String                   : SemString
-                    |   `true`              : SemTrue
-                    |   `false`           : SemFalse
+    Factor      ::=     LVal                                                                : SemLVal
+                    |   FuncCall                                                            : SemFuncCall
+                    |   `(` Expr `)`                                                        : SemExpr
+                    |   Number                                                              : SemNumber
+                    |   $String                                                             : SemString
+                    |   `true`                                                              : SemTrue
+                    |   `false`                                                             : SemFalse
                     ;
-    Number      ::=     $Integer | $Real        : SemNumber
+    Number      ::=     $Integer | $Real                                                    : SemNumber
                     ;
-    LVal        ::=     $Ident { `[` Expr `]` } : SemLVal
+    LVal        ::=     $Ident { `[` Expr `]` }                                             : SemLVal
                     ;
 $}
 
