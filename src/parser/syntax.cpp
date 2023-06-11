@@ -32,6 +32,26 @@
 
 using namespace std;
 
+ostream &operator<<(ostream &os, const tok_product_t &product)
+{
+    os << product.first << " -> ";
+    for (auto &tok : product.second)
+    {
+        os << tok.value << " ";
+    }
+    return os;
+}
+
+stringstream &operator<<(stringstream &ss, const tok_product_t &product)
+{
+    ss << product.first << " -> ";
+    for (auto &tok : product.second)
+    {
+        ss << tok.value << " ";
+    }
+    return ss;
+}
+
 /**
  * @brief 从tokens中查找第一个类型为type的token
  *
@@ -209,9 +229,7 @@ vector<tok_product_t> SyntaxParser::segmentProduct(tok_product_t &product)
     // Delimiter 是指用于分隔产生式中的子产生式的符号，如 |、 () 、 [] 、 {} 等
     // 一般Delimiter意味着某种运算符，而Separator意味着独立的产生式
     // 为了方便区分，可以称Delimiter为运算符，称Separator为分隔符
-    info << format(
-        "SyntaxParser: Segmenting product: $ -> $.\n",
-        product.first, compact(product.second));
+    info << format("SyntaxParser: Segmenting product: $.\n", product);
     vector<tok_product_t> products;
     symbol_t &left = product.first;
     vector<token> &right = product.second;
@@ -290,12 +308,7 @@ vector<tok_product_t> SyntaxParser::segmentProduct(tok_product_t &product)
     info << "SyntaxParser: Segmented product: " << endl;
     for (auto &pro : products)
     {
-        cout << pro.first << " -> ";
-        for (auto &tok : pro.second)
-        {
-            cout << tok.value << " ";
-        }
-        cout << endl;
+        std::cout << pro << endl;
     }
     return products;
 }
@@ -463,7 +476,7 @@ void SyntaxParser::addSyntaxRules(const vector<token> &tokens)
 
 /**
  * @brief 将MAPPING定义的映射关系加入到文法中
- * 
+ *
  * @param tokens MAPPING定义的token序列
  */
 void SyntaxParser::addTokenMappings(const vector<token> &tokens)
@@ -541,7 +554,7 @@ void SyntaxParser::addTokenMappings(const vector<token> &tokens)
 
 /**
  * @brief 将PREC定义的优先级和结合性加入到文法中
- * 
+ *
  */
 void SyntaxParser::addPrecAndAssoc()
 {
@@ -596,7 +609,7 @@ void SyntaxParser::addPrecAndAssoc()
 
 /**
  * @brief 将EBNF定义的文法解析为一系列产生式，并将其加入到文法中
- * 
+ *
  * @param grammarPath EBNF定义的文法的元数据文件路径
  * @return Grammar 解析得到的文法
  */

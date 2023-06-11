@@ -8,6 +8,19 @@
  *
  */
 
+/**
+ * 本文件实现了文法定义解析器
+ * 该解析器可以解析EBNF定义的文法，包括多种“运算符”，如分组、选择、重复、可选等
+ * 解析器会将文法定义文件递归下降地解析为一系列产生式，然后将其加入到文法中
+ * 解析器还会解析MAPPING定义，将其中的映射关系加入到文法中
+ * 解析器还会解析PREC定义，将其中的优先级和结合性加入到文法中
+ * 解析器还会解析SEMANTIC定义，将其中的语义动作加入到文法中
+ */
+
+#pragma once
+
+#include <sstream>
+
 #include "common/token.h"
 #include "common/gram/basic.h"
 #include "lexer/lexer.h"
@@ -16,6 +29,9 @@
 
 // 词素产生式，用于存储解析出的词素产生式，具有产生式的结构，但是右部的符号是词素
 using tok_product_t = pair<symbol_t, vector<token>>;
+
+ostream &operator<<(ostream &os, const tok_product_t &product);
+stringstream &operator<<(stringstream &ss, const tok_product_t &product);
 
 class SyntaxParser
 {
