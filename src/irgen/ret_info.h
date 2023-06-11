@@ -10,12 +10,12 @@
 
 #pragma once
 
+#include "ssa.h"
+#include "use.h"
+
 #include <list>
 #include <vector>
 #include <variant>
-
-#include "ssa.h"
-#include "use.h"
 
 struct AlphaStmtRetInfo
 {

@@ -13,9 +13,9 @@
 #include "viewer.h"
 #include "utils/log.h"
 
-using word_loc_t = pair<size_t, size_t>;
-static constexpr inline const word_loc_t word_npos = make_pair(-1, -1);
-static constexpr inline const word_loc_t word_end = make_pair(-1, 0);
+using word_loc_t = std::pair<size_t, size_t>;
+static constexpr inline const word_loc_t word_npos = std::make_pair(-1, -1);
+static constexpr inline const word_loc_t word_end = std::make_pair(-1, 0);
 
 class WordViewer : public Viewer
 {
@@ -34,23 +34,23 @@ public:
         Viewer::operator=(v);
     }
     WordViewer() = default;
-    WordViewer(string str) : Viewer(str) {}
+    WordViewer(std::string str) : Viewer(str) {}
     WordViewer(Viewer &v) : Viewer(v) {}
 
-    string operator[](word_loc_t loc) const
+    std::string operator[](word_loc_t loc) const
     {
         assert(loc != word_npos && loc != word_end, "Invalid word location!");
         return str.substr(loc.first, loc.second - loc.first);
     }
 
-    vector<word_loc_t> wordsOfRestLine() const
+    std::vector<word_loc_t> wordsOfRestLine() const
     {
-        vector<word_loc_t> ret;
+        std::vector<word_loc_t> ret;
         size_t start = current().first;
         size_t end = str.find('\n', pos);
         while (start < end)
         {
-            word_loc_t loc = make_pair(start, start);
+            word_loc_t loc = std::make_pair(start, start);
             while (loc.second < end && !isspace(str[loc.second]))
                 loc.second++;
             if (loc.second > loc.first)
@@ -62,14 +62,14 @@ public:
         return ret;
     }
 
-    word_loc_t find(const string &word, word_loc_t start = word_npos) const
+    word_loc_t find(const std::string &word, word_loc_t start = word_npos) const
     {
         // 找到并返回第一个是单词且值为word的位置，否则返回word_npos
         size_t _pos;
         _pos = start == word_npos ? str.find(word) : str.find(word, start.second);
-        while (_pos != string::npos)
+        while (_pos != std::string::npos)
         {
-            word_loc_t loc = make_pair(_pos, _pos + word.length());
+            word_loc_t loc = std::make_pair(_pos, _pos + word.length());
             if (isWord(loc))
                 return loc;
             _pos = str.find(word, _pos + 1);
@@ -99,7 +99,7 @@ public:
         size_t end = start;
         while (end < str.length() && !isspace(str[end]))
             end++;
-        return make_pair(start, end);
+        return std::make_pair(start, end);
     }
 
     word_loc_t advance()
@@ -162,27 +162,27 @@ public:
         return loc;
     }
 
-    string swallow()
+    std::string swallow()
     {
         // 删掉当前单词
         word_loc_t loc = current();
-        string ret = str.substr(loc.first, loc.second - loc.first);
+        std::string ret = str.substr(loc.first, loc.second - loc.first);
         str.erase(loc.first, loc.second - loc.first);
         return ret;
     }
 
-    string swallow(word_loc_t loc)
+    std::string swallow(word_loc_t loc)
     {
         // 删掉loc指定的单词
-        string ret = str.substr(loc.first, loc.second - loc.first);
+        std::string ret = str.substr(loc.first, loc.second - loc.first);
         str.erase(loc.first, loc.second - loc.first);
         return ret;
     }
 
-    void swallowWords(const vector<word_loc_t> &locs)
+    void swallowWords(const std::vector<word_loc_t> &locs)
     {
         // 先排序
-        vector<word_loc_t> locs_ = locs;
+        std::vector<word_loc_t> locs_ = locs;
         sort(
             locs_.begin(), locs_.end(),
             [](const word_loc_t &a, const word_loc_t &b) -> bool
@@ -192,7 +192,7 @@ public:
             str.erase(rit->first, rit->second - rit->first);
     }
 
-    WordViewer &replace(word_loc_t l1, word_loc_t l2, string word)
+    WordViewer &replace(word_loc_t l1, word_loc_t l2, std::string word)
     {
         // 用word替换l1到l2的单词
         str.replace(l1.first, l2.second - l1.first, word);

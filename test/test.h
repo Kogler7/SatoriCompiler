@@ -8,6 +8,8 @@
  *
  */
 
+using namespace std;
+
 void cstTest();
 void lexerTest();
 void nfaTest();

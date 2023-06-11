@@ -9,12 +9,12 @@
  */
 
 #pragma once
+
+#include "utils/view/viewer.h"
+
 #include <map>
 #include <set>
 #include <string>
-#include "utils/view/viewer.h"
-
-using namespace std;
 
 enum Operator
 {
@@ -28,13 +28,13 @@ enum Operator
 	UNI = 0x0e,		 // .
 };
 
-extern set<char> leftOp;
+extern std::set<char> leftOp;
 
-extern set<char> rightOp;
+extern std::set<char> rightOp;
 
-extern set<char> doubleOp;
+extern std::set<char> doubleOp;
 
-extern set<char> opSet;
+extern std::set<char> opSet;
 
 enum Symbol
 {
@@ -47,30 +47,30 @@ enum Symbol
 	NON_SPACE = 0x16, // \S
 };
 
-extern map<char, char> chr2op;
+extern std::map<char, char> chr2op;
 
-extern map<char, string> op2str;
+extern std::map<char, std::string> op2str;
 
-extern map<char, string> sym2str;
+extern std::map<char, std::string> sym2str;
 
-extern set<char> uni_set;
+extern std::set<char> uni_set;
 
-extern set<char> alpha_set;
+extern std::set<char> alpha_set;
 
-extern set<char> digit_set;
+extern std::set<char> digit_set;
 
-extern set<char> word_set;
+extern std::set<char> word_set;
 
-extern set<char> space_set;
+extern std::set<char> space_set;
 
-extern set<char> non_space_set;
+extern std::set<char> non_space_set;
 
-string char2str(char c);
+std::string char2str(char c);
 
 // 算符优先级
-extern map<char, int> precedence;
+extern std::map<char, int> precedence;
 
-extern map<char, char> escape;
+extern std::map<char, char> escape;
 
 /**
  * @brief 解析转义字符，返回对应的字符
@@ -86,4 +86,4 @@ char parseEscape(Viewer &v);
  * @param v Viewer
  * @return string
  */
-string exp2str(string exp);
+std::string exp2str(std::string exp);

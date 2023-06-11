@@ -10,21 +10,20 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
 #include "nfa.h"
 #include "common/token.h"
 #include "utils/view/viewer.h"
 #include "utils/meta.h"
 
-using namespace std;
+#include <map>
+#include <string>
+#include <vector>
 
 class Lexer
 {
-    set<token_type_t, type_less> ignoredTypes;
-    vector<token_type_t> typeOrder;                              // 词法单元类型顺序
-    map<token_type_t, vector<FiniteAutomaton>, type_less> faMap; // 状态自动机对照表
+    std::set<token_type_t, type_less> ignoredTypes;
+    std::vector<token_type_t> typeOrder;                                   // 词法单元类型顺序
+    std::map<token_type_t, std::vector<FiniteAutomaton>, type_less> faMap; // 状态自动机对照表
 
 public:
     Lexer() {}
@@ -32,18 +31,18 @@ public:
     {
         configLexer(pattern, ignored);
     }
-    Lexer(const string &metaFile)
+    Lexer(const std::string &metaFile)
     {
         MetaParser parser = MetaParser::fromFile(metaFile);
         configLexer(parser["PATTERN"], parser["IGNORED"]);
     }
     void configLexer(const meta_t &pattern, const meta_t &ignored = meta_null);
-    void addTokenType(string typeName, string regExp);
-    void addIgnoredType(string typeName);
-    vector<token> tokenize(const Viewer &viewer) const;
-    vector<token> tokenizeFile(const string &fileName) const
+    void addTokenType(std::string typeName, std::string regExp);
+    void addIgnoredType(std::string typeName);
+    std::vector<token> tokenize(const Viewer &viewer) const;
+    std::vector<token> tokenizeFile(const std::string &fileName) const
     {
         return tokenize(Viewer::fromFile(fileName));
     }
-    static void printTokens(const vector<token> &tokens);
+    static void printTokens(const std::vector<token> &tokens);
 };

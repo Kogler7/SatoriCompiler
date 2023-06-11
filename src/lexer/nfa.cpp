@@ -12,6 +12,8 @@
 #include "regexp/define.h"
 #include "utils/log.h"
 
+using namespace std;
+
 void FiniteAutomaton::setStartState(state_id_t id)
 {
 	startState = id;

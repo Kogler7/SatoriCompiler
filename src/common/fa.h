@@ -14,8 +14,6 @@
 #include <vector>
 #include <unordered_map>
 
-using namespace std;
-
-typedef size_t state_id_t;
-typedef pair<state_id_t, state_id_t> sub_fa_t;
-typedef unordered_map<char, set<state_id_t>> transition_map_t;
+using state_id_t = size_t;
+using sub_fa_t = std::pair<state_id_t, state_id_t>;
+using transition_map_t = std::unordered_map<char, std::set<state_id_t>>;

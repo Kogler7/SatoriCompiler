@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "utils/log.h"
+
 #include <map>
 #include <set>
 #include <vector>
@@ -19,10 +21,6 @@
 #include <sstream>
 #include <algorithm>
 
-#include "utils/log.h"
-
-using namespace std;
-
 template <typename data_t>
 class AbstractTreeNode;
 
@@ -30,10 +28,10 @@ template <typename data_t>
 using tree_node_t = AbstractTreeNode<data_t>;
 
 template <typename data_t>
-using tree_node_ptr_t = shared_ptr<AbstractTreeNode<data_t>>;
+using tree_node_ptr_t = std::shared_ptr<AbstractTreeNode<data_t>>;
 
 template <typename data_t>
-using tree_children_t = vector<tree_node_ptr_t<data_t>>;
+using tree_children_t = std::vector<tree_node_ptr_t<data_t>>;
 
 template <typename data_t>
 class AbstractTreeNode : public tree_children_t<data_t>
@@ -46,7 +44,7 @@ public:
 
     static tree_node_ptr_t<data_t> createNode(data_t data)
     {
-        return make_shared<tree_node_t<data_t>>(data);
+        return std::make_shared<tree_node_t<data_t>>(data);
     }
 
     size_t find(data_t data) const
@@ -94,7 +92,7 @@ public:
         return tree_children_t<data_t>::size();
     }
 
-    virtual string descData() const
+    virtual std::string descData() const
     {
         return "";
     }
@@ -167,10 +165,10 @@ public:
         f(self);
     }
 
-    string dumpTree()
+    std::string dumpTree()
     {
-        stringstream ss;
-        vector<bool> visible;
+        std::stringstream ss;
+        std::vector<bool> visible;
         int level = 0;
         int index = 0;
         traverse(
@@ -182,17 +180,17 @@ public:
                 {
                     if (node.parent == nullptr)
                     {
-                        warn << "DumpTree: Node <" << node.descData() << "> has no parent!" << endl;
+                        warn << "DumpTree: Node <" << node.descData() << "> has no parent!" << std::endl;
                     }
                     else if (index == node.parent->size() - 1)
                     {
                         visible[level - 1] = false;
                     }
                 }
-                auto getHead = [=](int level) -> string
+                auto getHead = [=](int level) -> std::string
                 {
                     int i = 0;
-                    string ret;
+                    std::string ret;
                     while (i < level - 1)
                     {
                         if (visible[i])
@@ -207,7 +205,7 @@ public:
                 };
                 ss << getHead(level);
                 ss << node.descData();
-                ss << endl;
+                ss << std::endl;
                 if (level > 0)
                     for (int i = level; i < visible.size(); i++)
                         visible[i] = true;
@@ -218,6 +216,6 @@ public:
 
     void print()
     {
-        cout << this->dumpTree();
+        std::cout << this->dumpTree();
     }
 };

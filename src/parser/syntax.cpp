@@ -17,16 +17,16 @@
  * 解析器还会解析SEMANTIC定义，将其中的语义动作加入到文法中
  */
 
-#include <map>
-#include <set>
-#include <vector>
-#include <string>
-
 #include "common/token.h"
 #include "syntax.h"
 #include "utils/log.h"
 #include "utils/table.h"
 #include "utils/stl.h"
+
+#include <map>
+#include <set>
+#include <vector>
+#include <string>
 
 #define DEBUG_LEVEL 0
 

@@ -10,30 +10,28 @@
 
 #pragma once
 
-#include <variant>
 #include "common/fa.h"
 #include "utils/stl.h"
 #include "utils/log.h"
 #include "utils/table.h"
 #include "predict.h"
 
-using namespace std;
-using namespace table;
+#include <variant>
 
-typedef product_ref reduce_t;
-typedef state_id_t shift_t;
-typedef bool accept_t;
-typedef variant<accept_t, reduce_t, shift_t> action_t;
-typedef pair<product_ref, size_t> lr_item_t;
+using reduce_t = product_ref;
+using shift_t = state_id_t;
+using accept_t = bool;
+using action_t = std::variant<accept_t, reduce_t, shift_t>;
+using lr_item_t = std::pair<product_ref, size_t>;
 
-inline string product2str(product_ref p)
+inline std::string product2str(product_ref p)
 {
-    string s = p.get().first + "->";
+    std::string s = p.get().first + "->";
     s += compact(p.get().second);
     return s;
 }
 
-inline string item2str(lr_item_t item)
+inline std::string item2str(lr_item_t item)
 {
     symbol_t left = item.first.get().first;
     symstr_t right = item.first.get().second;
@@ -69,15 +67,15 @@ struct item_less
     }
 };
 
-typedef set<lr_item_t, item_less> cluster_t;
-typedef vector<cluster_t> clusters_t;
+using cluster_t = std::set<lr_item_t, item_less>;
+using clusters_t = std::vector<cluster_t>;
 
-inline string cluster2str(const cluster_t &c)
+inline std::string cluster2str(const cluster_t &c)
 {
-    string s = "{";
+    std::string s = "{";
     for (int i = 0; i < c.size(); i++)
     {
-        lr_item_t item = *next(c.begin(), i);
+        lr_item_t item = *std::next(c.begin(), i);
         s += item2str(item);
         if (i != c.size() - 1)
             s += ", ";
@@ -88,8 +86,9 @@ inline string cluster2str(const cluster_t &c)
 
 inline void printCluster(const cluster_t &c, int i = 0)
 {
-    info << "Cluster " << i << ": " << endl;
-    tb_head | TB_TAB | TB_TAB | TB_TAB | MD_TAB | "Cluster " + to_string(i);
+    using namespace table;
+    info << "Cluster " << i << ": " << std::endl;
+    tb_head | TB_TAB | TB_TAB | TB_TAB | MD_TAB | "Cluster " + std::to_string(i);
     set_col | AL_RGT | AL_CTR | AL_RGT | AL_CTR | AL_LFT;
     for (auto &item : c)
     {
@@ -100,7 +99,7 @@ inline void printCluster(const cluster_t &c, int i = 0)
         symstr_t r2 = symstr_t(right.begin() + pos, right.end());
         new_row | left | "->" | compact(r1) | "." | compact(r2);
     }
-    cout << tb_view(BDR_RUD);
+    std::cout << tb_view(BDR_RUD);
 }
 
 class LRGrammar : public PredictiveGrammar
@@ -133,7 +132,7 @@ public:
         goTrans = g.goTrans;
     }
     clusters_t clusters;
-    vector<lr_item_t> items;
+    std::vector<lr_item_t> items;
     table_t<state_id_t, symbol_t, state_id_t> goTrans;
     void printItems() const;
     void printClusters() const;

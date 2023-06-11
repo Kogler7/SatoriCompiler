@@ -9,21 +9,23 @@
  */
 
 #pragma once
+
+#include "lexer/nfa.h"
+
 #include <stack>
 #include <string>
 #include <vector>
-#include "lexer/nfa.h"
 
 class RegexpParser
 {
-	string rawReg;
-	string tmpReg;
-	string postfix;
-	stack<sub_nfa_t> nfaStack;
-	vector<int> setStates;
+	std::string rawReg;
+	std::string tmpReg;
+	std::string postfix;
+	std::stack<sub_nfa_t> nfaStack;
+	std::vector<int> setStates;
 	FiniteAutomaton nfa;
 
-	void parseSet(string setExp);
+	void parseSet(std::string setExp);
 
 	void opSelect();
 	void opStar();
@@ -32,14 +34,14 @@ class RegexpParser
 	void opConcat();
 
 public:
-	RegexpParser(string regexp) : rawReg(regexp) {}
+	RegexpParser(std::string regexp) : rawReg(regexp) {}
 	void regexpPreproc();
 	void tmpReg2postfix();
 	void postfix2FA();
-	string getStackDesc() const;
-	string getRawReg() const { return rawReg; }
-	string getTmpReg() const { return tmpReg; }
-	string getPostfix() const { return postfix; }
+	std::string getStackDesc() const;
+	std::string getRawReg() const { return rawReg; }
+	std::string getTmpReg() const { return tmpReg; }
+	std::string getPostfix() const { return postfix; }
 	FiniteAutomaton getNFA() const { return nfa; }
 	FiniteAutomaton parse();
 };

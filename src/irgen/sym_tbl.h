@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <stack>
-
 #include "ssa.h"
 #include "utils/nested_map.h"
+
+#include <stack>
 
 using scope_t = NestedMap<std::string, alloc_ptr_t>;
 using scope_ptr_t = std::shared_ptr<scope_t>;

@@ -13,6 +13,8 @@
 #include "utils/log.h"
 #include "utils/stl.h"
 
+using namespace std;
+
 ParseSyntaxTreeNode::ParseSyntaxTreeNode(
     node_type typ, string sym, size_t ln, size_t co) : AbstractTreeNode<pst_node_data>(pst_node_data(typ, sym, ln, co))
 {

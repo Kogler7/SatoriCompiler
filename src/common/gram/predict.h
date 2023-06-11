@@ -26,10 +26,10 @@ protected:
     void calcFirstWithLeftRecursion();
 
 public:
-    map<symbol_t, symset_t> first;
-    map<symstr_t, symset_t> firstS;
-    map<symbol_t, symset_t> follow;
-    map<product_t, symset_t> select;
+    std::map<symbol_t, symset_t> first;
+    std::map<symstr_t, symset_t> firstS;
+    std::map<symbol_t, symset_t> follow;
+    std::map<product_t, symset_t> select;
     PredictiveGrammar() : Grammar(){};
     PredictiveGrammar(const Grammar &g) : Grammar(g)
     {

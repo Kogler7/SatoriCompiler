@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <vector>
-
 #include "ssa.h"
 #include "sym_tbl.h"
+
+#include <vector>
 
 class SemanticContext;
 

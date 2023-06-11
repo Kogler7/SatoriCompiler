@@ -9,6 +9,7 @@
  */
 
 #include "log.h"
+
 #include <sstream>
 
 StrFormatter::StrFormatter(std::string s)

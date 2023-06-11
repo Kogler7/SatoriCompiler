@@ -13,6 +13,8 @@
 #include "utils/log.h"
 #include "utils/table.h"
 
+using namespace std;
+
 #define DEBUG_LEVEL 0
 
 #define _isVT(t) _find(terminals, t)

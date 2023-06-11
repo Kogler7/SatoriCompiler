@@ -10,23 +10,21 @@
 
 #pragma once
 
-#include <string>
-#include <optional>
-
 #include "tree.h"
 #include "utils/log.h"
 #include "common/gram/basic.h"
 
-using namespace std;
+#include <string>
+#include <optional>
 
 class ParseSyntaxTreeNode;
 
-typedef ParseSyntaxTreeNode pst_node_t;
-typedef ParseSyntaxTreeNode pst_tree_t;
+using pst_node_t = ParseSyntaxTreeNode;
+using pst_tree_t = ParseSyntaxTreeNode;
 
-using pst_node_ptr_t = shared_ptr<pst_node_t>;
-using pst_tree_ptr_t = shared_ptr<pst_tree_t>;
-using pst_children_t = vector<pst_node_ptr_t>;
+using pst_node_ptr_t = std::shared_ptr<pst_node_t>;
+using pst_tree_ptr_t = std::shared_ptr<pst_tree_t>;
+using pst_children_t = std::vector<pst_node_ptr_t>;
 
 enum node_type
 {
@@ -37,19 +35,19 @@ enum node_type
 struct pst_node_data
 {
     node_type type;
-    string symbol;
+    std::string symbol;
     size_t line, col;
-    optional<product_t> product_opt;
-    optional<semantic_t> semantic_opt;
+    std::optional<product_t> product_opt;
+    std::optional<semantic_t> semantic_opt;
 };
 
 class ParseSyntaxTreeNode : public AbstractTreeNode<pst_node_data>
 {
 public:
     ParseSyntaxTreeNode(pst_node_data data) : AbstractTreeNode<pst_node_data>(data) {}
-    ParseSyntaxTreeNode(node_type typ, string sym, size_t ln, size_t co);
+    ParseSyntaxTreeNode(node_type typ, std::string sym, size_t ln, size_t co);
 
-    static pst_node_ptr_t createNode(node_type type, const string &symbol, size_t line, size_t col);
+    static pst_node_ptr_t createNode(node_type type, const std::string &symbol, size_t line, size_t col);
     static pst_node_ptr_t createNode(pst_node_data data);
 
     pst_node_t &attachProduct(product_t &product);
@@ -67,7 +65,7 @@ public:
     vector<pst_node_ptr_t> &getChildren() const
     {
         tree_children_t<pst_node_data> *children = (tree_children_t<pst_node_data> *)this;
-        return *(vector<pst_node_ptr_t> *)children;
+        return *(std::vector<pst_node_ptr_t> *)children;
     }
 
     void replace(size_t index, pst_node_ptr_t node)
@@ -83,7 +81,7 @@ public:
         {
             f(static_cast<pst_node_t &>(*(ref)));
         };
-        for_each(this->begin(), this->end(), nodeF);
+        std::for_each(this->begin(), this->end(), nodeF);
     }
 
     template <typename func_t>
@@ -96,5 +94,5 @@ public:
         f(*this);
     }
 
-    string descData() const override;
+    std::string descData() const override;
 };

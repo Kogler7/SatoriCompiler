@@ -13,15 +13,15 @@
 #include "viewer.h"
 #include "utils/log.h"
 
-using code_loc_t = pair<size_t, size_t>;
+using code_loc_t = std::pair<size_t, size_t>;
 
 class ContextViewer : public Viewer
 {
-	vector<size_t> lineNoVec;
+	std::vector<size_t> lineNoVec;
 	void initialize()
 	{
 		size_t pos = str.find('\n');
-		while (pos != string::npos)
+		while (pos != std::string::npos)
 		{
 			lineNoVec.push_back(pos);
 			pos = str.find('\n', pos + 1);
@@ -35,7 +35,7 @@ public:
 		Viewer::operator=(v);
 	}
 
-	ContextViewer(string str) : Viewer(str)
+	ContextViewer(std::string str) : Viewer(str)
 	{
 		initialize();
 	}
@@ -45,14 +45,14 @@ public:
 		initialize();
 	}
 
-	pair<size_t, size_t> getCurLineCol() const
+	std::pair<size_t, size_t> getCurLineCol() const
 	{
 		size_t ln = getLineNo();
 		size_t col = getPos() - (ln > 1 ? lineNoVec[ln - 2] + 1 : 0);
-		return make_pair(ln, col);
+		return std::make_pair(ln, col);
 	}
 
-	string getLine(size_t lineNo = -1) const
+	std::string getLine(size_t lineNo = -1) const
 	{
 		if (lineNo == -1)
 			lineNo = getLineNo();
@@ -78,13 +78,13 @@ public:
 	{
 		size_t lineNo = getLineNo();
 		size_t start = lineNo > 1 ? lineNoVec[lineNo - 2] : 0;
-		return make_pair(lineNo, pos - start);
+		return std::make_pair(lineNo, pos - start);
 	}
 
 	void printContext() const
 	{
 		size_t ln, col;
-		tie(ln, col) = getLnAndCol();
+		std::tie(ln, col) = getLnAndCol();
 		printContext(ln, col);
 	}
 
@@ -95,14 +95,14 @@ public:
 		size_t endLine = ln + 1 < lineMax ? ln + 1 : lineMax;
 		for (size_t i = startLine; i <= endLine; i++)
 		{
-			cout << setw(3) << i << ": ";
+			std::cout << std::setw(3) << i << ": ";
 			if (i == ln)
-				cout << ">>| ";
+				std::cout << ">>| ";
 			else
-				cout << "  | ";
-			cout << getLine(i) << endl;
+				std::cout << "  | ";
+			std::cout << getLine(i) << std::endl;
 			if (i == ln)
-				cout << setw(9 + col) << "^" << endl;
+				std::cout << std::setw(9 + col) << "^" << std::endl;
 		}
 	}
 

@@ -11,12 +11,15 @@
 #include "lexer.h"
 #include "nfa.h"
 #include "regexp/parser.h"
-#include <sstream>
 #include "utils/stl.h"
 #include "utils/log.h"
 #include "utils/table.h"
 #include "utils/view/ctx_view.h"
 #include "utils/view/wrd_view.h"
+
+#include <sstream>
+
+using namespace std;
 
 #define DEBUG_LEVEL -1
 

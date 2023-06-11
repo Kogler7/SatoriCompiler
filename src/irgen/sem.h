@@ -8,13 +8,14 @@
  *
  */
 
+#pragma once
+
 #include "utils/log.h"
 #include "utils/apply.h"
+
 #include <map>
 #include <string>
 #include <functional>
-
-#pragma once
 
 class ASTNode
 {

@@ -11,18 +11,17 @@
 #pragma once
 
 #include "common/token.h"
-#include "vector"
 #include "utils/log.h"
 
-using namespace std;
+#include <vector>
 
 class TokenViewer
 {
-    vector<token> &tokens;
+    std::vector<token> &tokens;
     size_t index;
 
 public:
-    TokenViewer(vector<token> &tokens) : tokens(tokens), index(0) {}
+    TokenViewer(std::vector<token> &tokens) : tokens(tokens), index(0) {}
     void operator=(TokenViewer &v)
     {
         tokens = v.tokens;
@@ -53,25 +52,25 @@ public:
     {
         index++;
     }
-    vector<token> rest() const
+    std::vector<token> rest() const
     {
-        vector<token> ret;
+        std::vector<token> ret;
         for (size_t i = index; i < tokens.size(); i++)
             ret.push_back(tokens[i]);
         return ret;
     }
-    vector<string> restTypes() const
+    std::vector<std::string> restTypes() const
     {
-        vector<string> ret;
+        std::vector<std::string> ret;
         for (size_t i = index; i < tokens.size(); i++)
             ret.push_back(*(tokens[i].type));
         return ret;
     }
 };
 
-inline string descTokVecFrom(const vector<token> &v, int i, int limit = 10)
+inline std::string descTokVecFrom(const std::vector<token> &v, int i, int limit = 10)
 {
-    stringstream ss;
+    std::stringstream ss;
     for (int j = i; j < v.size() && j < i + limit; j++)
     {
         ss << v[j].value;

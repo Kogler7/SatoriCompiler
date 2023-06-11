@@ -9,6 +9,7 @@
  */
 
 #include "token.h"
-#include <map>
+
+using namespace std;
 
 map<string, token_type_t> tokTypeMap;

@@ -15,11 +15,11 @@
  * 渲染器提供了一系列的接口和操作符重载，用于快速设置单元格的样式
  */
 
+#include "table.h"
+
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
-
-#include "table.h"
 
 using namespace table;
 

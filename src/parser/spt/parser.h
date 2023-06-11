@@ -25,8 +25,8 @@ public:
         calcPredictTable();
     }
     void printPredictTable() const;
-    bool parse(vector<token> input);
+    bool parse(std::vector<token> input);
     pst_tree_ptr_t getCST() const { return cst; }
 };
 
-typedef StackPredictiveTableParser SPTParser;
+using SPTParser = StackPredictiveTableParser;

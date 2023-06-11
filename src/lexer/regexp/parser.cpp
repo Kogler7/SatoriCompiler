@@ -13,6 +13,8 @@
 #include "utils/log.h"
 #include "define.h"
 
+using namespace std;
+
 string RegexpParser::getStackDesc() const
 {
 	stack<sub_nfa_t> tmpStack = nfaStack;

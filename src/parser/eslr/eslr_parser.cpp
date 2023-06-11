@@ -17,13 +17,14 @@
  * 3、支持扩展的语法树构建，即除了构建CST之外，还支持构建RST和AST，便于后续翻译步骤
  */
 
-#include <stack>
-#include <functional>
-
 #include "parser.h"
 #include "utils/table.h"
 #include "utils/view/tok_view.h"
 
+#include <stack>
+#include <functional>
+
+using namespace std;
 using namespace table;
 
 /**

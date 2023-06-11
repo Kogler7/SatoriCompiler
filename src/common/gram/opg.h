@@ -29,8 +29,8 @@ class OperatorPrecedenceGrammar : public Grammar
     void calcOPT();
 
 public:
-    map<symbol_t, symset_t> firstVT;
-    map<symbol_t, symset_t> lastVT;
+    std::map<symbol_t, symset_t> firstVT;
+    std::map<symbol_t, symset_t> lastVT;
     table_t<symbol_t, symbol_t, int> opt; // operator precedence table
     OperatorPrecedenceGrammar() : Grammar(){};
     OperatorPrecedenceGrammar(const Grammar &g) : Grammar(g)

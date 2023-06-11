@@ -9,8 +9,10 @@
  */
 
 #include "lrg.h"
+
 #include <queue>
 
+using namespace std;
 using namespace table;
 
 #define DEBUG_LEVEL -1

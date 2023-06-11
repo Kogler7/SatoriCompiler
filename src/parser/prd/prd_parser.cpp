@@ -12,6 +12,8 @@
 #include "parser.h"
 #include "utils/log.h"
 
+using namespace std;
+
 #define DEBUG_LEVEL 0
 
 #define _cur_tok(v) *(v.current().type)

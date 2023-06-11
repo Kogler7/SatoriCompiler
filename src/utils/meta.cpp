@@ -10,6 +10,8 @@
 
 #include "meta.h"
 
+using namespace std;
+
 inline string trim(const string &str)
 {
     string::size_type pos = str.find_first_not_of(" \t\n\r\f\v");

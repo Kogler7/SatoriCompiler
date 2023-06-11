@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include "log.h"
+
 #include <map>
 #include <vector>
 #include <stack>
-
-#include "log.h"
 
 // TAB在渲染器中控制同一行中的单元格内容合并
 #define TB_TAB "\t"
@@ -36,8 +36,8 @@
 
 namespace table
 {
-    typedef unsigned char sign;
-    typedef unsigned short int l_sign;
+    using sign = unsigned char;
+    using l_sign = unsigned short int;
 
     // 用于设置单元格的内容对齐方式
     enum align_t : sign

@@ -10,8 +10,10 @@
 
 #include "slr1.h"
 #include "utils/stl.h"
+
 #include <queue>
 
+using namespace std;
 using namespace table;
 
 inline symset_t intersects(const symset_t &s1, const symset_t &s2)

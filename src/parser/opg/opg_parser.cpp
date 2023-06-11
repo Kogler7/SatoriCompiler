@@ -13,7 +13,10 @@
 #include "utils/table.h"
 #include "utils/view/tok_view.h"
 #include "parser.h"
+
 #include <stack>
+
+using namespace std;
 
 #define DEBUG_LEVEL 0
 
@@ -25,7 +28,7 @@ using namespace table;
 #define _eq(t1, t2) (grammar.opt[mkcrd(t1, t2)] == OP::EQ)
 #define _gt(t1, t2) (grammar.opt[mkcrd(t1, t2)] == OP::GT)
 
-typedef std::pair<symbol_t, symstr_t> product_t;
+using product_t = std::pair<symbol_t, symstr_t>;
 
 symbol_t findLeft(const symstr_t &right, const Grammar &grammar)
 {

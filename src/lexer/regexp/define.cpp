@@ -10,6 +10,8 @@
 
 #include "define.h"
 
+using namespace std;
+
 set<char> leftOp = {
     STAR,
     PLUS,

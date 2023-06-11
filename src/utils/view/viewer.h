@@ -9,14 +9,14 @@
  */
 
 #pragma once
+
+#include "utils/log.h"
+
 #include <string>
 #include <vector>
 #include <iomanip>
 #include <fstream>
 #include <iostream>
-#include "utils/log.h"
-
-using namespace std;
 
 /**
  * @brief lightweight string viewer
@@ -24,21 +24,21 @@ using namespace std;
 class Viewer
 {
 protected:
-	string str;
+	std::string str;
 	size_t pos = 0;
 
 public:
-	static Viewer fromFile(string filename)
+	static Viewer fromFile(std::string filename)
 	{
-		ifstream ifs(filename);
+		std::ifstream ifs(filename);
 		assert(
 			ifs.is_open(),
 			format("Cannot open file: $.", filename));
-		string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+		std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 		return Viewer(str);
 	}
 	Viewer() = default;
-	Viewer(const string &str) : str(str) {}
+	Viewer(const std::string &str) : str(str) {}
 	Viewer(const Viewer &v)
 	{
 		str = v.str;
@@ -107,7 +107,7 @@ public:
 		return pos;
 	}
 	// 获取字符串
-	string getStr() const
+	std::string getStr() const
 	{
 		return str;
 	}

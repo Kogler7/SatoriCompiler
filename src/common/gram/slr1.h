@@ -10,9 +10,10 @@
 
 #pragma once
 
-#include <variant>
 #include "lrg.h"
 #include "utils/log.h"
+
+#include <variant>
 
 class SLR1Grammar : public LRGrammar
 {

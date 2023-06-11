@@ -22,15 +22,16 @@
 
 #include "view/wrd_view.h"
 #include "utils/log.h"
+
 #include <map>
 #include <set>
 
-using meta_name_t = string;
-using meta_mark_t = pair<string, string>;
-using meta_content_t = string;
-using meta_t = vector<meta_content_t>;
+using meta_name_t = std::string;
+using meta_mark_t = std::pair<std::string, std::string>;
+using meta_content_t = std::string;
+using meta_t = std::vector<meta_content_t>;
 
-static inline const meta_t meta_null = vector<meta_content_t>();
+static inline const meta_t meta_null = std::vector<meta_content_t>();
 
 inline bool operator<(const word_loc_t &a, const word_loc_t &b)
 {
@@ -40,11 +41,11 @@ inline bool operator<(const word_loc_t &a, const word_loc_t &b)
 class MetaParser
 {
     WordViewer viewer;
-    map<meta_name_t, meta_t> metas;
-    map<meta_mark_t, set<meta_name_t>> metaMap;
+    std::map<meta_name_t, meta_t> metas;
+    std::map<meta_mark_t, std::set<meta_name_t>> metaMap;
 
     void parseMetaMarks();
-    meta_content_t parseMetas(string text);
+    meta_content_t parseMetas(std::string text);
 
 public:
     MetaParser() = default;
@@ -54,7 +55,7 @@ public:
         parseMetas(viewer.getStr());
     }
 
-    static MetaParser fromFile(string filename)
+    static MetaParser fromFile(std::string filename)
     {
         Viewer v = Viewer::fromFile(filename);
         return MetaParser(v);

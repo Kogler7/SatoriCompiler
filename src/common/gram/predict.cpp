@@ -13,6 +13,8 @@
 #include "utils/table.h"
 #include "predict.h"
 
+using namespace std;
+
 #define insert_if_not_exist(A, s)               \
     {                                           \
         flag = false;                           \

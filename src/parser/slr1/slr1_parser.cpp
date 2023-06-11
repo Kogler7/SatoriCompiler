@@ -9,10 +9,12 @@
  */
 
 #include "parser.h"
-#include <stack>
 #include "utils/table.h"
 #include "utils/view/tok_view.h"
 
+#include <stack>
+
+using namespace std;
 using namespace table;
 
 template <typename T>

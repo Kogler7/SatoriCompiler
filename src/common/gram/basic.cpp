@@ -13,10 +13,12 @@
 #include "utils/log.h"
 #include "utils/table.h"
 
-typedef string symbol_t;
-typedef set<symbol_t> symset_t;
-typedef vector<symbol_t> symstr_t;
-typedef pair<symbol_t, symstr_t> product_t;
+using namespace std;
+
+using symbol_t = string;
+using symset_t = set<symbol_t>;
+using symstr_t = vector<symbol_t>;
+using product_t = pair<symbol_t, symstr_t>;
 
 #define DEBUG_LEVEL 1
 
