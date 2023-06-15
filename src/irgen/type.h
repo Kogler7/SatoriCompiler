@@ -23,6 +23,8 @@ class Type
 
 };
 
+using type_ptr_t = std::shared_ptr<Type>;
+
 class IntegerType : public Type
 {
 

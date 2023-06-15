@@ -26,32 +26,37 @@ using value_ptr_t = std::shared_ptr<Value>;
 class Value
 {
 protected:
-    Type type;
+    type_ptr_t type;
     std::string name;
     std::set<use_ptr_t> uses;
 
 public:
-    Value(Type type, std::string name) : type(type), name(name) {}
+    Value(type_ptr_t type, std::string name) : type(type), name(name) {}
     ~Value() = default;
-    Type getType() { return type; }
+    type_ptr_t getType() { return type; }
+    void addUse(use_ptr_t use) { uses.insert(use); }
+    bool delUse(use_ptr_t use) { return uses.erase(use); }
+    virtual bool isConstant() const { return false; }
+    virtual std::string dump() const { return name; }
 };
 
 class User : public Value
 {
 public:
-    explicit User(Type type, std::string name) : Value(type, name) {}
+    explicit User(type_ptr_t type = nullptr, std::string name = "") : Value(type, name) {}
+    virtual bool isTerminator() { return false; }
 };
 
 class Use
 {
-    user_ptr_t user;
+    User *user;
     value_ptr_t value;
 
 public:
-    Use(user_ptr_t user, value_ptr_t value) : user(std::move(user)), value(std::move(value)) {}
+    Use(value_ptr_t value, User *user) : user(user), value(value) {}
     ~Use() = default;
-    user_ptr_t getUser() { return user; }
+    User *getUser() { return user; }
     value_ptr_t getValue() { return value; }
-    void setUser(user_ptr_t user) { this->user = std::move(user); }
-    void setValue(value_ptr_t value) { this->value = std::move(value); }
+    void setUser(User *user) { this->user = user; }
+    void setValue(value_ptr_t value) { this->value = value; }
 };

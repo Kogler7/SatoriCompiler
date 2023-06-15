@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "ssa.h"
+#include "instr.h"
 #include "sym_tbl.h"
 
 #include <vector>
 
-class SemanticContext;
+class Context;
 
-class SemanticContext
+class Context
 {
 public:
     program_ptr_t programSsa;

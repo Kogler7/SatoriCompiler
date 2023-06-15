@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "ssa.h"
+#include "instr.h"
 #include "utils/nested_map.h"
 
 #include <stack>

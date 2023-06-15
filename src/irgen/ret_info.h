@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "ssa.h"
+#include "instr.h"
 #include "use.h"
 
 #include <list>
@@ -24,10 +24,10 @@ struct AlphaStmtRetInfo
 
 struct BetaStmtRetInfo
 {
-	//	todo
-	std::vector<jump_ptr_t> fallSsaList;
-	std::vector<branch_ptr_t> tBrSsaList;
-	std::vector<branch_ptr_t> fBrSsaList;
+	std::list<user_ptr_t> list;
+	std::vector<jump_ptr_t> fallList;
+	std::vector<br_ptr_t> trueList;
+	std::vector<br_ptr_t> falseList;
 };
 
 struct ThetaStmtRetInfo
