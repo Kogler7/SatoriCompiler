@@ -25,4 +25,10 @@ class SymbolTable
 public:
     void newScope();
     std::vector<alloc_ptr_t> popScope();
+    alloc_ptr_t find(const std::string &name);
+};
+
+class StaticDataTable
+{
+    std::map<std::string, alloc_ptr_t> table;
 };

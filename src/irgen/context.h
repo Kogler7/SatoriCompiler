@@ -25,7 +25,7 @@ public:
     alloc_ptr_t retVal;
     block_ptr_t entryBb;
     block_ptr_t exitBb;
-    std::vector<alloc_ptr_t> allocSsaList;
+    std::vector<alloc_ptr_t> allocList;
 	SymbolTable symbolTable;
 	void clear();
 };

@@ -11,22 +11,38 @@
 #include "sym_tbl.h"
 #include "utils/log.h"
 
-void SymbolTable::newScope() {
-	if (tableStk.empty()) {
+void SymbolTable::newScope()
+{
+	if (tableStk.empty())
+	{
 		tableStk.emplace(std::make_shared<scope_t>());
-	} else {
+	}
+	else
+	{
 		auto newTable = std::make_shared<scope_t>(tableStk.top());
 		tableStk.emplace(std::make_shared<scope_t>(tableStk.top()));
 	}
 }
 
-std::vector<alloc_ptr_t> SymbolTable::popScope() {
+std::vector<alloc_ptr_t> SymbolTable::popScope()
+{
 	assert(!tableStk.empty());
 	auto top = tableStk.top()->self();
 	auto r = std::vector<alloc_ptr_t>();
-	for (auto & [_, ssa]: top) {
+	for (auto &[_, ssa] : top)
+	{
 		r.emplace_back(ssa);
 	}
 	tableStk.pop();
 	return r;
+}
+
+alloc_ptr_t SymbolTable::find(const std::string &name)
+{
+	scope_ptr_t top = tableStk.top();
+	if (top->has(name))
+	{
+		return top->at(name).value();
+	}
+	return nullptr;
 }

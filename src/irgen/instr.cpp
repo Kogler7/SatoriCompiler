@@ -12,6 +12,7 @@
 #include "utils/str.h"
 
 #include <map>
+#include <string>
 
 std::map<const Value *, size_t> valueIdMap;
 
@@ -191,4 +192,24 @@ std::string Program::dump() const
         s += func->getValue()->dump();
     }
     return s;
+}
+
+std::string ConstantInt::dump() const {
+    return std::to_string(value);
+}
+
+std::string ConstantReal::dump() const {
+    return std::to_string(value);
+}
+
+std::string ConstantBool::dump() const {
+    return value ? "true" : "false";
+}
+
+std::string ConstantChar::dump() const {
+    return "'" + std::string(1, value) + "'";
+}
+
+std::string ConstantString::dump() const {
+    return "\"" + value + "\"";
 }

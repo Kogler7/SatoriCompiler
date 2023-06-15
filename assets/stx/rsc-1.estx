@@ -14,7 +14,7 @@ GRAMMAR ${
                     ;
     VarDecl     ::=     `var` VarDef { `,` VarDef }                                         : SemVarDecl
                     ;
-    VarType     ::=     `int` | `real` | `bool` | `str`                                     : SemVarType
+    VarType     ::=     `int` | `real` | `bool` | `char` | `str`                            : SemVarType
                     ;
     VarDef      ::=     $Ident `:` VarType { `[` $Integer `]` } [ `=` InitVal ]             : SemVarDef
                     ;
@@ -76,12 +76,16 @@ GRAMMAR ${
     Factor      ::=     LVal                                                                : SemLVal
                     |   FuncCall                                                            : SemFuncCall
                     |   `(` Expr `)`                                                        : SemExpr
-                    |   Number                                                              : SemNumber
+                    |   IntLiteral                                                          : SemInt
+                    |   RealLiteral                                                         : SemReal
                     |   $String                                                             : SemString
+                    |   $Char                                                               : SemChar
                     |   `true`                                                              : SemTrue
                     |   `false`                                                             : SemFalse
                     ;
-    Number      ::=     $Integer | $Real                                                    : SemNumber
+    IntLiteral  ::=     $Integer                                                            : SemInt
+                    ;
+    RealLiteral ::=     $Real                                                               : SemReal
                     ;
     LVal        ::=     $Ident { `[` Expr `]` }                                             : SemLVal
                     ;
@@ -92,4 +96,5 @@ MAPPING ${
     $Integer   -->     @INTEGER ;
     $Real      -->     @REAL ;
     $String    -->     @STRING ;
+    $Char      -->     @CHAR ;
 $}

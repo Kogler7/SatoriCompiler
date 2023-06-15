@@ -62,8 +62,8 @@ Program <Program -> Program_star_1>
 |              |--Expr <Expr -> MulExpr>
 |                 |--MulExpr <MulExpr -> UnaryExpr>
 |                    |--UnaryExpr <UnaryExpr -> Factor>
-|                       |--Factor <Factor -> Number>
-|                          |--Number <Number -> Integer>
+|                       |--Factor <Factor -> IntLiteral>
+|                          |--IntLiteral <IntLiteral -> Integer>
 |                             |--`10` at <9:16>
 |--VarDeclStmt <VarDeclStmt -> VarDecl>
 |  |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
@@ -100,8 +100,8 @@ Program <Program -> Program_star_1>
 |     |        |        |--Expr <Expr -> MulExpr>
 |     |        |           |--MulExpr <MulExpr -> UnaryExpr>
 |     |        |              |--UnaryExpr <UnaryExpr -> Factor>
-|     |        |                 |--Factor <Factor -> Number>
-|     |        |                    |--Number <Number -> Integer>
+|     |        |                 |--Factor <Factor -> IntLiteral>
+|     |        |                    |--IntLiteral <IntLiteral -> Integer>
 |     |        |                       |--`10` at <15:20>
 |     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
 |     |        |  |--`b` at <15:23>
@@ -116,22 +116,22 @@ Program <Program -> Program_star_1>
 |     |        |           |  |--Expr <Expr -> MulExpr>
 |     |        |           |     |--MulExpr <MulExpr -> UnaryExpr>
 |     |        |           |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |        |           |           |--Factor <Factor -> Number>
-|     |        |           |              |--Number <Number -> Integer>
+|     |        |           |           |--Factor <Factor -> IntLiteral>
+|     |        |           |              |--IntLiteral <IntLiteral -> Integer>
 |     |        |           |                 |--`1` at <15:38>
 |     |        |           |--InitVal <InitVal -> Expr>
 |     |        |           |  |--Expr <Expr -> MulExpr>
 |     |        |           |     |--MulExpr <MulExpr -> UnaryExpr>
 |     |        |           |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |        |           |           |--Factor <Factor -> Number>
-|     |        |           |              |--Number <Number -> Integer>
+|     |        |           |           |--Factor <Factor -> IntLiteral>
+|     |        |           |              |--IntLiteral <IntLiteral -> Integer>
 |     |        |           |                 |--`2` at <15:41>
 |     |        |           |--InitVal <InitVal -> Expr>
 |     |        |              |--Expr <Expr -> MulExpr>
 |     |        |                 |--MulExpr <MulExpr -> UnaryExpr>
 |     |        |                    |--UnaryExpr <UnaryExpr -> Factor>
-|     |        |                       |--Factor <Factor -> Number>
-|     |        |                          |--Number <Number -> Integer>
+|     |        |                       |--Factor <Factor -> IntLiteral>
+|     |        |                          |--IntLiteral <IntLiteral -> Integer>
 |     |        |                             |--`3` at <15:44>
 |     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`c` at <15:48>
@@ -158,8 +158,8 @@ Program <Program -> Program_star_1>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
 |     |                       |--UnaryExpr <UnaryExpr -> Factor>
-|     |                          |--Factor <Factor -> Number>
-|     |                             |--Number <Number -> Integer>
+|     |                          |--Factor <Factor -> IntLiteral>
+|     |                             |--IntLiteral <IntLiteral -> Integer>
 |     |                                |--`+3e10` at <16:23>
 |     |--Stmt <Stmt -> VarDeclStmt>
 |     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
@@ -174,8 +174,8 @@ Program <Program -> Program_star_1>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
 |     |                       |--UnaryExpr <UnaryExpr -> Factor>
-|     |                          |--Factor <Factor -> Number>
-|     |                             |--Number <Number -> Integer>
+|     |                          |--Factor <Factor -> IntLiteral>
+|     |                             |--IntLiteral <IntLiteral -> Integer>
 |     |                                |--`0x3f` at <17:22>
 |     |--Stmt <Stmt -> VarDeclStmt>
 |     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
@@ -190,8 +190,8 @@ Program <Program -> Program_star_1>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
 |     |                       |--UnaryExpr <UnaryExpr -> Factor>
-|     |                          |--Factor <Factor -> Number>
-|     |                             |--Number <Number -> Real>
+|     |                          |--Factor <Factor -> RealLiteral>
+|     |                             |--RealLiteral <RealLiteral -> Real>
 |     |                                |--`3.14` at <18:23>
 |     |--Stmt <Stmt -> VarDeclStmt>
 |     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
@@ -206,8 +206,8 @@ Program <Program -> Program_star_1>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
 |     |                       |--UnaryExpr <UnaryExpr -> Factor>
-|     |                          |--Factor <Factor -> Number>
-|     |                             |--Number <Number -> Real>
+|     |                          |--Factor <Factor -> RealLiteral>
+|     |                             |--RealLiteral <RealLiteral -> Real>
 |     |                                |--`-2.71828` at <19:27>
 |     |--Stmt <Stmt -> VarDeclStmt>
 |     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
@@ -222,8 +222,8 @@ Program <Program -> Program_star_1>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
 |     |                       |--UnaryExpr <UnaryExpr -> Factor>
-|     |                          |--Factor <Factor -> Number>
-|     |                             |--Number <Number -> Real>
+|     |                          |--Factor <Factor -> RealLiteral>
+|     |                             |--RealLiteral <RealLiteral -> Real>
 |     |                                |--`1.0e-10` at <20:26>
 |     |--Stmt <Stmt -> VarDeclStmt>
 |     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
@@ -260,8 +260,8 @@ Program <Program -> Program_star_1>
 |     |                    |--MulExpr <MulExpr -> MulExpr UnaryExpr>
 |     |                       |--MulExpr <MulExpr -> UnaryExpr>
 |     |                       |  |--UnaryExpr <UnaryExpr -> Factor>
-|     |                       |     |--Factor <Factor -> Number>
-|     |                       |        |--Number <Number -> Integer>
+|     |                       |     |--Factor <Factor -> IntLiteral>
+|     |                       |        |--IntLiteral <IntLiteral -> Integer>
 |     |                       |           |--`2` at <23:28>
 |     |                       |--UnaryExpr <UnaryExpr -> Factor>
 |     |                          |--Factor <Factor -> Expr>
@@ -349,8 +349,8 @@ Program <Program -> Program_star_1>
 |     |  |           |--Expr <Expr -> MulExpr>
 |     |  |              |--MulExpr <MulExpr -> UnaryExpr>
 |     |  |                 |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |                    |--Factor <Factor -> Number>
-|     |  |                       |--Number <Number -> Integer>
+|     |  |                    |--Factor <Factor -> IntLiteral>
+|     |  |                       |--IntLiteral <IntLiteral -> Integer>
 |     |  |                          |--`0` at <34:24>
 |     |  |--BoolExpr <BoolExpr -> OrExpr>
 |     |  |  |--OrExpr <OrExpr -> AndExpr>
@@ -367,8 +367,8 @@ Program <Program -> Program_star_1>
 |     |  |              |--Expr <Expr -> MulExpr>
 |     |  |                 |--MulExpr <MulExpr -> UnaryExpr>
 |     |  |                    |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |                       |--Factor <Factor -> Number>
-|     |  |                          |--Number <Number -> Integer>
+|     |  |                       |--Factor <Factor -> IntLiteral>
+|     |  |                          |--IntLiteral <IntLiteral -> Integer>
 |     |  |                             |--`10` at <34:32>
 |     |  |--Assignment <Assignment -> LVal Expr>
 |     |  |  |--LVal <LVal -> Ident LVal_star_1>
@@ -382,8 +382,8 @@ Program <Program -> Program_star_1>
 |     |  |     |              |--`i` at <34:39>
 |     |  |     |--MulExpr <MulExpr -> UnaryExpr>
 |     |  |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |           |--Factor <Factor -> Number>
-|     |  |              |--Number <Number -> Integer>
+|     |  |           |--Factor <Factor -> IntLiteral>
+|     |  |              |--IntLiteral <IntLiteral -> Integer>
 |     |  |                 |--`1` at <34:43>
 |     |  |--Stmt <Stmt -> Block>
 |     |     |--Block <Block -> Block_star_1>
@@ -440,8 +440,8 @@ Program <Program -> Program_star_1>
 |     |                    |              |--Expr <Expr -> MulExpr>
 |     |                    |                 |--MulExpr <MulExpr -> UnaryExpr>
 |     |                    |                    |--UnaryExpr <UnaryExpr -> Factor>
-|     |                    |                       |--Factor <Factor -> Number>
-|     |                    |                          |--Number <Number -> Integer>
+|     |                    |                       |--Factor <Factor -> IntLiteral>
+|     |                    |                          |--IntLiteral <IntLiteral -> Integer>
 |     |                    |                             |--`0` at <39:25>
 |     |                    |--Stmt <Stmt -> Block>
 |     |                       |--Block <Block -> Block_star_1>
@@ -459,8 +459,8 @@ Program <Program -> Program_star_1>
 |           |--Expr <Expr -> MulExpr>
 |              |--MulExpr <MulExpr -> UnaryExpr>
 |                 |--UnaryExpr <UnaryExpr -> Factor>
-|                    |--Factor <Factor -> Number>
-|                       |--Number <Number -> Integer>
+|                    |--Factor <Factor -> IntLiteral>
+|                       |--IntLiteral <IntLiteral -> Integer>
 |                          |--`0` at <52:12>
 |--FuncDef <FuncDef -> FuncDecl Block>
    |--FuncDecl <FuncDecl -> Ident FuncDecl_opti_1 FuncDecl_opti_2>

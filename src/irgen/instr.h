@@ -110,6 +110,27 @@ class Program;
 using program_ptr_t = std::shared_ptr<Program>;
 #define make_program() std::make_shared<Program>()
 
+// Constant Values
+class ConstantInt;
+using const_int_ptr_t = std::shared_ptr<ConstantInt>;
+#define make_const_int(value) std::make_shared<ConstantInt>(value)
+
+class ConstantReal;
+using const_real_ptr_t = std::shared_ptr<ConstantReal>;
+#define make_const_real(value) std::make_shared<ConstantReal>(value)
+
+class ConstantBool;
+using const_bool_ptr_t = std::shared_ptr<ConstantBool>;
+#define make_const_bool(value) std::make_shared<ConstantBool>(value)
+
+class ConstantChar;
+using const_char_ptr_t = std::shared_ptr<ConstantChar>;
+#define make_const_char(value) std::make_shared<ConstantChar>(value)
+
+class ConstantString;
+using const_str_ptr_t = std::shared_ptr<ConstantString>;
+#define make_const_str(value) std::make_shared<ConstantString>(value)
+
 class AllocInstr : public User
 {
 public:
@@ -375,4 +396,64 @@ public:
     void addFunc(user_ptr_t func) { funcs.push_back(make_use(std::move(func), this)); }
 
     std::string dump() const override;
+};
+
+class ConstantInt : public User
+{
+    int value;
+
+public:
+    explicit ConstantInt(int value) : value(value) {}
+    ~ConstantInt() = default;
+
+    bool isConstant() const override { return true; }
+    std::string dump() const;
+};
+
+class ConstantReal : public User
+{
+    double value;
+
+public:
+    explicit ConstantReal(double value) : value(value) {}
+    ~ConstantReal() = default;
+
+    bool isConstant() const override { return true; }
+    std::string dump() const;
+};
+
+class ConstantBool : public User
+{
+    bool value;
+
+public:
+    explicit ConstantBool(bool value) : value(value) {}
+    ~ConstantBool() = default;
+
+    bool isConstant() const override { return true; }
+    std::string dump() const;
+};
+
+class ConstantChar : public User
+{
+    char value;
+
+public:
+    explicit ConstantChar(char value) : value(value) {}
+    ~ConstantChar() = default;
+
+    bool isConstant() const override { return true; }
+    std::string dump() const;
+};
+
+class ConstantString : public User
+{
+    std::string value;
+
+public:
+    explicit ConstantString(std::string value) : value(std::move(value)) {}
+    ~ConstantString() = default;
+
+    bool isConstant() const override { return true; }
+    std::string dump() const;
 };

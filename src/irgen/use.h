@@ -36,11 +36,15 @@ protected:
 public:
     Value(type_ptr_t type, std::string name) : type(type), name(name) {}
     ~Value() = default;
+
     type_ptr_t getType() { return type; }
+
     void addUse(Use *use) { uses.insert(use); }
     bool delUse(Use *use) { return uses.erase(use); }
+
     void setName(std::string name) { this->name = name; }
     std::string getName() const { return name; }
+    
     virtual bool isConstant() const { return false; }
     virtual std::string dump() const { return name; }
 };
