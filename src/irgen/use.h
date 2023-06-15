@@ -20,8 +20,11 @@ class User;
 class Use;
 
 using use_ptr_t = std::shared_ptr<Use>;
+#define make_use(value, user) std::make_shared<Use>(value, user)
 using user_ptr_t = std::shared_ptr<User>;
+#define make_user(type, name) std::make_shared<User>(type, name)
 using value_ptr_t = std::shared_ptr<Value>;
+#define make_value(type, name) std::make_shared<Value>(type, name)
 
 class Value
 {
