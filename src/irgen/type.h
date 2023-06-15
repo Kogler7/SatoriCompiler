@@ -10,37 +10,53 @@
 
 #pragma once
 
+#include <string>
 #include <memory>
 
 class Type;
-class IntegerType;
-class RealType;
-class BooleanType;
-class StringType;
+using type_ptr_t = std::shared_ptr<Type>;
+class PrimitiveType;
+using prim_ptr_t = std::shared_ptr<PrimitiveType>;
+#define make_prime_type(type) std::make_shared<PrimitiveType>(type)
+class PointerType;
+using ptr_ptr_t = std::shared_ptr<PointerType>;
+#define make_ptr_type(type) std::make_shared<PointerType>(type)
 
 class Type
 {
-
+public:
+    virtual ~Type() = default;
+    virtual std::string dump() const = 0;
+    virtual type_ptr_t getDeRefed() const = 0;
 };
 
-using type_ptr_t = std::shared_ptr<Type>;
-
-class IntegerType : public Type
+class PrimitiveType : public Type
 {
+public:
+    enum PrimType
+    {
+        INT,
+        REAL,
+        BOOL,
+        CHAR,
+        STR,
+    };
 
+    explicit PrimitiveType(PrimType type) : type(type) {}
+    std::string dump() const override;
+    type_ptr_t getDeRefed() const override { return nullptr; }
+
+protected:
+    PrimType type;
 };
 
-class RealType : public Type
+class PointerType : public Type
 {
+public:
+    explicit PointerType(type_ptr_t type) : ptr(type) {}
+    std::string dump() const override;
+    type_ptr_t getDeRefed() const override { return ptr; }
 
-};
-
-class BooleanType : public Type
-{
-
-};
-
-class StringType : public Type
-{
-
+protected:
+    type_ptr_t ptr;
 };

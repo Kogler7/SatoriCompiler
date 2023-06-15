@@ -31,14 +31,16 @@ class Value
 protected:
     type_ptr_t type;
     std::string name;
-    std::set<use_ptr_t> uses;
+    std::set<Use *> uses;
 
 public:
     Value(type_ptr_t type, std::string name) : type(type), name(name) {}
     ~Value() = default;
     type_ptr_t getType() { return type; }
-    void addUse(use_ptr_t use) { uses.insert(use); }
-    bool delUse(use_ptr_t use) { return uses.erase(use); }
+    void addUse(Use *use) { uses.insert(use); }
+    bool delUse(Use *use) { return uses.erase(use); }
+    void setName(std::string name) { this->name = name; }
+    std::string getName() const { return name; }
     virtual bool isConstant() const { return false; }
     virtual std::string dump() const { return name; }
 };
@@ -56,8 +58,13 @@ class Use
     value_ptr_t value;
 
 public:
-    Use(value_ptr_t value, User *user) : user(user), value(value) {}
+    Use(value_ptr_t value, User *user) : user(user), value(value)
+    {
+        if (value)
+            value->addUse(this);
+    }
     ~Use() = default;
+    value_ptr_t getValue() const { return value; }
     User *getUser() { return user; }
     value_ptr_t getValue() { return value; }
     void setUser(User *user) { this->user = user; }

@@ -10,10 +10,7 @@
 
 #pragma once
 
-#include <string>
-#include <queue>
-#include <sstream>
-#include <iostream>
+#include "str.h"
 
 #define _red(x) "\033[31m" << x << "\033[0m"
 #define _blue(x) "\033[34m" << x << "\033[0m"
@@ -35,40 +32,6 @@
 	if (level <= DEBUG_LEVEL) \
 	std::cout
 
-class StrFormatter
-{
-	std::stringstream ss;
-	std::queue<std::string> segs;
-
-public:
-	StrFormatter(std::string s);
-
-	StrFormatter(const char *s) : StrFormatter(std::string(s)) {}
-
-	template <typename T>
-	StrFormatter &operator,(const T &t)
-	{
-		if (segs.empty())
-			return *this;
-		ss << segs.front();
-		segs.pop();
-		ss << t;
-		return *this;
-	}
-
-	std::string str();
-};
-
-#define format(fmt, ...) ((StrFormatter(fmt), ##__VA_ARGS__).str())
-
-inline void print_ln()
-{
-}
-
-inline void print_ln(std::string s)
-{
-	std::cout << s << std::endl;
-}
 
 #define assert(x, msg)                                    \
 	if (!(x))                                             \
