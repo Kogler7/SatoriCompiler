@@ -68,6 +68,11 @@ public:
         return dynamic_pointer_cast<ParseSyntaxTreeNode>(child);
     }
 
+    size_t childrenCount() const
+    {
+        return this->size();
+    }
+
     vector<pst_node_ptr_t> &getChildren() const
     {
         tree_children_t<pst_node_data> *children = (tree_children_t<pst_node_data> *)this;

@@ -53,20 +53,17 @@ GRAMMAR ${
     UnaryExpr   ::=     ( `+` | `-` | `!` ) UnaryExpr                                       : SemUnaryExpr
                     |   Factor                                                              : SemFactor
                     ;
-    MulExpr     ::=     MulExpr ( `*` | `/` ) UnaryExpr                                     : SemMulExpr
+    MulExpr     ::=     MulExpr ( `*` | `/` | `%` ) UnaryExpr                               : SemMulExpr
                     |   UnaryExpr                                                           : SemUnaryExpr
                     ;
     Expr        ::=     Expr ( `+` | `-` ) MulExpr                                          : SemExpr
                     |   MulExpr                                                             : SemMulExpr
                     ;
-    RelExpr     ::=     RelExpr ( `<` | `<=` | `>` | `>=` ) Expr                            : SemRelExpr
+    RelExpr     ::=     Expr ( `<` | `<=` | `>` | `>=` | `==` | `!=` ) Expr                 : SemRelExpr
                     |   Expr                                                                : SemExpr
                     ;
-    EqExpr      ::=     EqExpr ( `==` | `!=` ) RelExpr                                      : SemEqExpr
+    AndExpr     ::=     AndExpr `&&` RelExpr                                                : SemAndExpr
                     |   RelExpr                                                             : SemRelExpr
-                    ;
-    AndExpr     ::=     AndExpr `&&` EqExpr                                                 : SemAndExpr
-                    |   EqExpr                                                              : SemEqExpr
                     ;
     OrExpr      ::=     OrExpr `||` AndExpr                                                 : SemOrExpr
                     |   AndExpr                                                             : SemAndExpr

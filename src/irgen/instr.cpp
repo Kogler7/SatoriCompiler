@@ -14,11 +14,13 @@
 #include <map>
 #include <string>
 
-std::map<const Value *, size_t> valueIdMap;
-
-inline std::string getIdOf(const Value *v)
+std::string getIdOf(const Value *v)
 {
-    return std::to_string(valueIdMap[v]++);
+    static size_t id = 0;
+    static std::map<const Value *, size_t> valueIdMap;
+    if (!valueIdMap.count(v))
+        valueIdMap[v] = ++id;
+    return std::to_string(valueIdMap[v]);
 }
 
 inline std::string getLabelTag(const InstrBlock *b)
@@ -194,22 +196,27 @@ std::string Program::dump() const
     return s;
 }
 
-std::string ConstantInt::dump() const {
+std::string ConstantInt::dump() const
+{
     return std::to_string(value);
 }
 
-std::string ConstantReal::dump() const {
+std::string ConstantReal::dump() const
+{
     return std::to_string(value);
 }
 
-std::string ConstantBool::dump() const {
+std::string ConstantBool::dump() const
+{
     return value ? "true" : "false";
 }
 
-std::string ConstantChar::dump() const {
+std::string ConstantChar::dump() const
+{
     return "'" + std::string(1, value) + "'";
 }
 
-std::string ConstantString::dump() const {
+std::string ConstantString::dump() const
+{
     return "\"" + value + "\"";
 }

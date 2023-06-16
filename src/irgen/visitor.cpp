@@ -14,6 +14,15 @@
 #define _is_term_node(node) (node->data.type == TERMINAL)
 #define _is_non_term_node(node) (node->data.type == NON_TERM)
 
+inline std::string getProSymAt(pst_node_ptr_t node, size_t idx)
+{
+    assert(_is_non_term_node(node), "node should be non terminal");
+    auto &productOpt = node->data.product_opt;
+    assert(productOpt.has_value(), "node should have product option");
+    assert(idx < productOpt.value().second.size(), "idx out of range");
+    return productOpt.value().second[idx];
+}
+
 StmtRetInfo RSCVisitor::visitProgram(pst_node_ptr_t node)
 {
     return StmtRetInfo();
@@ -119,70 +128,270 @@ StmtRetInfo RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
     return StmtRetInfo();
 }
 
+// Stmt -> return [Expr] ;
 StmtRetInfo RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
 {
     return StmtRetInfo();
 }
 
+// Stmt -> Expr ;
 StmtRetInfo RSCVisitor::visitExprStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    return visitExpr(node);
 }
 
+// UnaryExpr -> ( `+` | `-` | `!` ) UnaryExpr | Factor
 StmtRetInfo RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    pst_node_ptr_t child = node->firstChild();
+    if (child->data.symbol == "Factor")
+    {
+        // Factor
+        return visitFactor(child);
+    }
+    // ( `+` | `-` | `!` ) UnaryExpr
+    auto exprInfo = visitUnaryExpr(child);
+    assert(is_alpha(exprInfo), "expr return info should be alpha");
+    instr_list_t list = get_alpha(exprInfo).list;
+    // 目前仅支持 - 操作，+ 和 ! 操作暂不支持
+    auto op = getProSymAt(node, 0); // + | - | !
+    assert(op == "-", "only support unary minus");
+    user_ptr_t operand = list.back();
+    // 生成neg指令并追加到list之后
+    neg_ptr_t instr = make_neg(operand, operand->getType()->getOpType());
+    list.push_back(instr);
+    return exprInfo;
 }
 
+// MulExpr -> MulExpr ( `*` | `/` | `%` ) UnaryExpr | UnaryExpr
 StmtRetInfo RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    pst_node_ptr_t child = node->firstChild();
+    if (child->data.symbol == "UnaryExpr")
+    {
+        // UnaryExpr
+        return visitUnaryExpr(child);
+    }
+    // MulExpr ( `*` | `/` | `%` ) UnaryExpr
+    assert(node->childrenCount() == 2, "mul expr should have 1 or 2 child(ren)");
+    auto lhsInfo = visitMulExpr(child);
+    assert(is_alpha(lhsInfo), "lhs of mul expr return info should be alpha");
+    auto rhsInfo = visitUnaryExpr(node->getChildAt(1));
+    assert(is_alpha(rhsInfo), "rhs of mul expr return info should be alpha");
+    auto op = getProSymAt(node, 1); // * | / | %
+    user_ptr_t lhs = get_alpha(lhsInfo).list.back();
+    user_ptr_t rhs = get_alpha(rhsInfo).list.back();
+    // 检查类型是否匹配
+    assert(
+        lhs->getType()->getOpType() == rhs->getType()->getOpType(),
+        "type of lhs and rhs should be the same");
+    // 生成相关指令并追加到list之后
+    instr_list_t list = get_alpha(lhsInfo).list;
+    user_ptr_t instr = nullptr;
+    if (op == "*")
+    {
+        instr = make_mul(lhs, rhs, lhs->getType()->getOpType());
+    }
+    else if (op == "/")
+    {
+        instr = make_div(lhs, rhs, lhs->getType()->getOpType());
+    }
+    else if (op == "%")
+    {
+        instr = make_rem(lhs, rhs, lhs->getType()->getOpType());
+    }
+    else
+    {
+        error << "unknown operator" << std::endl;
+        exit(1);
+    }
+    list.push_back(instr);
+    return AlphaStmtRetInfo{list};
 }
 
+// Expr -> Expr ( `+` | `-` ) MulExpr | MulExpr
 StmtRetInfo RSCVisitor::visitExpr(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    pst_node_ptr_t child = node->firstChild();
+    if (child->data.symbol == "MulExpr")
+    {
+        // MulExpr
+        return visitMulExpr(child);
+    }
+    // Expr ( `+` | `-` ) MulExpr
+    assert(node->childrenCount() == 2, "expr should have 1 or 2 child(ren)");
+    auto lhsInfo = visitExpr(child);
+    assert(is_alpha(lhsInfo), "lhs of expr return info should be alpha");
+    auto rhsInfo = visitMulExpr(node->getChildAt(1));
+    assert(is_alpha(rhsInfo), "rhs of expr return info should be alpha");
+    auto op = getProSymAt(node, 1); // + | -
+    user_ptr_t lhs = get_alpha(lhsInfo).list.back();
+    user_ptr_t rhs = get_alpha(rhsInfo).list.back();
+    // 检查类型是否匹配
+    assert(
+        lhs->getType()->getOpType() == rhs->getType()->getOpType(),
+        "type of lhs and rhs should be the same");
+    // 生成相关指令并追加到list之后
+    instr_list_t list = get_alpha(lhsInfo).list;
+    user_ptr_t instr = nullptr;
+    if (op == "+")
+    {
+        instr = make_add(lhs, rhs, lhs->getType()->getOpType());
+    }
+    else if (op == "-")
+    {
+        instr = make_sub(lhs, rhs, lhs->getType()->getOpType());
+    }
+    else
+    {
+        error << "unknown operator" << std::endl;
+        exit(1);
+    }
+    list.push_back(instr);
+    return AlphaStmtRetInfo{list};
 }
 
+// RelExpr -> Expr ( `<` | `<=` | `>` | `>=` | `==` | `!=` ) Expr | Expr
 StmtRetInfo RSCVisitor::visitRelExpr(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 在这一步，将底层传来的AlphaStmtRetInfo转换为BetaStmtRetInfo
+    // 构造跳转指令，构造BasicBlock
+    size_t childNum = node->childrenCount();
+    block_ptr_t bb = make_block("rel_expr");
+    cmp_ptr_t cmpInstr = nullptr;
+    br_ptr_t brInstr = nullptr;
+    if (childNum == 1)
+    {
+        // 如果是单个Expr，则直接将其和0比较
+        // 即设置为Expr != 0，以便将其和后续的逻辑运算符连接
+        auto exprInfo = visitExpr(node->firstChild());
+        assert(is_alpha(exprInfo), "expr return info should be alpha");
+        // 将原来的指令列表包装成BasicBlock
+        instr_list_t list = get_alpha(exprInfo).list;
+        for (user_ptr_t instr : list)
+        {
+            bb->addInstr(instr);
+        }
+        // 添加cmp expr 0指令，追加到bb之后
+        user_ptr_t lhs = list.back();
+        user_ptr_t rhs = make_const_int(0);
+        // cmp n lhs 0
+        cmpInstr = make_cmp(lhs, rhs, lhs->getType()->getOpType(), CT_NE);
+        // 添加br指令，追加到bb之后
+        brInstr = make_br(cmpInstr);
+    }
+    else
+    {
+        assert(childNum == 2, "rel expr should have 1 or 2 child(ren)");
+        auto lhsInfo = visitRelExpr(node->firstChild());
+        assert(is_alpha(lhsInfo), "lhs of rel expr return info should be alpha");
+        auto rhsInfo = visitExpr(node->getChildAt(1));
+        assert(is_alpha(rhsInfo), "rhs of rel expr return info should be alpha");
+        // 在产生式中获取具体的关系运算符
+        auto op = getProSymAt(node, 1); // < | <= | > | >= | == | !=
+        // 将原来的指令列表包装成BasicBlock
+        instr_list_t lhsList = get_alpha(lhsInfo).list;
+        instr_list_t rhsList = get_alpha(rhsInfo).list;
+        for (user_ptr_t instr : lhsList)
+        {
+            bb->addInstr(instr);
+        }
+        for (user_ptr_t instr : rhsList)
+        {
+            bb->addInstr(instr);
+        }
+        // 添加cmp lhs rhs指令，追加到bb之后
+        user_ptr_t lhs = lhsList.back();
+        user_ptr_t rhs = rhsList.back();
+        // 检查类型是否匹配
+        assert(
+            lhs->getType()->getOpType() == rhs->getType()->getOpType(),
+            "type of lhs and rhs should be the same");
+        // cmp n lhs rhs
+        cmpInstr = make_cmp(lhs, rhs, lhs->getType()->getOpType(), opTermToType(op));
+        // 添加br指令，追加到bb之后
+        brInstr = make_br(cmpInstr);
+    }
+    bb->addInstr(cmpInstr);
+    bb->addInstr(brInstr);
+    // 返回BetaStmtRetInfo
+    return BetaStmtRetInfo{{bb}, {}, {brInstr}, {brInstr}};
 }
 
-StmtRetInfo RSCVisitor::visitEqExpr(pst_node_ptr_t node)
-{
-    return StmtRetInfo();
-}
-
+// AndExpr -> AndExpr `&&` RelExpr | RelExpr
 StmtRetInfo RSCVisitor::visitAndExpr(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    size_t childNum = node->childrenCount();
+    pst_node_ptr_t child = node->firstChild();
+    if (childNum == 1 && child->data.symbol == "RelExpr")
+    {
+        // AndExpr -> RelExpr
+        // 直接返回RelExpr的结果即可
+        return visitRelExpr(child);
+    }
+    assert(childNum == 2, "and expr should have 1 or 2 child(ren)");
+    // 处理与运算
+    auto lhsInfo = visitAndExpr(child);
+    assert(is_beta(lhsInfo), "lhs of and expr return info should be beta");
+    auto rhsInfo = visitAndExpr(node->getChildAt(1));
+    assert(is_beta(rhsInfo), "rhs of and expr return info should be beta");
+    BetaStmtRetInfo lhs = get_beta(lhsInfo);
+    BetaStmtRetInfo rhs = get_beta(rhsInfo);
+    // 对于与运算，需要将lhs和rhs的bb连接起来
+    // 将lhs的真出口tc连接到rhs的入口bb entry
+    // 将lhs的假出口fc和rhs的假出口合并后返回
+    // 将rhs的真出口作为返回值的真出口直接返回
+    BetaStmtRetInfo retInfo{lhs.list, {}, rhs.trueList, lhs.falseList};
+    // 将lhs的真出口tc连接到rhs的入口bb entry
+    const block_ptr_t bb = dynamic_pointer_cast<InstrBlock>(rhs.list.front());
+    for (br_ptr_t br : lhs.trueList)
+    {
+        br->setTrueTarget(bb);
+    }
+    retInfo.list.splice(retInfo.list.end(), rhs.list);                // 将rhs的指令列表追加到retInfo的指令列表之后
+    retInfo.falseList.splice(retInfo.falseList.end(), rhs.falseList); // 将rhs的假出口追加到retInfo的假出口之后
+    return retInfo;
 }
 
 // OrExpr -> OrExpr `||` AndExpr | AndExpr
 StmtRetInfo RSCVisitor::visitOrExpr(pst_node_ptr_t node)
 {
+    size_t childNum = node->childrenCount();
     pst_node_ptr_t child = node->firstChild();
-    if (child->data.symbol == "OrExpr")
+    if (childNum == 1 && child->data.symbol == "AndExpr")
     {
-        return visitOrExpr(child);
+        // OrExpr -> AndExpr
+        // 直接返回AndExpr的结果即可
+        return visitAndExpr(child);
     }
-    else
+    assert(childNum == 2, "or expr should have 1 or 2 child(ren)");
+    // 处理或运算
+    auto lhsInfo = visitOrExpr(child);
+    assert(is_beta(lhsInfo), "lhs of or expr return info should be beta");
+    auto rhsInfo = visitOrExpr(node->getChildAt(1));
+    assert(is_beta(rhsInfo), "rhs of or expr return info should be beta");
+    BetaStmtRetInfo lhs = get_beta(lhsInfo);
+    BetaStmtRetInfo rhs = get_beta(rhsInfo);
+    // 对于或运算，需要将lhs和rhs的bb连接起来
+    // 将lhs的假出口fc连接到rhs的入口bb entry
+    // 将lhs的真出口tc和rhs的真出口合并后返回
+    // 将rhs的假出口作为返回值的假出口直接返回
+    BetaStmtRetInfo retInfo{lhs.list, {}, lhs.trueList, rhs.falseList};
+    // 将lhs的假出口fc连接到rhs的入口bb entry
+    const block_ptr_t bb = dynamic_pointer_cast<InstrBlock>(rhs.list.front());
+    for (br_ptr_t br : lhs.falseList)
     {
-        // 处理或运算
-        pst_children_t children = node->getChildren();
-        auto lhsInfo = visitAndExpr(children[0]);
-        assert(is_beta(lhsInfo), "lhs of or expr return info should be beta");
-        auto rhsInfo = visitAndExpr(children[1]);
-        assert(is_beta(rhsInfo), "rhs of or expr return info should be beta");
-        BetaStmtRetInfo lhs = get_beta(lhsInfo);
-        BetaStmtRetInfo rhs = get_beta(rhsInfo);
+        br->setFalseTarget(bb);
     }
+    retInfo.list.splice(retInfo.list.end(), rhs.list);             // 将rhs的指令列表追加到retInfo的指令列表之后
+    retInfo.trueList.splice(retInfo.trueList.end(), rhs.trueList); // 将rhs的真出口追加到retInfo的真出口之后
+    return retInfo;
 }
 
 // BoolExpr -> OrExpr
 StmtRetInfo RSCVisitor::visitBoolExpr(pst_node_ptr_t node)
 {
+    // 仅有一种情况，即OrExpr，直接返回即可
     return visitOrExpr(node->firstChild());
 }
 

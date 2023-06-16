@@ -282,65 +282,57 @@ Program <Program -> Program_star_1>
 |     |  |  |--OrExpr <OrExpr -> OrExpr || AndExpr>
 |     |  |     |--OrExpr <OrExpr -> OrExpr || AndExpr>
 |     |  |     |  |--OrExpr <OrExpr -> AndExpr>
-|     |  |     |  |  |--AndExpr <AndExpr -> AndExpr && EqExpr>
-|     |  |     |  |     |--AndExpr <AndExpr -> EqExpr>
-|     |  |     |  |     |  |--EqExpr <EqExpr -> RelExpr>
-|     |  |     |  |     |     |--RelExpr <RelExpr -> RelExpr > Expr>
-|     |  |     |  |     |        |--RelExpr <RelExpr -> Expr>
-|     |  |     |  |     |        |  |--Expr <Expr -> MulExpr>
-|     |  |     |  |     |        |     |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |  |     |        |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |  |     |        |           |--Factor <Factor -> LVal>
-|     |  |     |  |     |        |              |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |  |     |        |                 |--`d` at <25:9>
-|     |  |     |  |     |        |--Expr <Expr -> MulExpr>
-|     |  |     |  |     |           |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |  |     |              |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |  |     |                 |--Factor <Factor -> LVal>
-|     |  |     |  |     |                    |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |  |     |                       |--`e` at <25:13>
-|     |  |     |  |     |--EqExpr <EqExpr -> RelExpr>
-|     |  |     |  |        |--RelExpr <RelExpr -> RelExpr < Expr>
-|     |  |     |  |           |--RelExpr <RelExpr -> Expr>
-|     |  |     |  |           |  |--Expr <Expr -> MulExpr>
-|     |  |     |  |           |     |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |  |           |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |  |           |           |--Factor <Factor -> LVal>
-|     |  |     |  |           |              |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |  |           |                 |--`a` at <25:18>
-|     |  |     |  |           |--Expr <Expr -> MulExpr>
-|     |  |     |  |              |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |  |                 |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |  |                    |--Factor <Factor -> LVal>
-|     |  |     |  |                       |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |  |                          |--`b` at <25:22>
-|     |  |     |  |--AndExpr <AndExpr -> EqExpr>
-|     |  |     |     |--EqExpr <EqExpr -> EqExpr == RelExpr>
-|     |  |     |        |--EqExpr <EqExpr -> RelExpr>
-|     |  |     |        |  |--RelExpr <RelExpr -> Expr>
-|     |  |     |        |     |--Expr <Expr -> MulExpr>
-|     |  |     |        |        |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |        |           |--UnaryExpr <UnaryExpr -> - UnaryExpr>
-|     |  |     |        |              |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |        |                 |--Factor <Factor -> LVal>
-|     |  |     |        |                    |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |        |                       |--`c` at <25:28>
-|     |  |     |        |--RelExpr <RelExpr -> Expr>
-|     |  |     |           |--Expr <Expr -> MulExpr>
-|     |  |     |              |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |                 |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |                    |--Factor <Factor -> true>
-|     |  |     |                       |--`true` at <25:36>
-|     |  |     |--AndExpr <AndExpr -> EqExpr>
-|     |  |        |--EqExpr <EqExpr -> RelExpr>
-|     |  |           |--RelExpr <RelExpr -> Expr>
-|     |  |              |--Expr <Expr -> MulExpr>
-|     |  |                 |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |                    |--UnaryExpr <UnaryExpr -> ! UnaryExpr>
-|     |  |                       |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |                          |--Factor <Factor -> IntLiteral>
-|     |  |                             |--IntLiteral <IntLiteral -> Integer>
-|     |  |                                |--`1` at <25:42>
+|     |  |     |  |  |--AndExpr <AndExpr -> AndExpr && RelExpr>
+|     |  |     |  |     |--AndExpr <AndExpr -> RelExpr>
+|     |  |     |  |     |  |--RelExpr <RelExpr -> Expr > Expr>
+|     |  |     |  |     |     |--Expr <Expr -> MulExpr>
+|     |  |     |  |     |     |  |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |     |     |     |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |     |     |        |--Factor <Factor -> LVal>
+|     |  |     |  |     |     |           |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |     |     |              |--`d` at <25:9>
+|     |  |     |  |     |     |--Expr <Expr -> MulExpr>
+|     |  |     |  |     |        |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |     |           |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |     |              |--Factor <Factor -> LVal>
+|     |  |     |  |     |                 |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |     |                    |--`e` at <25:13>
+|     |  |     |  |     |--RelExpr <RelExpr -> Expr < Expr>
+|     |  |     |  |        |--Expr <Expr -> MulExpr>
+|     |  |     |  |        |  |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |        |     |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |        |        |--Factor <Factor -> LVal>
+|     |  |     |  |        |           |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |        |              |--`a` at <25:18>
+|     |  |     |  |        |--Expr <Expr -> MulExpr>
+|     |  |     |  |           |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |              |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |                 |--Factor <Factor -> LVal>
+|     |  |     |  |                    |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |                       |--`b` at <25:22>
+|     |  |     |  |--AndExpr <AndExpr -> RelExpr>
+|     |  |     |     |--RelExpr <RelExpr -> Expr == Expr>
+|     |  |     |        |--Expr <Expr -> MulExpr>
+|     |  |     |        |  |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |        |     |--UnaryExpr <UnaryExpr -> - UnaryExpr>
+|     |  |     |        |        |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |        |           |--Factor <Factor -> LVal>
+|     |  |     |        |              |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |        |                 |--`c` at <25:28>
+|     |  |     |        |--Expr <Expr -> MulExpr>
+|     |  |     |           |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |              |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |                 |--Factor <Factor -> true>
+|     |  |     |                    |--`true` at <25:36>
+|     |  |     |--AndExpr <AndExpr -> RelExpr>
+|     |  |        |--RelExpr <RelExpr -> Expr>
+|     |  |           |--Expr <Expr -> MulExpr>
+|     |  |              |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |                 |--UnaryExpr <UnaryExpr -> ! UnaryExpr>
+|     |  |                    |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |                       |--Factor <Factor -> IntLiteral>
+|     |  |                          |--IntLiteral <IntLiteral -> Integer>
+|     |  |                             |--`1` at <25:42>
 |     |  |--Stmt <Stmt -> Block>
 |     |     |--Block <Block -> { Block_star_1 }>
 |     |        |--Stmt <Stmt -> print Expr ;>
@@ -366,22 +358,20 @@ Program <Program -> Program_star_1>
 |     |  |                          |--`0` at <34:24>
 |     |  |--BoolExpr <BoolExpr -> OrExpr>
 |     |  |  |--OrExpr <OrExpr -> AndExpr>
-|     |  |     |--AndExpr <AndExpr -> EqExpr>
-|     |  |        |--EqExpr <EqExpr -> RelExpr>
-|     |  |           |--RelExpr <RelExpr -> RelExpr < Expr>
-|     |  |              |--RelExpr <RelExpr -> Expr>
-|     |  |              |  |--Expr <Expr -> MulExpr>
-|     |  |              |     |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |              |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |              |           |--Factor <Factor -> LVal>
-|     |  |              |              |--LVal <LVal -> Ident LVal_star_1>
-|     |  |              |                 |--`i` at <34:27>
-|     |  |              |--Expr <Expr -> MulExpr>
-|     |  |                 |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |                    |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |                       |--Factor <Factor -> IntLiteral>
-|     |  |                          |--IntLiteral <IntLiteral -> Integer>
-|     |  |                             |--`10` at <34:32>
+|     |  |     |--AndExpr <AndExpr -> RelExpr>
+|     |  |        |--RelExpr <RelExpr -> Expr < Expr>
+|     |  |           |--Expr <Expr -> MulExpr>
+|     |  |           |  |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |           |     |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |           |        |--Factor <Factor -> LVal>
+|     |  |           |           |--LVal <LVal -> Ident LVal_star_1>
+|     |  |           |              |--`i` at <34:27>
+|     |  |           |--Expr <Expr -> MulExpr>
+|     |  |              |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |                 |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |                    |--Factor <Factor -> IntLiteral>
+|     |  |                       |--IntLiteral <IntLiteral -> Integer>
+|     |  |                          |--`10` at <34:32>
 |     |  |--Assignment <Assignment -> LVal = Expr>
 |     |  |  |--LVal <LVal -> Ident LVal_star_1>
 |     |  |  |  |--`i` at <34:35>
@@ -417,44 +407,40 @@ Program <Program -> Program_star_1>
 |     |        |--Stmt <Stmt -> while ( BoolExpr ) Stmt>
 |     |           |--BoolExpr <BoolExpr -> OrExpr>
 |     |           |  |--OrExpr <OrExpr -> AndExpr>
-|     |           |     |--AndExpr <AndExpr -> EqExpr>
-|     |           |        |--EqExpr <EqExpr -> RelExpr>
-|     |           |           |--RelExpr <RelExpr -> Expr>
-|     |           |              |--Expr <Expr -> MulExpr>
-|     |           |                 |--MulExpr <MulExpr -> UnaryExpr>
-|     |           |                    |--UnaryExpr <UnaryExpr -> Factor>
-|     |           |                       |--Factor <Factor -> LVal>
-|     |           |                          |--LVal <LVal -> Ident LVal_star_1>
-|     |           |                             |--`flag` at <37:19>
+|     |           |     |--AndExpr <AndExpr -> RelExpr>
+|     |           |        |--RelExpr <RelExpr -> Expr>
+|     |           |           |--Expr <Expr -> MulExpr>
+|     |           |              |--MulExpr <MulExpr -> UnaryExpr>
+|     |           |                 |--UnaryExpr <UnaryExpr -> Factor>
+|     |           |                    |--Factor <Factor -> LVal>
+|     |           |                       |--LVal <LVal -> Ident LVal_star_1>
+|     |           |                          |--`flag` at <37:19>
 |     |           |--Stmt <Stmt -> Block>
 |     |              |--Block <Block -> { Block_star_1 }>
 |     |                 |--Stmt <Stmt -> if ( BoolExpr ) Stmt>
 |     |                    |--BoolExpr <BoolExpr -> OrExpr>
 |     |                    |  |--OrExpr <OrExpr -> AndExpr>
-|     |                    |     |--AndExpr <AndExpr -> EqExpr>
-|     |                    |        |--EqExpr <EqExpr -> EqExpr == RelExpr>
-|     |                    |           |--EqExpr <EqExpr -> RelExpr>
-|     |                    |           |  |--RelExpr <RelExpr -> Expr>
-|     |                    |           |     |--Expr <Expr -> MulExpr>
-|     |                    |           |        |--MulExpr <MulExpr -> UnaryExpr>
-|     |                    |           |           |--UnaryExpr <UnaryExpr -> Factor>
-|     |                    |           |              |--Factor <Factor -> LVal>
-|     |                    |           |                 |--LVal <LVal -> Ident LVal_star_1>
-|     |                    |           |                    |--`b` at <39:17>
-|     |                    |           |                    |--StarList <LVal_star_1 -> [ Expr ] LVal_star_1>
-|     |                    |           |                       |--Expr <Expr -> MulExpr>
-|     |                    |           |                          |--MulExpr <MulExpr -> UnaryExpr>
-|     |                    |           |                             |--UnaryExpr <UnaryExpr -> Factor>
-|     |                    |           |                                |--Factor <Factor -> LVal>
-|     |                    |           |                                   |--LVal <LVal -> Ident LVal_star_1>
-|     |                    |           |                                      |--`i` at <39:19>
-|     |                    |           |--RelExpr <RelExpr -> Expr>
-|     |                    |              |--Expr <Expr -> MulExpr>
-|     |                    |                 |--MulExpr <MulExpr -> UnaryExpr>
-|     |                    |                    |--UnaryExpr <UnaryExpr -> Factor>
-|     |                    |                       |--Factor <Factor -> IntLiteral>
-|     |                    |                          |--IntLiteral <IntLiteral -> Integer>
-|     |                    |                             |--`0` at <39:25>
+|     |                    |     |--AndExpr <AndExpr -> RelExpr>
+|     |                    |        |--RelExpr <RelExpr -> Expr == Expr>
+|     |                    |           |--Expr <Expr -> MulExpr>
+|     |                    |           |  |--MulExpr <MulExpr -> UnaryExpr>
+|     |                    |           |     |--UnaryExpr <UnaryExpr -> Factor>
+|     |                    |           |        |--Factor <Factor -> LVal>
+|     |                    |           |           |--LVal <LVal -> Ident LVal_star_1>
+|     |                    |           |              |--`b` at <39:17>
+|     |                    |           |              |--StarList <LVal_star_1 -> [ Expr ] LVal_star_1>
+|     |                    |           |                 |--Expr <Expr -> MulExpr>
+|     |                    |           |                    |--MulExpr <MulExpr -> UnaryExpr>
+|     |                    |           |                       |--UnaryExpr <UnaryExpr -> Factor>
+|     |                    |           |                          |--Factor <Factor -> LVal>
+|     |                    |           |                             |--LVal <LVal -> Ident LVal_star_1>
+|     |                    |           |                                |--`i` at <39:19>
+|     |                    |           |--Expr <Expr -> MulExpr>
+|     |                    |              |--MulExpr <MulExpr -> UnaryExpr>
+|     |                    |                 |--UnaryExpr <UnaryExpr -> Factor>
+|     |                    |                    |--Factor <Factor -> IntLiteral>
+|     |                    |                       |--IntLiteral <IntLiteral -> Integer>
+|     |                    |                          |--`0` at <39:25>
 |     |                    |--Stmt <Stmt -> Block>
 |     |                       |--Block <Block -> { Block_star_1 }>
 |     |                          |--Stmt <Stmt -> Assignment ;>

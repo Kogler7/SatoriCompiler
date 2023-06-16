@@ -13,6 +13,13 @@
 #include <string>
 #include <memory>
 
+enum OperandType
+{
+    OT_UNSIGNED = 'u',
+    OT_SIGNED = 's',
+    OT_FLOAT = 'f',
+};
+
 class Type;
 using type_ptr_t = std::shared_ptr<Type>;
 class PrimitiveType;
@@ -28,6 +35,7 @@ public:
     virtual ~Type() = default;
     virtual std::string dump() const = 0;
     virtual type_ptr_t getDeRefed() const = 0;
+    virtual OperandType getOpType() const { return OT_SIGNED; }
 };
 
 class PrimitiveType : public Type
@@ -45,6 +53,24 @@ public:
     explicit PrimitiveType(PrimType type) : type(type) {}
     std::string dump() const override;
     type_ptr_t getDeRefed() const override { return nullptr; }
+    OperandType getOpType() const override
+    {
+        switch (type)
+        {
+        case INT:
+            return OT_SIGNED;
+        case REAL:
+            return OT_FLOAT;
+        case BOOL:
+            return OT_UNSIGNED;
+        case CHAR:
+            return OT_UNSIGNED;
+        case STR:
+            return OT_UNSIGNED;
+        default:
+            return OT_SIGNED;
+        }
+    }
 
 protected:
     PrimType type;
@@ -56,6 +82,7 @@ public:
     explicit PointerType(type_ptr_t type) : ptr(type) {}
     std::string dump() const override;
     type_ptr_t getDeRefed() const override { return ptr; }
+    OperandType getOpType() const override { return OT_UNSIGNED; }
 
 protected:
     type_ptr_t ptr;

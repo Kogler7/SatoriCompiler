@@ -16,13 +16,6 @@
 #include <list>
 #include <vector>
 
-enum OperandType
-{
-    OT_UNSIGNED = 'u',
-    OT_SIGNED = 's',
-    OT_FLOAT = 'f',
-};
-
 enum CompareType
 {
     CT_EQ = 'e',
@@ -32,6 +25,22 @@ enum CompareType
     CT_LT = 'l',
     CT_LE = 'L',
 };
+
+inline CompareType opTermToType(std::string opStr)
+{
+    if (opStr == "==")
+        return CT_EQ;
+    if (opStr == "!=")
+        return CT_NE;
+    if (opStr == ">")
+        return CT_GT;
+    if (opStr == ">=")
+        return CT_GE;
+    if (opStr == "<")
+        return CT_LT;
+    if (opStr == "<=")
+        return CT_LE;
+}
 
 // Memory Access and Addressing Operations （内存访问和寻址操作）
 class AllocInstr;
@@ -74,7 +83,7 @@ using jmp_ptr_t = std::shared_ptr<JmpInstr>;
 // Unary Operations （一元运算）
 class NegInstr;
 using neg_ptr_t = std::shared_ptr<NegInstr>;
-#define make_neg(from) std::make_shared<NegInstr>(from)
+#define make_neg(from, opType) std::make_shared<NegInstr>(from, opType)
 
 // Binary Operations （二元运算）
 class AddInstr;
@@ -99,7 +108,7 @@ using rem_ptr_t = std::shared_ptr<RemInstr>;
 
 class CmpInstr;
 using cmp_ptr_t = std::shared_ptr<CmpInstr>;
-#define make_cmp(lhs, rhs, cmpType) std::make_shared<CmpInstr>(lhs, rhs, cmpType)
+#define make_cmp(lhs, rhs, opType, cmpType) std::make_shared<CmpInstr>(lhs, rhs, opType, cmpType)
 
 // Block and Program
 class InstrBlock;

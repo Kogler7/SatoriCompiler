@@ -54,7 +54,6 @@ public:
     StmtRetInfo visitMulExpr(pst_node_ptr_t node);
     StmtRetInfo visitExpr(pst_node_ptr_t node);
     StmtRetInfo visitRelExpr(pst_node_ptr_t node);
-    StmtRetInfo visitEqExpr(pst_node_ptr_t node);
     StmtRetInfo visitAndExpr(pst_node_ptr_t node);
     StmtRetInfo visitOrExpr(pst_node_ptr_t node);
     StmtRetInfo visitBoolExpr(pst_node_ptr_t node);
