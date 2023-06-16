@@ -33,19 +33,31 @@ StmtRetInfo RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node)
     return StmtRetInfo();
 }
 
+// VarDecl -> { VarDef }
 StmtRetInfo RSCVisitor::visitVarDecl(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    AlphaStmtRetInfo retInfo;
+    // 获取VarDef列表，遍历处理即可
+    pst_children_t children = node->getChildren();
+    for (pst_node_ptr_t child : children)
+    {
+        auto varInfo = visitVarDef(child);
+        assert(is_alpha(varInfo), "var def return info should be alpha");
+        retInfo.list.splice(retInfo.list.end(), get_alpha(varInfo).list);
+    }
+    return retInfo;
 }
 
-StmtRetInfo RSCVisitor::visitVarType(pst_node_ptr_t node)
-{
-    return StmtRetInfo();
-}
-
+// VarDef -> ident : Type
 StmtRetInfo RSCVisitor::visitVarDef(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 获取ident和Type
+    // 暂时不考虑数组，因此剩余子节点暂时不处理
+    std::string identStr = node->getChildAt(0)->data.symbol;
+    std::string typeStr = node->getChildAt(1)->firstChild()->data.symbol;
+    type_ptr_t type = make_prime_type(PrimitiveType::str2type(typeStr));
+    alloc_ptr_t alloc = context.symbolTable.registerSymbol(identStr, type);
+    return AlphaStmtRetInfo{std::list<user_ptr_t>{alloc}};
 }
 
 StmtRetInfo RSCVisitor::visitInitVal(pst_node_ptr_t node)
@@ -118,26 +130,58 @@ StmtRetInfo RSCVisitor::visitForStmt(pst_node_ptr_t node)
     return StmtRetInfo();
 }
 
+// Stmt -> break ;
 StmtRetInfo RSCVisitor::visitBreakStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    jmp_ptr_t instr = make_jmp();
+    return ThetaStmtRetInfo{{}, instr};
 }
 
+// Stmt -> continue ;
 StmtRetInfo RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    jmp_ptr_t instr = make_jmp();
+    return ThetaStmtRetInfo{{}, instr};
 }
 
 // Stmt -> return [Expr] ;
 StmtRetInfo RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    size_t childSum = node->childrenCount();
+    assert(childSum == 1, "return stmt should have 1 child(ren)");
+    pst_node_ptr_t child = node->firstChild(); // Optional
+    if (child->childrenCount() == 1)
+    {
+        // Optional -> Expr ;
+        auto exprInfo = visitExpr(child->firstChild());
+        assert(is_alpha(exprInfo), "expr return info should be alpha");
+        instr_list_t list = get_alpha(exprInfo).list;
+        // 生成ret指令并追加到list之后
+        ret_ptr_t instr = make_ret(list.back());
+        list.push_back(instr);
+        // ret是terminator指令，所以返回的是ThetaStmtRetInfo
+        // 这里是ThetaStmtRetInfo的特例，因为ret指令不会跳转，所以jmpSsa为nullptr
+        return ThetaStmtRetInfo{list, nullptr};
+    }
+    else
+    {
+        // Optional -> ;
+        return ThetaStmtRetInfo{{make_ret()}, nullptr};
+    }
 }
 
 // Stmt -> Expr ;
 StmtRetInfo RSCVisitor::visitExprStmt(pst_node_ptr_t node)
 {
-    return visitExpr(node);
+    size_t childSum = node->childrenCount();
+    assert(childSum == 1, "expr stmt should have 1 child(ren)");
+    pst_node_ptr_t child = node->firstChild(); // Optional
+    if (child->childrenCount() == 1)
+    {
+        // Optional -> Expr ;
+        return visitExpr(child->firstChild());
+    }
+    return StmtRetInfo();
 }
 
 // UnaryExpr -> ( `+` | `-` | `!` ) UnaryExpr | Factor

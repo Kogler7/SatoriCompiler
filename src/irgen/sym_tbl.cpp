@@ -46,3 +46,13 @@ alloc_ptr_t SymbolTable::find(const std::string &name)
 	}
 	return nullptr;
 }
+
+alloc_ptr_t SymbolTable::registerSymbol(const std::string &name, type_ptr_t type)
+{
+	scope_ptr_t top = tableStk.top();
+	assert(top != nullptr, "SymbolTable::registerSymbol: top is nullptr");
+	assert(!top->has(name), "SymbolTable::registerSymbol: symbol already exists");
+	alloc_ptr_t alloc = make_alloc(name, type);
+	top->insert(name, alloc);
+	return alloc;
+}

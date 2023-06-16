@@ -71,6 +71,20 @@ public:
             return OT_SIGNED;
         }
     }
+    static PrimType str2type(const std::string &str)
+    {
+        if (str == "int")
+            return PrimitiveType::INT;
+        if (str == "real")
+            return PrimitiveType::REAL;
+        if (str == "bool")
+            return PrimitiveType::BOOL;
+        if (str == "char")
+            return PrimitiveType::CHAR;
+        if (str == "str")
+            return PrimitiveType::STR;
+        return PrimitiveType::INT;
+    }
 
 protected:
     PrimType type;

@@ -12,6 +12,7 @@
 
 #include "type.h"
 #include "use.h"
+#include "utils/log.h"
 
 #include <list>
 #include <vector>
@@ -40,6 +41,8 @@ inline CompareType opTermToType(std::string opStr)
         return CT_LT;
     if (opStr == "<=")
         return CT_LE;
+    assert(false, "unknown compare type");
+    return CT_EQ;
 }
 
 // Memory Access and Addressing Operations （内存访问和寻址操作）
@@ -143,7 +146,7 @@ using const_str_ptr_t = std::shared_ptr<ConstantString>;
 class AllocInstr : public User
 {
 public:
-    AllocInstr(type_ptr_t type, std::string name = "") : User(type, name) {}
+    AllocInstr(std::string name, type_ptr_t type) : User(type, name) {}
     ~AllocInstr() = default;
 
     std::string dump() const override;
@@ -240,7 +243,8 @@ class RetInstr : public User
     use_ptr_t retval;
 
 public:
-    explicit RetInstr(use_ptr_t retval) : retval(std::move(retval)) {}
+    RetInstr() : retval(make_use(nullptr, this)) {}
+    explicit RetInstr(value_ptr_t retval) : retval(make_use(std::move(retval), this)) {}
     ~RetInstr() = default;
 
     std::string dump() const override;
@@ -272,6 +276,7 @@ class JmpInstr : public User
     block_ptr_t target;
 
 public:
+    JmpInstr() : target(nullptr) {}
     explicit JmpInstr(const block_ptr_t &target) : target(std::move(target)) {}
     ~JmpInstr() = default;
 

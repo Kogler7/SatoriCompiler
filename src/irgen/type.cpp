@@ -16,18 +16,20 @@ std::string PrimitiveType::dump() const
     switch (type)
     {
     case INT:
-        return "int";
+        return "i32";
     case REAL:
-        return "real";
+        return "double";
     case BOOL:
-        return "bool";
+        return "i1";
     case CHAR:
-        return "char";
+        return "i8";
     case STR:
         return "str";
     default:
         error << "unknown primitive type" << std::endl;
+        exit(1);
     }
+    return "";
 }
 
 std::string PointerType::dump() const

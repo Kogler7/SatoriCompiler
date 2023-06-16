@@ -89,6 +89,8 @@ std::string CallInstr::dump() const
 
 std::string RetInstr::dump() const
 {
+    if (retval == nullptr)
+        return "\tret void\n";
     return format(
         "\tret $ $\n",
         retval->getValue()->getType()->dump(),

@@ -40,6 +40,10 @@ func main() : int
             {
                 flag = false;
             }
+            if (b[i] == 1)
+            {
+                continue;
+            }
             //else
             //{
             //    b[i] = b[i] - 1;

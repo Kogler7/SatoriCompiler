@@ -25,7 +25,6 @@ public:
 
     StmtRetInfo visitVarDeclStmt(pst_node_ptr_t node);
     StmtRetInfo visitVarDecl(pst_node_ptr_t node);
-    StmtRetInfo visitVarType(pst_node_ptr_t node);
     StmtRetInfo visitVarDef(pst_node_ptr_t node);
 
     StmtRetInfo visitInitVal(pst_node_ptr_t node);

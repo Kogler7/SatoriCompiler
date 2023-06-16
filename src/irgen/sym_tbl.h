@@ -25,7 +25,8 @@ class SymbolTable
 public:
     void newScope();
     std::vector<alloc_ptr_t> popScope();
-    alloc_ptr_t find(const std::string &name);
+    [[nodiscard]] alloc_ptr_t find(const std::string &name);
+    [[nodiscard]] alloc_ptr_t registerSymbol(const std::string &name, type_ptr_t type);
 };
 
 class StaticDataTable

@@ -32,7 +32,7 @@ struct BetaStmtRetInfo
 struct ThetaStmtRetInfo
 {
 	std::list<user_ptr_t> list;
-	jmp_ptr_t jmpSsa;
+	jmp_ptr_t jmpInstr;
 };
 
 using instr_list_t = std::list<user_ptr_t>;
