@@ -63,7 +63,7 @@ std::string GEPInstr::dump() const { return "not implemented."; }
 std::string FuncInstr::dump() const
 {
     std::string s = format("define $ $(", retType->dump(), name);
-    // for (auto &arg : args)
+    // for (auto &arg : params)
     // {
     //     s += format("$ $, ", arg->getType()->dump(), arg->getName());
     // }
@@ -79,7 +79,7 @@ std::string FuncInstr::dump() const
 std::string CallInstr::dump() const
 {
     std::string s = format("\t$ = call $(", getValueTag(this), func->getName());
-    // for (auto &arg : args)
+    // for (auto &arg : params)
     // {
     //     s += format("$ $, ", arg->getType()->dump(), arg->getName());
     // }

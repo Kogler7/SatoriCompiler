@@ -23,14 +23,36 @@ inline std::string getProSymAt(pst_node_ptr_t node, size_t idx)
     return productOpt.value().second[idx];
 }
 
+// Program -> { VarDeclStmt | FuncDeclStmt | FuncDef }
 StmtRetInfo RSCVisitor::visitProgram(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    pst_children_t children = node->getChildren();
+    for (pst_node_ptr_t child : children)
+    {
+        if (child->data.symbol == "VarDeclStmt")
+        {
+            visitVarDeclStmt(child);
+        }
+        else if (child->data.symbol == "FuncDeclStmt")
+        {
+            visitFuncDeclStmt(child);
+        }
+        else if (child->data.symbol == "FuncDef")
+        {
+            visitFuncDef(child);
+        }
+        else
+        {
+            error << "unknown symbol" << std::endl;
+            exit(1);
+        }
+    }
 }
 
+// VarDeclStmt -> VarDecl ;
 StmtRetInfo RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    return visitVarDecl(node->firstChild());
 }
 
 // VarDecl -> { VarDef }
@@ -60,19 +82,51 @@ StmtRetInfo RSCVisitor::visitVarDef(pst_node_ptr_t node)
     return AlphaStmtRetInfo{std::list<user_ptr_t>{alloc}};
 }
 
+// InitVal -> Expr | { Expr }
 StmtRetInfo RSCVisitor::visitInitVal(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 暂时不考虑数组，因此只需要处理Expr即可
+    if (node->childrenCount() == 1)
+    {
+        // InitVal -> Expr
+        return visitExpr(node->firstChild());
+    }
+    return AlphaStmtRetInfo();
 }
 
+// FuncDeclStmt -> FuncDecl ;
 StmtRetInfo RSCVisitor::visitFuncDeclStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    return visitFuncDecl(node->firstChild());
 }
 
+// FuncDecl -> ident ( [ParamList] ) [: Type] ;
 StmtRetInfo RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    pst_children_t children = node->getChildren();
+    std::string identStr = children[0]->data.symbol;
+    pst_node_ptr_t paramsNode = children[1];
+    pst_node_ptr_t retTypeNode = children[2];
+    // 先根据函数名和返回值类型注册函数
+    type_ptr_t retType = nullptr;
+    if (retTypeNode->hasChild())
+    {
+        // FuncDecl -> ident ( [ParamList] ) : Type ;
+        std::string typeStr = retTypeNode->firstChild()->data.symbol;
+        retType = make_prime_type(PrimitiveType::str2type(typeStr));
+    }
+    else
+    {
+        // FuncDecl -> ident ( [ParamList] ) ;
+        // 没有指定返回类型，则默认为void
+        retType = make_prime_type(PrimitiveType::VOID);
+    }
+    func_ptr_t func = context.functionTable.registerFunction(identStr, retType);
+    // 解析参数列表，为函数添加参数
+    auto paramsInfo = visitParamList(paramsNode);
+    assert(is_alpha(paramsInfo), "param list return info should be alpha");
+    func->addParams(get_alpha(paramsInfo).list);
+    return AlphaStmtRetInfo{std::list<user_ptr_t>{func}};
 }
 
 StmtRetInfo RSCVisitor::visitFuncDef(pst_node_ptr_t node)
@@ -90,14 +144,31 @@ StmtRetInfo RSCVisitor::visitArgList(pst_node_ptr_t node)
     return StmtRetInfo();
 }
 
+// ParamList -> { Param }
 StmtRetInfo RSCVisitor::visitParamList(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 获取Param列表，遍历处理即可
+    AlphaStmtRetInfo retInfo;
+    pst_children_t children = node->getChildren();
+    for (pst_node_ptr_t child : children)
+    {
+        auto paramInfo = visitParam(child);
+        assert(is_alpha(paramInfo), "param return info should be alpha");
+        retInfo.list.splice(retInfo.list.end(), get_alpha(paramInfo).list);
+    }
+    return retInfo;
 }
 
+// Param -> ident : Type
 StmtRetInfo RSCVisitor::visitParam(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 获取ident和Type
+    // 暂时不考虑数组，因此剩余子节点暂时不处理
+    std::string identStr = node->getChildAt(0)->data.symbol;
+    std::string typeStr = node->getChildAt(1)->firstChild()->data.symbol;
+    type_ptr_t type = make_prime_type(PrimitiveType::str2type(typeStr));
+    alloc_ptr_t alloc = context.symbolTable.registerSymbol(identStr, type);
+    return AlphaStmtRetInfo{std::list<user_ptr_t>{alloc}};
 }
 
 StmtRetInfo RSCVisitor::visitStmt(pst_node_ptr_t node)

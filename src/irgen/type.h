@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "utils/log.h"
+
 #include <string>
 #include <memory>
 
@@ -22,9 +24,11 @@ enum OperandType
 
 class Type;
 using type_ptr_t = std::shared_ptr<Type>;
+
 class PrimitiveType;
 using prim_ptr_t = std::shared_ptr<PrimitiveType>;
 #define make_prime_type(type) std::make_shared<PrimitiveType>(type)
+
 class PointerType;
 using ptr_ptr_t = std::shared_ptr<PointerType>;
 #define make_ptr_type(type) std::make_shared<PointerType>(type)
@@ -33,8 +37,11 @@ class Type
 {
 public:
     virtual ~Type() = default;
+
     virtual std::string dump() const = 0;
+
     virtual type_ptr_t getDeRefed() const = 0;
+
     virtual OperandType getOpType() const { return OT_SIGNED; }
 };
 
@@ -48,11 +55,15 @@ public:
         BOOL,
         CHAR,
         STR,
+        VOID
     };
 
     explicit PrimitiveType(PrimType type) : type(type) {}
+
     std::string dump() const override;
+
     type_ptr_t getDeRefed() const override { return nullptr; }
+
     OperandType getOpType() const override
     {
         switch (type)
@@ -68,9 +79,11 @@ public:
         case STR:
             return OT_UNSIGNED;
         default:
+            assert(false, "unknown primitive type");
             return OT_SIGNED;
         }
     }
+
     static PrimType str2type(const std::string &str)
     {
         if (str == "int")
@@ -83,6 +96,7 @@ public:
             return PrimitiveType::CHAR;
         if (str == "str")
             return PrimitiveType::STR;
+        assert(false, "unknown primitive type");
         return PrimitiveType::INT;
     }
 
@@ -94,8 +108,11 @@ class PointerType : public Type
 {
 public:
     explicit PointerType(type_ptr_t type) : ptr(type) {}
+
     std::string dump() const override;
+
     type_ptr_t getDeRefed() const override { return ptr; }
+
     OperandType getOpType() const override { return OT_UNSIGNED; }
 
 protected:

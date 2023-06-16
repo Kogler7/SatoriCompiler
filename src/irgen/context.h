@@ -27,5 +27,6 @@ public:
     block_ptr_t exitBb;
     std::vector<alloc_ptr_t> allocList;
 	SymbolTable symbolTable;
+    FunctionTable functionTable;
 	void clear();
 };

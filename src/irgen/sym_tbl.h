@@ -33,3 +33,27 @@ class StaticDataTable
 {
     std::map<std::string, alloc_ptr_t> table;
 };
+
+class FunctionTable
+{
+    std::map<std::string, func_ptr_t> table;
+
+public:
+    void insert(const std::string &name, func_ptr_t func) { table.insert({name, func}); }
+    [[nodiscard]] func_ptr_t find(const std::string &name) const
+    {
+        auto it = table.find(name);
+        if (it != table.end())
+        {
+            return it->second;
+        }
+        return nullptr;
+    }
+    [[nodiscard]] bool has(const std::string &name) const { return table.find(name) != table.end(); }
+    [[nodiscard]] func_ptr_t registerFunction(const std::string &name, type_ptr_t type)
+    {
+        func_ptr_t func = make_func(name, type);
+        table.insert({name, func});
+        return func;
+    }
+};

@@ -68,9 +68,12 @@ public:
             value->addUse(this);
     }
     ~Use() = default;
+
     value_ptr_t getValue() const { return value; }
+
     User *getUser() { return user; }
-    value_ptr_t getValue() { return value; }
+
     void setUser(User *user) { this->user = user; }
+    
     void setValue(value_ptr_t value) { this->value = value; }
 };

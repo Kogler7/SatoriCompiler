@@ -64,7 +64,7 @@ using gep_ptr_t = std::shared_ptr<GEPInstr>;
 // Function Call Instructions （函数调用和返回指令）
 class FuncInstr; // 抽象指令，由其他指令组合而成
 using func_ptr_t = std::shared_ptr<FuncInstr>;
-#define make_func(retType, args, blocks, name) std::make_shared<FuncInstr>(retType, args, blocks, name)
+#define make_func(name, retType) std::make_shared<FuncInstr>(name, retType)
 
 class CallInstr;
 using call_ptr_t = std::shared_ptr<CallInstr>;
@@ -196,17 +196,42 @@ public:
 class FuncInstr : public User
 {
     type_ptr_t retType;
-    std::vector<use_ptr_t> args;
+    std::map<std::string, user_ptr_t> params;
     std::list<use_ptr_t> blocks;
 
 public:
-    FuncInstr(type_ptr_t retType, std::string name = "")
+    FuncInstr(std::string name, type_ptr_t retType)
         : User(nullptr, std::move(name)), retType(std::move(retType)) {}
     ~FuncInstr() = default;
 
     type_ptr_t getRetType() { return retType; }
 
-    const std::vector<use_ptr_t> &getArgs() { return args; }
+    bool addParam(type_ptr_t type, std::string name)
+    {
+        if (params.count(name))
+        {
+            return false;
+        }
+        params[name] = make_user(type, name);
+        return true;
+    }
+
+    void addParams(std::list<user_ptr_t> argList)
+    {
+        for (auto &arg : argList)
+        {
+            params[arg->getName()] = arg;
+        }
+    }
+
+    user_ptr_t getParam(std::string name)
+    {
+        if (!params.count(name))
+        {
+            return nullptr;
+        }
+        return params[name];
+    }
 
     void addBlock(block_ptr_t block) { blocks.push_back(make_use(std::move(block), this)); }
 
@@ -227,10 +252,10 @@ class CallInstr : public User
 public:
     CallInstr(func_ptr_t func) : User(func->getRetType(), name), func(std::move(func))
     {
-        const auto &args = this->func->getArgs();
-        // for (auto &arg : args)
+        const auto &params = this->func->getArgs();
+        // for (auto &arg : params)
         // {
-        //     this->args.emplace_back(arg, this);
+        //     this->params.emplace_back(arg, this);
         // }
     }
     ~CallInstr() = default;
