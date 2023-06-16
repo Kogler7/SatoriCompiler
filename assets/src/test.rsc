@@ -22,7 +22,7 @@ func main() : int
 
     var result : int = a + 2 * (d - e);
 
-    if (d > e && a < b || c == true)
+    if (d > e && a < b || -c == true || !1)
     {
         print "Hello World!";
     }

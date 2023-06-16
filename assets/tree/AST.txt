@@ -1,63 +1,63 @@
 Program <Program -> Program_star_1>
-|--FuncDeclStmt <FuncDeclStmt -> FuncDecl>
-|  |--FuncDecl <FuncDecl -> Ident FuncDecl_opti_1 FuncDecl_opti_2>
+|--FuncDeclStmt <FuncDeclStmt -> decl FuncDecl ;>
+|  |--FuncDecl <FuncDecl -> func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2>
 |     |--`add` at <5:13>
 |     |--Optional <FuncDecl_opti_1 -> ParamList>
 |     |  |--ParamList <ParamList -> Param ParamList_star_1>
-|     |     |--Param <Param -> Ident VarType Param_star_1>
+|     |     |--Param <Param -> Ident : VarType Param_star_1>
 |     |     |  |--`x` at <5:15>
 |     |     |  |--VarType <VarType -> int>
 |     |     |  |  |--`int` at <5:21>
 |     |     |  |--StarList <Param_star_1 -> >
-|     |     |--Param <Param -> Ident VarType Param_star_1>
+|     |     |--Param <Param -> Ident : VarType Param_star_1>
 |     |        |--`y` at <5:24>
 |     |        |--VarType <VarType -> int>
 |     |        |  |--`int` at <5:30>
 |     |        |--StarList <Param_star_1 -> >
-|     |--Optional <FuncDecl_opti_2 -> VarType>
+|     |--Optional <FuncDecl_opti_2 -> : VarType>
 |        |--VarType <VarType -> int>
 |           |--`int` at <5:37>
-|--FuncDeclStmt <FuncDeclStmt -> FuncDecl>
-|  |--FuncDecl <FuncDecl -> Ident FuncDecl_opti_1 FuncDecl_opti_2>
+|--FuncDeclStmt <FuncDeclStmt -> decl FuncDecl ;>
+|  |--FuncDecl <FuncDecl -> func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2>
 |     |--`add` at <6:13>
 |     |--Optional <FuncDecl_opti_1 -> ParamList>
 |     |  |--ParamList <ParamList -> Param ParamList_star_1>
-|     |     |--Param <Param -> Ident VarType Param_star_1>
+|     |     |--Param <Param -> Ident : VarType Param_star_1>
 |     |     |  |--`x` at <6:15>
 |     |     |  |--VarType <VarType -> int>
 |     |     |  |  |--`int` at <6:21>
 |     |     |  |--StarList <Param_star_1 -> >
-|     |     |--Param <Param -> Ident VarType Param_star_1>
+|     |     |--Param <Param -> Ident : VarType Param_star_1>
 |     |     |  |--`y` at <6:24>
 |     |     |  |--VarType <VarType -> int>
 |     |     |  |  |--`int` at <6:30>
 |     |     |  |--StarList <Param_star_1 -> >
-|     |     |--Param <Param -> Ident VarType Param_star_1>
+|     |     |--Param <Param -> Ident : VarType Param_star_1>
 |     |     |  |--`z` at <6:33>
 |     |     |  |--VarType <VarType -> real>
 |     |     |  |  |--`real` at <6:40>
 |     |     |  |--StarList <Param_star_1 -> >
-|     |     |--Param <Param -> Ident VarType Param_star_1>
+|     |     |--Param <Param -> Ident : VarType Param_star_1>
 |     |        |--`s` at <6:43>
 |     |        |--VarType <VarType -> str>
 |     |        |  |--`str` at <6:49>
 |     |        |--StarList <Param_star_1 -> >
-|     |--Optional <FuncDecl_opti_2 -> VarType>
+|     |--Optional <FuncDecl_opti_2 -> : VarType>
 |        |--VarType <VarType -> int>
 |           |--`int` at <6:56>
-|--FuncDeclStmt <FuncDeclStmt -> FuncDecl>
-|  |--FuncDecl <FuncDecl -> Ident FuncDecl_opti_1 FuncDecl_opti_2>
+|--FuncDeclStmt <FuncDeclStmt -> decl FuncDecl ;>
+|  |--FuncDecl <FuncDecl -> func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2>
 |     |--`sub` at <7:13>
 |     |--Optional <FuncDecl_opti_1 -> >
 |     |--Optional <FuncDecl_opti_2 -> >
-|--VarDeclStmt <VarDeclStmt -> VarDecl>
-|  |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|  |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |        |--`x` at <9:5>
 |        |--VarType <VarType -> int>
 |        |  |--`int` at <9:11>
 |        |--StarList <VarDef_star_1 -> >
-|        |--Optional <VarDef_opti_2 -> InitVal>
+|        |--Optional <VarDef_opti_2 -> = InitVal>
 |           |--InitVal <InitVal -> Expr>
 |              |--Expr <Expr -> MulExpr>
 |                 |--MulExpr <MulExpr -> UnaryExpr>
@@ -65,14 +65,14 @@ Program <Program -> Program_star_1>
 |                       |--Factor <Factor -> IntLiteral>
 |                          |--IntLiteral <IntLiteral -> Integer>
 |                             |--`10` at <9:16>
-|--VarDeclStmt <VarDeclStmt -> VarDecl>
-|  |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|  |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |        |--`y` at <10:5>
 |        |--VarType <VarType -> bool>
 |        |  |--`bool` at <10:12>
 |        |--StarList <VarDef_star_1 -> >
-|        |--Optional <VarDef_opti_2 -> InitVal>
+|        |--Optional <VarDef_opti_2 -> = InitVal>
 |           |--InitVal <InitVal -> Expr>
 |              |--Expr <Expr -> MulExpr>
 |                 |--MulExpr <MulExpr -> UnaryExpr>
@@ -80,22 +80,22 @@ Program <Program -> Program_star_1>
 |                       |--Factor <Factor -> true>
 |                          |--`true` at <10:19>
 |--FuncDef <FuncDef -> FuncDecl Block>
-|  |--FuncDecl <FuncDecl -> Ident FuncDecl_opti_1 FuncDecl_opti_2>
+|  |--FuncDecl <FuncDecl -> func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2>
 |  |  |--`main` at <13:9>
 |  |  |--Optional <FuncDecl_opti_1 -> >
-|  |  |--Optional <FuncDecl_opti_2 -> VarType>
+|  |  |--Optional <FuncDecl_opti_2 -> : VarType>
 |  |     |--VarType <VarType -> int>
 |  |        |--`int` at <13:17>
-|  |--Block <Block -> Block_star_1>
+|  |--Block <Block -> { Block_star_1 }>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |        |  |--`a` at <15:9>
 |     |        |  |--VarType <VarType -> int>
 |     |        |  |  |--`int` at <15:15>
 |     |        |  |--StarList <VarDef_star_1 -> >
-|     |        |  |--Optional <VarDef_opti_2 -> InitVal>
+|     |        |  |--Optional <VarDef_opti_2 -> = InitVal>
 |     |        |     |--InitVal <InitVal -> Expr>
 |     |        |        |--Expr <Expr -> MulExpr>
 |     |        |           |--MulExpr <MulExpr -> UnaryExpr>
@@ -103,14 +103,14 @@ Program <Program -> Program_star_1>
 |     |        |                 |--Factor <Factor -> IntLiteral>
 |     |        |                    |--IntLiteral <IntLiteral -> Integer>
 |     |        |                       |--`10` at <15:20>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |        |  |--`b` at <15:23>
 |     |        |  |--VarType <VarType -> int>
 |     |        |  |  |--`int` at <15:29>
-|     |        |  |--StarList <VarDef_star_1 -> Integer VarDef_star_1>
+|     |        |  |--StarList <VarDef_star_1 -> [ Integer ] VarDef_star_1>
 |     |        |  |  |--`10` at <15:32>
-|     |        |  |--Optional <VarDef_opti_2 -> InitVal>
-|     |        |     |--InitVal <InitVal -> InitVal_opti_2>
+|     |        |  |--Optional <VarDef_opti_2 -> = InitVal>
+|     |        |     |--InitVal <InitVal -> { InitVal_opti_2 }>
 |     |        |        |--Optional <InitVal_opti_2 -> InitVal InitVal_star_1>
 |     |        |           |--InitVal <InitVal -> Expr>
 |     |        |           |  |--Expr <Expr -> MulExpr>
@@ -133,12 +133,12 @@ Program <Program -> Program_star_1>
 |     |        |                       |--Factor <Factor -> IntLiteral>
 |     |        |                          |--IntLiteral <IntLiteral -> Integer>
 |     |        |                             |--`3` at <15:44>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`c` at <15:48>
 |     |           |--VarType <VarType -> bool>
 |     |           |  |--`bool` at <15:55>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
@@ -146,14 +146,14 @@ Program <Program -> Program_star_1>
 |     |                          |--Factor <Factor -> false>
 |     |                             |--`false` at <15:63>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`d` at <16:9>
 |     |           |--VarType <VarType -> int>
 |     |           |  |--`int` at <16:15>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
@@ -162,14 +162,14 @@ Program <Program -> Program_star_1>
 |     |                             |--IntLiteral <IntLiteral -> Integer>
 |     |                                |--`+3e10` at <16:23>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`e` at <17:9>
 |     |           |--VarType <VarType -> int>
 |     |           |  |--`int` at <17:15>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
@@ -178,14 +178,14 @@ Program <Program -> Program_star_1>
 |     |                             |--IntLiteral <IntLiteral -> Integer>
 |     |                                |--`0x3f` at <17:22>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`o` at <18:9>
 |     |           |--VarType <VarType -> real>
 |     |           |  |--`real` at <18:16>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
@@ -194,14 +194,14 @@ Program <Program -> Program_star_1>
 |     |                             |--RealLiteral <RealLiteral -> Real>
 |     |                                |--`3.14` at <18:23>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`p` at <19:9>
 |     |           |--VarType <VarType -> real>
 |     |           |  |--`real` at <19:16>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
@@ -210,14 +210,14 @@ Program <Program -> Program_star_1>
 |     |                             |--RealLiteral <RealLiteral -> Real>
 |     |                                |--`-2.71828` at <19:27>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`q` at <20:9>
 |     |           |--VarType <VarType -> real>
 |     |           |  |--`real` at <20:16>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
@@ -226,14 +226,14 @@ Program <Program -> Program_star_1>
 |     |                             |--RealLiteral <RealLiteral -> Real>
 |     |                                |--`1.0e-10` at <20:26>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`s` at <21:9>
 |     |           |--VarType <VarType -> str>
 |     |           |  |--`str` at <21:15>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
 |     |                 |--Expr <Expr -> MulExpr>
 |     |                    |--MulExpr <MulExpr -> UnaryExpr>
@@ -241,31 +241,31 @@ Program <Program -> Program_star_1>
 |     |                          |--Factor <Factor -> String>
 |     |                             |--`"Hello World!"` at <21:32>
 |     |--Stmt <Stmt -> VarDeclStmt>
-|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |           |--`result` at <23:14>
 |     |           |--VarType <VarType -> int>
 |     |           |  |--`int` at <23:20>
 |     |           |--StarList <VarDef_star_1 -> >
-|     |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |              |--InitVal <InitVal -> Expr>
-|     |                 |--Expr <Expr -> Expr MulExpr>
+|     |                 |--Expr <Expr -> Expr + MulExpr>
 |     |                    |--Expr <Expr -> MulExpr>
 |     |                    |  |--MulExpr <MulExpr -> UnaryExpr>
 |     |                    |     |--UnaryExpr <UnaryExpr -> Factor>
 |     |                    |        |--Factor <Factor -> LVal>
 |     |                    |           |--LVal <LVal -> Ident LVal_star_1>
 |     |                    |              |--`a` at <23:24>
-|     |                    |--MulExpr <MulExpr -> MulExpr UnaryExpr>
+|     |                    |--MulExpr <MulExpr -> MulExpr * UnaryExpr>
 |     |                       |--MulExpr <MulExpr -> UnaryExpr>
 |     |                       |  |--UnaryExpr <UnaryExpr -> Factor>
 |     |                       |     |--Factor <Factor -> IntLiteral>
 |     |                       |        |--IntLiteral <IntLiteral -> Integer>
 |     |                       |           |--`2` at <23:28>
 |     |                       |--UnaryExpr <UnaryExpr -> Factor>
-|     |                          |--Factor <Factor -> Expr>
-|     |                             |--Expr <Expr -> Expr MulExpr>
+|     |                          |--Factor <Factor -> ( Expr )>
+|     |                             |--Expr <Expr -> Expr - MulExpr>
 |     |                                |--Expr <Expr -> MulExpr>
 |     |                                |  |--MulExpr <MulExpr -> UnaryExpr>
 |     |                                |     |--UnaryExpr <UnaryExpr -> Factor>
@@ -277,74 +277,86 @@ Program <Program -> Program_star_1>
 |     |                                      |--Factor <Factor -> LVal>
 |     |                                         |--LVal <LVal -> Ident LVal_star_1>
 |     |                                            |--`e` at <23:37>
-|     |--Stmt <Stmt -> BoolExpr Stmt>
+|     |--Stmt <Stmt -> if ( BoolExpr ) Stmt>
 |     |  |--BoolExpr <BoolExpr -> OrExpr>
-|     |  |  |--OrExpr <OrExpr -> OrExpr AndExpr>
-|     |  |     |--OrExpr <OrExpr -> AndExpr>
-|     |  |     |  |--AndExpr <AndExpr -> AndExpr EqExpr>
-|     |  |     |     |--AndExpr <AndExpr -> EqExpr>
-|     |  |     |     |  |--EqExpr <EqExpr -> RelExpr>
-|     |  |     |     |     |--RelExpr <RelExpr -> RelExpr Expr>
-|     |  |     |     |        |--RelExpr <RelExpr -> Expr>
-|     |  |     |     |        |  |--Expr <Expr -> MulExpr>
-|     |  |     |     |        |     |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |     |        |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |     |        |           |--Factor <Factor -> LVal>
-|     |  |     |     |        |              |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |     |        |                 |--`d` at <25:9>
-|     |  |     |     |        |--Expr <Expr -> MulExpr>
-|     |  |     |     |           |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |     |              |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |     |                 |--Factor <Factor -> LVal>
-|     |  |     |     |                    |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |     |                       |--`e` at <25:13>
-|     |  |     |     |--EqExpr <EqExpr -> RelExpr>
-|     |  |     |        |--RelExpr <RelExpr -> RelExpr Expr>
-|     |  |     |           |--RelExpr <RelExpr -> Expr>
-|     |  |     |           |  |--Expr <Expr -> MulExpr>
-|     |  |     |           |     |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |     |           |        |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |           |           |--Factor <Factor -> LVal>
-|     |  |     |           |              |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |           |                 |--`a` at <25:18>
+|     |  |  |--OrExpr <OrExpr -> OrExpr || AndExpr>
+|     |  |     |--OrExpr <OrExpr -> OrExpr || AndExpr>
+|     |  |     |  |--OrExpr <OrExpr -> AndExpr>
+|     |  |     |  |  |--AndExpr <AndExpr -> AndExpr && EqExpr>
+|     |  |     |  |     |--AndExpr <AndExpr -> EqExpr>
+|     |  |     |  |     |  |--EqExpr <EqExpr -> RelExpr>
+|     |  |     |  |     |     |--RelExpr <RelExpr -> RelExpr > Expr>
+|     |  |     |  |     |        |--RelExpr <RelExpr -> Expr>
+|     |  |     |  |     |        |  |--Expr <Expr -> MulExpr>
+|     |  |     |  |     |        |     |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |     |        |        |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |     |        |           |--Factor <Factor -> LVal>
+|     |  |     |  |     |        |              |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |     |        |                 |--`d` at <25:9>
+|     |  |     |  |     |        |--Expr <Expr -> MulExpr>
+|     |  |     |  |     |           |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |     |              |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |     |                 |--Factor <Factor -> LVal>
+|     |  |     |  |     |                    |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |     |                       |--`e` at <25:13>
+|     |  |     |  |     |--EqExpr <EqExpr -> RelExpr>
+|     |  |     |  |        |--RelExpr <RelExpr -> RelExpr < Expr>
+|     |  |     |  |           |--RelExpr <RelExpr -> Expr>
+|     |  |     |  |           |  |--Expr <Expr -> MulExpr>
+|     |  |     |  |           |     |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |           |        |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |           |           |--Factor <Factor -> LVal>
+|     |  |     |  |           |              |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |           |                 |--`a` at <25:18>
+|     |  |     |  |           |--Expr <Expr -> MulExpr>
+|     |  |     |  |              |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |  |                 |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |  |                    |--Factor <Factor -> LVal>
+|     |  |     |  |                       |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |  |                          |--`b` at <25:22>
+|     |  |     |  |--AndExpr <AndExpr -> EqExpr>
+|     |  |     |     |--EqExpr <EqExpr -> EqExpr == RelExpr>
+|     |  |     |        |--EqExpr <EqExpr -> RelExpr>
+|     |  |     |        |  |--RelExpr <RelExpr -> Expr>
+|     |  |     |        |     |--Expr <Expr -> MulExpr>
+|     |  |     |        |        |--MulExpr <MulExpr -> UnaryExpr>
+|     |  |     |        |           |--UnaryExpr <UnaryExpr -> - UnaryExpr>
+|     |  |     |        |              |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |     |        |                 |--Factor <Factor -> LVal>
+|     |  |     |        |                    |--LVal <LVal -> Ident LVal_star_1>
+|     |  |     |        |                       |--`c` at <25:28>
+|     |  |     |        |--RelExpr <RelExpr -> Expr>
 |     |  |     |           |--Expr <Expr -> MulExpr>
 |     |  |     |              |--MulExpr <MulExpr -> UnaryExpr>
 |     |  |     |                 |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |     |                    |--Factor <Factor -> LVal>
-|     |  |     |                       |--LVal <LVal -> Ident LVal_star_1>
-|     |  |     |                          |--`b` at <25:22>
+|     |  |     |                    |--Factor <Factor -> true>
+|     |  |     |                       |--`true` at <25:36>
 |     |  |     |--AndExpr <AndExpr -> EqExpr>
-|     |  |        |--EqExpr <EqExpr -> EqExpr RelExpr>
-|     |  |           |--EqExpr <EqExpr -> RelExpr>
-|     |  |           |  |--RelExpr <RelExpr -> Expr>
-|     |  |           |     |--Expr <Expr -> MulExpr>
-|     |  |           |        |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |           |           |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |           |              |--Factor <Factor -> LVal>
-|     |  |           |                 |--LVal <LVal -> Ident LVal_star_1>
-|     |  |           |                    |--`c` at <25:27>
+|     |  |        |--EqExpr <EqExpr -> RelExpr>
 |     |  |           |--RelExpr <RelExpr -> Expr>
 |     |  |              |--Expr <Expr -> MulExpr>
 |     |  |                 |--MulExpr <MulExpr -> UnaryExpr>
-|     |  |                    |--UnaryExpr <UnaryExpr -> Factor>
-|     |  |                       |--Factor <Factor -> true>
-|     |  |                          |--`true` at <25:35>
+|     |  |                    |--UnaryExpr <UnaryExpr -> ! UnaryExpr>
+|     |  |                       |--UnaryExpr <UnaryExpr -> Factor>
+|     |  |                          |--Factor <Factor -> IntLiteral>
+|     |  |                             |--IntLiteral <IntLiteral -> Integer>
+|     |  |                                |--`1` at <25:42>
 |     |  |--Stmt <Stmt -> Block>
-|     |     |--Block <Block -> Block_star_1>
-|     |        |--Stmt <Stmt -> Expr>
+|     |     |--Block <Block -> { Block_star_1 }>
+|     |        |--Stmt <Stmt -> print Expr ;>
 |     |           |--Expr <Expr -> MulExpr>
 |     |              |--MulExpr <MulExpr -> UnaryExpr>
 |     |                 |--UnaryExpr <UnaryExpr -> Factor>
 |     |                    |--Factor <Factor -> String>
 |     |                       |--`"Hello World!"` at <27:28>
-|     |--Stmt <Stmt -> VarDecl BoolExpr Assignment Stmt>
-|     |  |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |  |  |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |--Stmt <Stmt -> for ( VarDecl ; BoolExpr ; Assignment ) Stmt>
+|     |  |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |  |  |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |  |     |--`i` at <34:14>
 |     |  |     |--VarType <VarType -> int>
 |     |  |     |  |--`int` at <34:20>
 |     |  |     |--StarList <VarDef_star_1 -> >
-|     |  |     |--Optional <VarDef_opti_2 -> InitVal>
+|     |  |     |--Optional <VarDef_opti_2 -> = InitVal>
 |     |  |        |--InitVal <InitVal -> Expr>
 |     |  |           |--Expr <Expr -> MulExpr>
 |     |  |              |--MulExpr <MulExpr -> UnaryExpr>
@@ -356,7 +368,7 @@ Program <Program -> Program_star_1>
 |     |  |  |--OrExpr <OrExpr -> AndExpr>
 |     |  |     |--AndExpr <AndExpr -> EqExpr>
 |     |  |        |--EqExpr <EqExpr -> RelExpr>
-|     |  |           |--RelExpr <RelExpr -> RelExpr Expr>
+|     |  |           |--RelExpr <RelExpr -> RelExpr < Expr>
 |     |  |              |--RelExpr <RelExpr -> Expr>
 |     |  |              |  |--Expr <Expr -> MulExpr>
 |     |  |              |     |--MulExpr <MulExpr -> UnaryExpr>
@@ -370,10 +382,10 @@ Program <Program -> Program_star_1>
 |     |  |                       |--Factor <Factor -> IntLiteral>
 |     |  |                          |--IntLiteral <IntLiteral -> Integer>
 |     |  |                             |--`10` at <34:32>
-|     |  |--Assignment <Assignment -> LVal Expr>
+|     |  |--Assignment <Assignment -> LVal = Expr>
 |     |  |  |--LVal <LVal -> Ident LVal_star_1>
 |     |  |  |  |--`i` at <34:35>
-|     |  |  |--Expr <Expr -> Expr MulExpr>
+|     |  |  |--Expr <Expr -> Expr + MulExpr>
 |     |  |     |--Expr <Expr -> MulExpr>
 |     |  |     |  |--MulExpr <MulExpr -> UnaryExpr>
 |     |  |     |     |--UnaryExpr <UnaryExpr -> Factor>
@@ -386,23 +398,23 @@ Program <Program -> Program_star_1>
 |     |  |              |--IntLiteral <IntLiteral -> Integer>
 |     |  |                 |--`1` at <34:43>
 |     |  |--Stmt <Stmt -> Block>
-|     |     |--Block <Block -> Block_star_1>
+|     |     |--Block <Block -> { Block_star_1 }>
 |     |        |--Stmt <Stmt -> VarDeclStmt>
-|     |        |  |--VarDeclStmt <VarDeclStmt -> VarDecl>
-|     |        |     |--VarDecl <VarDecl -> VarDef VarDecl_star_1>
-|     |        |        |--VarDef <VarDef -> Ident VarType VarDef_star_1 VarDef_opti_2>
+|     |        |  |--VarDeclStmt <VarDeclStmt -> VarDecl ;>
+|     |        |     |--VarDecl <VarDecl -> var VarDef VarDecl_star_1>
+|     |        |        |--VarDef <VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2>
 |     |        |           |--`flag` at <36:16>
 |     |        |           |--VarType <VarType -> bool>
 |     |        |           |  |--`bool` at <36:23>
 |     |        |           |--StarList <VarDef_star_1 -> >
-|     |        |           |--Optional <VarDef_opti_2 -> InitVal>
+|     |        |           |--Optional <VarDef_opti_2 -> = InitVal>
 |     |        |              |--InitVal <InitVal -> Expr>
 |     |        |                 |--Expr <Expr -> MulExpr>
 |     |        |                    |--MulExpr <MulExpr -> UnaryExpr>
 |     |        |                       |--UnaryExpr <UnaryExpr -> Factor>
 |     |        |                          |--Factor <Factor -> true>
 |     |        |                             |--`true` at <36:30>
-|     |        |--Stmt <Stmt -> BoolExpr Stmt>
+|     |        |--Stmt <Stmt -> while ( BoolExpr ) Stmt>
 |     |           |--BoolExpr <BoolExpr -> OrExpr>
 |     |           |  |--OrExpr <OrExpr -> AndExpr>
 |     |           |     |--AndExpr <AndExpr -> EqExpr>
@@ -415,12 +427,12 @@ Program <Program -> Program_star_1>
 |     |           |                          |--LVal <LVal -> Ident LVal_star_1>
 |     |           |                             |--`flag` at <37:19>
 |     |           |--Stmt <Stmt -> Block>
-|     |              |--Block <Block -> Block_star_1>
-|     |                 |--Stmt <Stmt -> BoolExpr Stmt>
+|     |              |--Block <Block -> { Block_star_1 }>
+|     |                 |--Stmt <Stmt -> if ( BoolExpr ) Stmt>
 |     |                    |--BoolExpr <BoolExpr -> OrExpr>
 |     |                    |  |--OrExpr <OrExpr -> AndExpr>
 |     |                    |     |--AndExpr <AndExpr -> EqExpr>
-|     |                    |        |--EqExpr <EqExpr -> EqExpr RelExpr>
+|     |                    |        |--EqExpr <EqExpr -> EqExpr == RelExpr>
 |     |                    |           |--EqExpr <EqExpr -> RelExpr>
 |     |                    |           |  |--RelExpr <RelExpr -> Expr>
 |     |                    |           |     |--Expr <Expr -> MulExpr>
@@ -429,7 +441,7 @@ Program <Program -> Program_star_1>
 |     |                    |           |              |--Factor <Factor -> LVal>
 |     |                    |           |                 |--LVal <LVal -> Ident LVal_star_1>
 |     |                    |           |                    |--`b` at <39:17>
-|     |                    |           |                    |--StarList <LVal_star_1 -> Expr LVal_star_1>
+|     |                    |           |                    |--StarList <LVal_star_1 -> [ Expr ] LVal_star_1>
 |     |                    |           |                       |--Expr <Expr -> MulExpr>
 |     |                    |           |                          |--MulExpr <MulExpr -> UnaryExpr>
 |     |                    |           |                             |--UnaryExpr <UnaryExpr -> Factor>
@@ -444,9 +456,9 @@ Program <Program -> Program_star_1>
 |     |                    |                          |--IntLiteral <IntLiteral -> Integer>
 |     |                    |                             |--`0` at <39:25>
 |     |                    |--Stmt <Stmt -> Block>
-|     |                       |--Block <Block -> Block_star_1>
-|     |                          |--Stmt <Stmt -> Assignment>
-|     |                             |--Assignment <Assignment -> LVal Expr>
+|     |                       |--Block <Block -> { Block_star_1 }>
+|     |                          |--Stmt <Stmt -> Assignment ;>
+|     |                             |--Assignment <Assignment -> LVal = Expr>
 |     |                                |--LVal <LVal -> Ident LVal_star_1>
 |     |                                |  |--`flag` at <41:20>
 |     |                                |--Expr <Expr -> MulExpr>
@@ -454,7 +466,7 @@ Program <Program -> Program_star_1>
 |     |                                      |--UnaryExpr <UnaryExpr -> Factor>
 |     |                                         |--Factor <Factor -> false>
 |     |                                            |--`false` at <41:28>
-|     |--Stmt <Stmt -> Stmt_opti_1>
+|     |--Stmt <Stmt -> return Stmt_opti_1 ;>
 |        |--Optional <Stmt_opti_1 -> Expr>
 |           |--Expr <Expr -> MulExpr>
 |              |--MulExpr <MulExpr -> UnaryExpr>
@@ -463,27 +475,27 @@ Program <Program -> Program_star_1>
 |                       |--IntLiteral <IntLiteral -> Integer>
 |                          |--`0` at <52:12>
 |--FuncDef <FuncDef -> FuncDecl Block>
-   |--FuncDecl <FuncDecl -> Ident FuncDecl_opti_1 FuncDecl_opti_2>
+   |--FuncDecl <FuncDecl -> func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2>
    |  |--`add` at <55:8>
    |  |--Optional <FuncDecl_opti_1 -> ParamList>
    |  |  |--ParamList <ParamList -> Param ParamList_star_1>
-   |  |     |--Param <Param -> Ident VarType Param_star_1>
+   |  |     |--Param <Param -> Ident : VarType Param_star_1>
    |  |     |  |--`x` at <55:10>
    |  |     |  |--VarType <VarType -> int>
    |  |     |  |  |--`int` at <55:16>
    |  |     |  |--StarList <Param_star_1 -> >
-   |  |     |--Param <Param -> Ident VarType Param_star_1>
+   |  |     |--Param <Param -> Ident : VarType Param_star_1>
    |  |        |--`y` at <55:19>
    |  |        |--VarType <VarType -> int>
    |  |        |  |--`int` at <55:25>
    |  |        |--StarList <Param_star_1 -> >
-   |  |--Optional <FuncDecl_opti_2 -> VarType>
+   |  |--Optional <FuncDecl_opti_2 -> : VarType>
    |     |--VarType <VarType -> int>
    |        |--`int` at <55:32>
-   |--Block <Block -> Block_star_1>
-      |--Stmt <Stmt -> Stmt_opti_1>
+   |--Block <Block -> { Block_star_1 }>
+      |--Stmt <Stmt -> return Stmt_opti_1 ;>
          |--Optional <Stmt_opti_1 -> Expr>
-            |--Expr <Expr -> Expr MulExpr>
+            |--Expr <Expr -> Expr + MulExpr>
                |--Expr <Expr -> MulExpr>
                |  |--MulExpr <MulExpr -> UnaryExpr>
                |     |--UnaryExpr <UnaryExpr -> Factor>
