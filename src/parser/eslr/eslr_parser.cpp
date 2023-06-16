@@ -275,9 +275,7 @@ pst_tree_ptr_t ExtendedSimpleLR1Parser::reduceCST()
                 assert(node.data.product_opt.has_value());
                 product_t &product = node.data.product_opt.value();
                 symstr_t &right = product.second;
-                // 将产生式简化为仅包含有用信息的产生式
-                reduced_product_t reducedProduct = g.reduceProduct(product);
-                rstNode->attachProduct(reducedProduct);
+                rstNode->attachProduct(product);
                 // 如果产生式右部只有一个终结符，那么将其作为RST节点的数据保留
                 if (right.size() == 1 && _find(terminals, right[0]))
                 {
@@ -420,8 +418,10 @@ pst_tree_ptr_t ExtendedSimpleLR1Parser::refactorRST()
             {
                 assert(node.data.product_opt.has_value());
                 product_t &product = node.data.product_opt.value();
-                symbol_t &left = product.first;
-                symstr_t &right = product.second;
+                // 将产生式简化为仅包含有用信息的产生式
+                reduced_product_t reducedProduct = grammar.reduceProduct(product);
+                symbol_t &left = reducedProduct.first;
+                symstr_t &right = reducedProduct.second;
                 // 记录产生式中特殊非终结符的位置
                 // 特殊非终结符包括：_star_（表示0或多次）、_opti_（表示0或1次）
                 // 这些特殊的非终结符是在EBNF解析的过程中添加的
