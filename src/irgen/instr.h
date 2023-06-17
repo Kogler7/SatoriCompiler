@@ -195,18 +195,18 @@ public:
 
 class FuncInstr : public User
 {
-    type_ptr_t retType;
+    prim_ptr_t retType;
     std::map<std::string, user_ptr_t> params;
     std::list<use_ptr_t> blocks;
 
 public:
-    FuncInstr(std::string name, type_ptr_t retType)
+    FuncInstr(std::string name, prim_ptr_t retType)
         : User(nullptr, std::move(name)), retType(std::move(retType)) {}
     ~FuncInstr() = default;
 
-    type_ptr_t getRetType() { return retType; }
+    prim_ptr_t getRetType() { return retType; }
 
-    bool addParam(type_ptr_t type, std::string name)
+    bool addParam(prim_ptr_t type, std::string name)
     {
         if (params.count(name))
         {
@@ -233,6 +233,30 @@ public:
         return params[name];
     }
 
+    bool match(PrimitiveType::PrimType pType, const std::list<user_ptr_t> params)
+    {
+        if (pType != retType->getType())
+        {
+            return false;
+        }
+        if (params.size() != this->params.size())
+        {
+            return false;
+        }
+        auto it1 = this->params.begin();
+        auto it2 = params.begin();
+        while (it1 != this->params.end())
+        {
+            if (it1->second->getType() != (*it2)->getType())
+            {
+                return false;
+            }
+            ++it1;
+            ++it2;
+        }
+        return true;
+    }
+
     void addBlock(block_ptr_t block) { blocks.push_back(make_use(std::move(block), this)); }
 
     block_ptr_t newBlock(const std::string &name = "")
@@ -252,7 +276,7 @@ class CallInstr : public User
 public:
     CallInstr(func_ptr_t func) : User(func->getRetType(), name), func(std::move(func))
     {
-        const auto &params = this->func->getArgs();
+        // const auto &params = this->func->getParam();
         // for (auto &arg : params)
         // {
         //     this->params.emplace_back(arg, this);

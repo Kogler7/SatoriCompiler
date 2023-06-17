@@ -64,6 +64,8 @@ public:
 
     type_ptr_t getDeRefed() const override { return nullptr; }
 
+    PrimType getType() const { return type; }
+
     OperandType getOpType() const override
     {
         switch (type)
