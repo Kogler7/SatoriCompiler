@@ -90,22 +90,6 @@ bool SLR1Grammar::checkSLR1()
 void SLR1Grammar::calcSLR1Table()
 {
     info << "Calculating SLR(1) table..." << endl;
-    // 填入移进动作
-    for (auto &go : goTrans)
-    {
-        coord_t coord = go.first;
-        state_id_t state = go.second;
-        if (_find(slr1Table, coord))
-        {
-            assert(slr1Table[coord].index() == 2, "Conflict in SLR(1) table!");
-            assert(get<2>(slr1Table[coord]) == state, "Conflict in SLR(1) table!");
-        }
-        else
-        {
-            action_t action(state);
-            slr1Table[coord] = action;
-        }
-    }
     // 填入规约动作
     for (size_t i = 0; i < clusters.size(); i++)
     {
@@ -134,6 +118,78 @@ void SLR1Grammar::calcSLR1Table()
             }
         }
     }
+    // 填入移进动作
+    // 移进在规约之后，可以覆盖规约动作
+    // 也就是说，如果有冲突，移进优先
+    for (auto &go : goTrans)
+    {
+        coord_t coord = go.first;
+        state_id_t state = go.second;
+        if (_find(slr1Table, coord))
+        {
+            warn << "Conflict found in SLR(1) table! Shift action will be applied!" << endl;
+        }
+        action_t action(state);
+        slr1Table[coord] = action;
+    }
+}
+
+void SLR1Grammar::printSLR1TableField(coord_t<state_id_t, symbol_t> c) const
+{
+    tb_head | "State" | "Action/Goto";
+    set_col | table::AL_CTR | table::AL_CTR;
+    new_row | "S" + to_string(c.first);
+    if (_find(slr1Table, c))
+    {
+        action_t action = slr1Table.at(c);
+        if (action.index() == 0)
+            tb_cont | Cell("ACC") & (FORE_GRE | FONT_BOL);
+        else if (action.index() == 1)
+            tb_cont | product2str(get<1>(action));
+        else
+            tb_cont | "S" + to_string(get<2>(action));
+    }
+    else
+        tb_cont | "";
+    cout << tb_view(BDR_ALL);
+}
+
+void SLR1Grammar::printSLR1TableOfState(state_id_t s) const
+{
+    info << "SLR1 table of state " << s << ":" << endl;
+    tb_head | "Symbol" | "Action/Goto" = AL_CTR;
+    tb_line();
+    auto printST = [&](state_id_t s, symbol_t t)
+    {
+        coord_t c(s, t);
+        new_row | t;
+        if (_find(slr1Table, c))
+        {
+            action_t action = slr1Table.at(c);
+            if (action.index() == 0)
+                tb_cont | Cell("ACC") & (FORE_GRE | FONT_BOL);
+            else if (action.index() == 1)
+                tb_cont | product2str(get<1>(action));
+            else
+                tb_cont | "S" + to_string(get<2>(action));
+        }
+        else
+            tb_cont | "";
+    };
+    new_row | MD_TAB | "Action";
+    tb_line();
+    for (auto &t : terminals)
+    {
+        printST(s, t);
+    }
+    tb_line();
+    new_row | MD_TAB | "Goto";
+    tb_line();
+    for (auto &t : nonTerms)
+    {
+        printST(s, t);
+    }
+    cout << tb_view();
 }
 
 void SLR1Grammar::printSLR1Table() const

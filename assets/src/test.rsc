@@ -44,10 +44,10 @@ func main() : int
             {
                 continue;
             }
-            //else
-            //{
-            //    b[i] = b[i] - 1;
-            //}
+            else
+            {
+                b[i] = b[i] - 1;
+            }
         }
     }
 

@@ -32,7 +32,10 @@ void eslrTest()
     // G.printClusters();
     // G.printGoTrans();
     // G.printSLR1Table();
-    assert(G.checkSLR1(), "Not SLR(1) grammar!");
+    // assert(G.checkSLR1(), "Not SLR(1) grammar!");
+    G.checkSLR1();
+    G.printSLR1TableField({150, "else"});
+    G.printSLR1TableOfState(150);
     ESLR1Parser eslr1(G);
     // Lexer lexer("./assets/lex/func.lex");
     // Viewer code = Viewer::fromFile("./assets/src/func.txt");

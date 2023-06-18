@@ -32,6 +32,8 @@ public:
     }
     table_t<state_id_t, symbol_t, action_t> slr1Table;
     void printSLR1Table() const;
+    void printSLR1TableField(coord_t<state_id_t, symbol_t> c) const;
+    void printSLR1TableOfState(state_id_t s) const;
     void printSLR1Table(coord_t<state_id_t, symbol_t> c) const;
     void printLargeSLR1Table() const;
 };
