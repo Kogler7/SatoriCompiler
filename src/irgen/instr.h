@@ -14,6 +14,7 @@
 #include "use.h"
 #include "utils/log.h"
 
+#include <map>
 #include <list>
 #include <vector>
 
@@ -216,9 +217,9 @@ public:
         return true;
     }
 
-    void addParams(std::list<user_ptr_t> argList)
+    void addParams(std::list<user_ptr_t> pList)
     {
-        for (auto &arg : argList)
+        for (auto &arg : pList)
         {
             params[arg->getName()] = arg;
         }
@@ -233,18 +234,19 @@ public:
         return params[name];
     }
 
-    bool match(PrimitiveType::PrimType pType, const std::list<user_ptr_t> params)
+    bool matchRetType(PrimitiveType::PrimType pType)
     {
-        if (pType != retType->getType())
-        {
-            return false;
-        }
-        if (params.size() != this->params.size())
+        return pType == retType->getType();
+    }
+
+    bool matchArgs(const std::list<user_ptr_t> args)
+    {
+        if (args.size() != this->params.size())
         {
             return false;
         }
         auto it1 = this->params.begin();
-        auto it2 = params.begin();
+        auto it2 = args.begin();
         while (it1 != this->params.end())
         {
             if (it1->second->getType() != (*it2)->getType())
@@ -272,17 +274,16 @@ public:
 class CallInstr : public User
 {
     func_ptr_t func;
+    std::list<user_ptr_t> args;
 
 public:
-    CallInstr(func_ptr_t func) : User(func->getRetType(), name), func(std::move(func))
-    {
-        // const auto &params = this->func->getParam();
-        // for (auto &arg : params)
-        // {
-        //     this->params.emplace_back(arg, this);
-        // }
-    }
+    CallInstr(func_ptr_t func) : User(func->getRetType(), name), func(func) {}
     ~CallInstr() = default;
+
+    void addArgs(std::list<user_ptr_t> argList)
+    {
+        args.splice(args.end(), argList);
+    }
 
     std::string dump() const override;
 };

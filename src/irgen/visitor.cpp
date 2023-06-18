@@ -175,7 +175,8 @@ StmtRetInfo RSCVisitor::visitFuncDef(pst_node_ptr_t node)
         assert(is_alpha(paramsInfo), "param list return info should be alpha");
 
         assert(
-            func->match(PrimitiveType::str2type(retTypeStr), get_alpha(paramsInfo).list),
+            func->matchRetType(PrimitiveType::str2type(retTypeStr)) &&
+                func->matchArgs(get_alpha(paramsInfo).list),
             "function declaration and definition mismatch.");
     }
 
@@ -191,31 +192,105 @@ StmtRetInfo RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     // 下面开始构建函数定义
 
     // 首先构建函数的入口基本块 entry basic block
-    block_ptr_t entry = make_block("entry");
+    block_ptr_t entryBB = make_block("entry");
     // 将函数体内变量的内存分配指令追加到entry之后
     std::vector<alloc_ptr_t> vars = context.symbolTable.popScope();
     for (alloc_ptr_t var : vars)
     {
-        entry->addInstr(var);
+        entryBB->addInstr(var);
     }
     // 为函数返回值分配内存
     alloc_ptr_t retAlloc = make_alloc("retval", func->getRetType());
-    entry->addInstr(retAlloc);
+    entryBB->addInstr(retAlloc);
 
     // 构建函数的出口基本块 exit basic block
-    block_ptr_t exit = make_block("exit");
+    block_ptr_t exitBB = make_block("exit");
     // 为函数返回值赋值
     load_ptr_t loadInstr = make_load(retAlloc);
+    ret_ptr_t retInstr = make_ret(loadInstr);
+    exitBB->addInstr(loadInstr);
+    exitBB->addInstr(retInstr);
+
+    // 构建函数的主体基本块 main basic block
+    block_ptr_t mainBB = make_block("main");
+    for (auto &instr : block.list)
+    {
+        mainBB->addInstr(instr);
+    }
+    block.jmpInstr->setTarget(exitBB);
+    entryBB->addInstr(make_br(mainBB));
+
+    // 将entry, main, exit基本块追加到函数中
+    func->addBlock(entryBB);
+    func->addBlock(mainBB);
+    func->addBlock(exitBB);
+
+    return AlphaStmtRetInfo{std::list<user_ptr_t>{func}};
 }
 
+// FuncCall -> ident ( [ArgList] )
 StmtRetInfo RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 获取ident和ArgList
+    std::string ident = node->getChildAt(0)->data.symbol;
+    if (ident == "print")
+    {
+        // print函数是内置函数，暂时不生成IR
+        warn << "print function is not supported yet" << std::endl;
+        return AlphaStmtRetInfo();
+    }
+    // 查看函数是否已经声明
+    func_ptr_t func = context.functionTable.find(ident);
+    assert(func != nullptr, "function has not been declared");
+
+    pst_node_ptr_t argListNode = node->getChildAt(1);
+
+    AlphaStmtRetInfo retInfo;
+    // 解析ArgList
+    auto argListInfo = visitArgList(argListNode);
+    assert(is_alpha(argListInfo), "arg list return info should be alpha");
+
+    retInfo.list.splice(retInfo.list.end(), get_alpha(argListInfo).list);
+
+    // 生成call指令并追加到list之后
+    call_ptr_t callInstr = make_call(func);
+    instr_list_t &list = get_alpha(argListInfo).list;
+    // 做一步类型转换，将list转换为list<user_ptr_t>
+    std::list<user_ptr_t> args(list.begin(), list.end());
+
+    // 检查参数列表是否匹配
+    assert(func->matchArgs(args), "function call and declaration mismatch");
+
+    callInstr->addArgs(args);
+    retInfo.list.push_back(callInstr);
+
+    return retInfo;
 }
 
+// ArgList -> { Expr }
 StmtRetInfo RSCVisitor::visitArgList(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 获取Expr列表，遍历处理即可
+    // 将Expr的结果追加到list之后
+    // 将每个Expr的结果列表单独放到context中传递
+    AlphaStmtRetInfo retInfo;
+    pst_children_t children = node->getChildren();
+
+    context.allocList.clear();
+
+    for (pst_node_ptr_t child : children)
+    {
+        auto exprInfo = visitExpr(child);
+        assert(is_alpha(exprInfo), "expr return info should be alpha");
+        instr_list_t &list = get_alpha(exprInfo).list;
+
+        retInfo.list.splice(retInfo.list.end(), list);
+
+        // 一般来讲，Expr的结果列表的最后一个元素就是Expr的结果
+        context.allocList.push_back(dynamic_pointer_cast<AllocInstr>(list.back()));
+    }
+
+    return retInfo;
 }
 
 // ParamList -> { Param }

@@ -21,11 +21,7 @@ class Context
 {
 public:
     program_ptr_t programSsa;
-    func_ptr_t funcSsa;
-    alloc_ptr_t retVal;
-    block_ptr_t entryBb;
-    block_ptr_t exitBb;
-    std::vector<alloc_ptr_t> allocList;
+    std::list<alloc_ptr_t> allocList;
 	SymbolTable symbolTable;
     FunctionTable functionTable;
 	void clear();

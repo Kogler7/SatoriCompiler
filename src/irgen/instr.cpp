@@ -63,10 +63,13 @@ std::string GEPInstr::dump() const { return "not implemented."; }
 std::string FuncInstr::dump() const
 {
     std::string s = format("define $ $(", retType->dump(), name);
-    // for (auto &arg : params)
-    // {
-    //     s += format("$ $, ", arg->getType()->dump(), arg->getName());
-    // }
+    for (auto it = params.begin(); it != params.end(); ++it)
+    {
+        user_ptr_t param = it->second;
+        s += param->getType()->dump() + " " + param->getName();
+        if (it != std::prev(params.end()))
+            s += ", ";
+    }
     s += ") {\n";
     for (auto &block : blocks)
     {
@@ -79,10 +82,12 @@ std::string FuncInstr::dump() const
 std::string CallInstr::dump() const
 {
     std::string s = format("\t$ = call $(", getValueTag(this), func->getName());
-    // for (auto &arg : params)
-    // {
-    //     s += format("$ $, ", arg->getType()->dump(), arg->getName());
-    // }
+    for (auto it = args.begin(); it != args.end(); ++it)
+    {
+        s += getValueTag(it->get());
+        if (it != std::prev(args.end()))
+            s += ", ";
+    }
     s += ")\n";
     return s;
 }

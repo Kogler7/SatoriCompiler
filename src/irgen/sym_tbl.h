@@ -50,7 +50,7 @@ public:
         return nullptr;
     }
     [[nodiscard]] bool has(const std::string &name) const { return table.find(name) != table.end(); }
-    [[nodiscard]] func_ptr_t registerFunction(const std::string &name, type_ptr_t type)
+    [[nodiscard]] func_ptr_t registerFunction(const std::string &name, prim_ptr_t type)
     {
         func_ptr_t func = make_func(name, type);
         table.insert({name, func});
