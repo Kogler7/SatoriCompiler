@@ -42,9 +42,11 @@ public:
 	VisitorRetInfo &unionInfo(VisitorRetInfo &another);
 
 	target_list_t &getTargetsOf(JumpReason reason);
+
+	VisitorRetInfo & backpatch(JumpReason reason, block_ptr_t instr);
 };
 
-using ret_info = VisitorRetInfo;
+using ret_info_t = VisitorRetInfo;
 
 template<typename T>
 inline std::list<T> &list_concat(std::list<T> &list1, std::list<T> &list2)

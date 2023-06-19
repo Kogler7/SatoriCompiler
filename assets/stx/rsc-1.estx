@@ -38,7 +38,7 @@ GRAMMAR ${
                     |   VarDeclStmt                                                         : SemVarDeclStmt
                     |   `if` `(` BoolExpr `)` Stmt [ `else` Stmt ]                          : SemIfStmt
                     |   `while` `(` BoolExpr `)` Stmt                                       : SemWhileStmt
-                    |   `for` `(` ( VarDecl | Expr ) `;` BoolExpr `;` Assignment `)` Stmt   : SemForStmt
+                    |   `for` `(` [ VarDecl | Assignment ] `;` [ BoolExpr ] `;` [ Assignment ] `)` Stmt   : SemForStmt
                     |   `break` `;`                                                         : SemBreakStmt
                     |   `continue` `;`                                                      : SemContinueStmt
                     |   `print` Expr `;`                                                    : SemPrintStmt

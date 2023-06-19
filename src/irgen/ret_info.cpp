@@ -97,3 +97,12 @@ VisitorRetInfo &VisitorRetInfo::unionInfo(VisitorRetInfo &another)
         gotoListMap[p.first].splice(gotoListMap[p.first].end(), p.second);
     return *this;
 }
+
+VisitorRetInfo & VisitorRetInfo::backpatch(JumpReason reason, block_ptr_t instr)
+{
+    target_list_t &list = getTargetsOf(reason);
+    for (auto &target : list)
+        target->patch(instr);
+    list.clear();
+    return *this;
+}

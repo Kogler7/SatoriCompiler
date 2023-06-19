@@ -21,44 +21,44 @@ class RSCVisitor
     Context context;
 
 public:
-    ret_info visitProgram(pst_node_ptr_t node);
+    ret_info_t visitProgram(pst_node_ptr_t node);
 
-    ret_info visitVarDeclStmt(pst_node_ptr_t node);
-    ret_info visitVarDecl(pst_node_ptr_t node);
-    ret_info visitVarDef(pst_node_ptr_t node);
+    ret_info_t visitVarDeclStmt(pst_node_ptr_t node);
+    ret_info_t visitVarDecl(pst_node_ptr_t node);
+    ret_info_t visitVarDef(pst_node_ptr_t node);
 
-    ret_info visitInitVal(pst_node_ptr_t node);
+    ret_info_t visitInitVal(pst_node_ptr_t node);
 
-    ret_info visitFuncDeclStmt(pst_node_ptr_t node);
-    ret_info visitFuncDecl(pst_node_ptr_t node);
-    ret_info visitFuncDef(pst_node_ptr_t node);
-    ret_info visitFuncCall(pst_node_ptr_t node);
+    ret_info_t visitFuncDeclStmt(pst_node_ptr_t node);
+    ret_info_t visitFuncDecl(pst_node_ptr_t node);
+    ret_info_t visitFuncDef(pst_node_ptr_t node);
+    ret_info_t visitFuncCall(pst_node_ptr_t node);
 
-    ret_info visitArgList(pst_node_ptr_t node);
-    ret_info visitParamList(pst_node_ptr_t node);
-    ret_info visitParam(pst_node_ptr_t node);
+    ret_info_t visitArgList(pst_node_ptr_t node);
+    ret_info_t visitParamList(pst_node_ptr_t node);
+    ret_info_t visitParam(pst_node_ptr_t node);
 
-    ret_info visitStmt(pst_node_ptr_t node);
-    ret_info visitBlock(pst_node_ptr_t node);
-    ret_info visitAssignment(pst_node_ptr_t node);
-    ret_info visitIfStmt(pst_node_ptr_t node);
-    ret_info visitWhileStmt(pst_node_ptr_t node);
-    ret_info visitForStmt(pst_node_ptr_t node);
-    ret_info visitBreakStmt(pst_node_ptr_t node);
-    ret_info visitContinueStmt(pst_node_ptr_t node);
-    ret_info visitReturnStmt(pst_node_ptr_t node);
-    ret_info visitExprStmt(pst_node_ptr_t node);
+    ret_info_t visitStmt(pst_node_ptr_t node);
+    ret_info_t visitBlock(pst_node_ptr_t node);
+    ret_info_t visitAssignment(pst_node_ptr_t node);
+    ret_info_t visitIfStmt(pst_node_ptr_t node);
+    ret_info_t visitWhileStmt(pst_node_ptr_t node);
+    ret_info_t visitForStmt(pst_node_ptr_t node);
+    ret_info_t visitBreakStmt(pst_node_ptr_t node);
+    ret_info_t visitContinueStmt(pst_node_ptr_t node);
+    ret_info_t visitReturnStmt(pst_node_ptr_t node);
+    ret_info_t visitExprStmt(pst_node_ptr_t node);
 
-    ret_info visitUnaryExpr(pst_node_ptr_t node);
-    ret_info visitMulExpr(pst_node_ptr_t node);
-    ret_info visitExpr(pst_node_ptr_t node);
-    ret_info visitRelExpr(pst_node_ptr_t node);
-    ret_info visitAndExpr(pst_node_ptr_t node);
-    ret_info visitOrExpr(pst_node_ptr_t node);
-    ret_info visitBoolExpr(pst_node_ptr_t node);
+    ret_info_t visitUnaryExpr(pst_node_ptr_t node);
+    ret_info_t visitMulExpr(pst_node_ptr_t node);
+    ret_info_t visitExpr(pst_node_ptr_t node);
+    ret_info_t visitRelExpr(pst_node_ptr_t node);
+    ret_info_t visitAndExpr(pst_node_ptr_t node);
+    ret_info_t visitOrExpr(pst_node_ptr_t node);
+    ret_info_t visitBoolExpr(pst_node_ptr_t node);
 
     // factors
-    ret_info visitFactor(pst_node_ptr_t node);
-    ret_info visitLVal(pst_node_ptr_t node);
-    ret_info visitLiteral(pst_node_ptr_t node);
+    ret_info_t visitFactor(pst_node_ptr_t node);
+    ret_info_t visitLVal(pst_node_ptr_t node);
+    ret_info_t visitLiteral(pst_node_ptr_t node);
 };

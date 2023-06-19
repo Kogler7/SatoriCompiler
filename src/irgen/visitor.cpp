@@ -27,7 +27,7 @@ inline std::string getProSymAt(pst_node_ptr_t node, size_t idx)
 }
 
 // Program -> { VarDeclStmt | FuncDeclStmt | FuncDef }
-ret_info RSCVisitor::visitProgram(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitProgram(pst_node_ptr_t node)
 {
     pst_children_t children = node->getChildren();
 
@@ -54,21 +54,21 @@ ret_info RSCVisitor::visitProgram(pst_node_ptr_t node)
 }
 
 // VarDeclStmt -> VarDecl ;
-ret_info RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node)
 {
     return visitVarDecl(node->firstChild());
 }
 
 // VarDecl -> { VarDef }
-ret_info RSCVisitor::visitVarDecl(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node)
 {
-    ret_info retInfo;
+    ret_info_t retInfo;
     // 获取VarDef列表，遍历处理即可
     pst_children_t children = node->getChildren();
 
     for (pst_node_ptr_t child : children)
     {
-        ret_info varInfo = visitVarDef(child);
+        ret_info_t varInfo = visitVarDef(child);
         // 将VarDef的结果追加到list之后
         retInfo.appendInstrList(varInfo.instrList);
     }
@@ -76,7 +76,7 @@ ret_info RSCVisitor::visitVarDecl(pst_node_ptr_t node)
 }
 
 // VarDef -> ident : Type
-ret_info RSCVisitor::visitVarDef(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node)
 {
     // 获取ident和Type
     // 暂时不考虑数组，因此剩余子节点暂时不处理
@@ -86,11 +86,11 @@ ret_info RSCVisitor::visitVarDef(pst_node_ptr_t node)
     type_ptr_t type = make_prime_type(PrimitiveType::str2type(typeStr));
     alloc_ptr_t alloc = context.symbolTable.registerSymbol(identStr, type);
 
-    return ret_info{instr_list_t{alloc}};
+    return ret_info_t{instr_list_t{alloc}};
 }
 
 // InitVal -> Expr | { Expr }
-ret_info RSCVisitor::visitInitVal(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitInitVal(pst_node_ptr_t node)
 {
     // 暂时不考虑数组，因此只需要处理Expr即可
     if (node->childrenCount() == 1)
@@ -98,17 +98,17 @@ ret_info RSCVisitor::visitInitVal(pst_node_ptr_t node)
         // InitVal -> Expr
         return visitExpr(node->firstChild());
     }
-    return ret_info();
+    return ret_info_t();
 }
 
 // FuncDeclStmt -> FuncDecl ;
-ret_info RSCVisitor::visitFuncDeclStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitFuncDeclStmt(pst_node_ptr_t node)
 {
     return visitFuncDecl(node->firstChild());
 }
 
 // FuncDecl -> ident ( [ParamList] ) [: Type] ;
-ret_info RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
 {
     pst_children_t children = node->getChildren();
 
@@ -136,15 +136,15 @@ ret_info RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
     func_ptr_t func = context.functionTable.registerFunction(identStr, retType);
 
     // 解析参数列表，为函数添加参数
-    ret_info paramsInfo = visitParamList(paramsNode);
+    ret_info_t paramsInfo = visitParamList(paramsNode);
 
     func->addParams(paramsInfo.instrList);
 
-    return ret_info{instr_list_t{func}};
+    return ret_info_t{instr_list_t{func}};
 }
 
 // FuncDef -> FuncDecl Block
-ret_info RSCVisitor::visitFuncDef(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
 {
     // 首先检查函数是否已经声明
     // 如果已经声明，则需要对比函数声明和函数定义是否一致
@@ -157,7 +157,7 @@ ret_info RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     if (func == nullptr)
     {
         // 函数未声明，直接注册函数
-        ret_info funcInfo = visitFuncDecl(funcDeclNode);
+        ret_info_t funcInfo = visitFuncDecl(funcDeclNode);
 
         func = dynamic_pointer_cast<FuncInstr>(funcInfo.instrList.back());
     }
@@ -165,7 +165,7 @@ ret_info RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     {
         // 函数已声明，检查函数声明和函数定义是否一致
         const std::string &retTypeStr = funcDeclNode->getChildAt(2)->data.symbol;
-        ret_info paramsInfo = visitParamList(funcDeclNode->getChildAt(1));
+        ret_info_t paramsInfo = visitParamList(funcDeclNode->getChildAt(1));
 
         assert(
             func->matchRetType(PrimitiveType::str2type(retTypeStr)) &&
@@ -176,12 +176,12 @@ ret_info RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     // 新建作用域，访问解析函数体
     context.symbolTable.newScope();
     pst_node_ptr_t blockNode = node->getChildAt(1);
-    ret_info blockInfo = visitBlock(blockNode);
+    ret_info_t blockInfo = visitBlock(blockNode);
 
     // 下面开始构建函数定义
 
     // 首先构建函数的入口基本块 entry basic block
-    block_ptr_t entryBB = make_block("entry");
+    block_ptr_t entryBB = make_block("func_entry");
     // 将函数体内变量的内存分配指令追加到entry之后
     std::vector<alloc_ptr_t> vars = context.symbolTable.popScope();
     for (alloc_ptr_t var : vars)
@@ -193,7 +193,7 @@ ret_info RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     entryBB->addInstr(retAlloc);
 
     // 构建函数的出口基本块 exit basic block
-    block_ptr_t exitBB = make_block("exit");
+    block_ptr_t exitBB = make_block("func_exit");
     // 为函数返回值赋值
     load_ptr_t loadInstr = make_load(retAlloc);
     ret_ptr_t retInstr = make_ret(loadInstr);
@@ -201,7 +201,7 @@ ret_info RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     exitBB->addInstr(retInstr);
 
     // 构建函数的主体基本块 main basic block
-    block_ptr_t mainBB = make_block("main");
+    block_ptr_t mainBB = make_block("func_body");
     mainBB->addInstrList(blockInfo.instrList);
     entryBB->addInstr(make_br(mainBB));
 
@@ -210,11 +210,11 @@ ret_info RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     func->addBlock(mainBB);
     func->addBlock(exitBB);
 
-    return ret_info{std::list<user_ptr_t>{func}};
+    return ret_info_t{std::list<user_ptr_t>{func}};
 }
 
 // FuncCall -> ident ( [ArgList] )
-ret_info RSCVisitor::visitFuncCall(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 {
     // 获取ident和ArgList
     std::string ident = node->getChildAt(0)->data.symbol;
@@ -222,7 +222,7 @@ ret_info RSCVisitor::visitFuncCall(pst_node_ptr_t node)
     {
         // print函数是内置函数，暂时不生成IR
         warn << "print function is not supported yet" << std::endl;
-        return ret_info();
+        return ret_info_t();
     }
     // 查看函数是否已经声明
     func_ptr_t func = context.functionTable.find(ident);
@@ -230,7 +230,7 @@ ret_info RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 
     pst_node_ptr_t argListNode = node->getChildAt(1);
 
-    ret_info retInfo;
+    ret_info_t retInfo;
     // 解析ArgList
     auto argListInfo = visitArgList(argListNode);
     instr_list_t &list = argListInfo.instrList;
@@ -251,12 +251,12 @@ ret_info RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 }
 
 // ArgList -> { Expr }
-ret_info RSCVisitor::visitArgList(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitArgList(pst_node_ptr_t node)
 {
     // 获取Expr列表，遍历处理即可
     // 将Expr的结果追加到list之后
     // 将每个Expr的结果列表单独放到context中传递
-    ret_info retInfo;
+    ret_info_t retInfo;
     pst_children_t children = node->getChildren();
 
     for (pst_node_ptr_t child : children)
@@ -270,15 +270,15 @@ ret_info RSCVisitor::visitArgList(pst_node_ptr_t node)
 }
 
 // ParamList -> { Param }
-ret_info RSCVisitor::visitParamList(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitParamList(pst_node_ptr_t node)
 {
     // 获取Param列表，遍历处理即可
-    ret_info retInfo;
+    ret_info_t retInfo;
     pst_children_t children = node->getChildren();
 
     for (pst_node_ptr_t child : children)
     {
-        ret_info paramInfo = visitParam(child);
+        ret_info_t paramInfo = visitParam(child);
         // 这里只保留值，不保留指令
         retInfo.addValue(paramInfo.getValue());
     }
@@ -287,7 +287,7 @@ ret_info RSCVisitor::visitParamList(pst_node_ptr_t node)
 }
 
 // Param -> ident : Type
-ret_info RSCVisitor::visitParam(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
 {
     // 获取ident和Type
     // 暂时不考虑数组，因此剩余子节点暂时不处理
@@ -297,24 +297,24 @@ ret_info RSCVisitor::visitParam(pst_node_ptr_t node)
     type_ptr_t type = make_prime_type(PrimitiveType::str2type(typeStr));
     alloc_ptr_t value = make_alloc(identStr, type);
 
-    return ret_info().setValue(value); // 空指令列表，值为value
+    return ret_info_t().setValue(value); // 空指令列表，值为value
 }
 
-ret_info RSCVisitor::visitStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitStmt(pst_node_ptr_t node)
 {
-    return ret_info();
+    return ret_info_t();
 }
 
 // Block -> { Stmt }
-ret_info RSCVisitor::visitBlock(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitBlock(pst_node_ptr_t node)
 {
     // 遍历Stmt列表，处理每个Stmt
     // 将每个Stmt的结果追加到list之后
-    ret_info retInfo;
+    ret_info_t retInfo;
     pst_children_t children = node->getChildren();
     for (pst_node_ptr_t child : children)
     {
-        ret_info stmtInfo = visitStmt(child);
+        ret_info_t stmtInfo = visitStmt(child);
         // 将Stmt的所有信息整合到retInfo中
         retInfo.unionInfo(stmtInfo);
     }
@@ -322,11 +322,11 @@ ret_info RSCVisitor::visitBlock(pst_node_ptr_t node)
 }
 
 // Assignment -> ident = Expr ;
-ret_info RSCVisitor::visitAssignment(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitAssignment(pst_node_ptr_t node)
 {
     // 获取ident和Expr
     std::string identStr = node->getChildAt(0)->data.symbol;
-    ret_info exprInfo = visitExpr(node->getChildAt(1));
+    ret_info_t exprInfo = visitExpr(node->getChildAt(1));
 
     // 获取ident对应的内存分配指令
     alloc_ptr_t alloc = context.symbolTable.find(identStr);
@@ -341,10 +341,10 @@ ret_info RSCVisitor::visitAssignment(pst_node_ptr_t node)
 }
 
 // IfStmt -> if ( BoolExpr ) Stmt [else Stmt]
-ret_info RSCVisitor::visitIfStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
 {
     // 直接将BoolExpr返回值作为If返回info
-    ret_info retInfo = visitBoolExpr(node->getChildAt(0));
+    ret_info_t retInfo = visitBoolExpr(node->getChildAt(0));
     // 将BoolExpr内容追加到list之后
     retInfo.appendInstrList(retInfo.instrList);
 
@@ -357,7 +357,7 @@ ret_info RSCVisitor::visitIfStmt(pst_node_ptr_t node)
     retInfo.addInstr(stmtBB);
 
     // 获取else Stmt
-    ret_info elseStmtInfo = visitStmt(node->getChildAt(2));
+    ret_info_t elseStmtInfo = visitStmt(node->getChildAt(2));
     // 生成jmp指令并追加到list之后
     jmp_ptr_t jmpInstr = make_jmp();
     elseStmtInfo.addInstr(jmpInstr);
@@ -369,69 +369,143 @@ ret_info RSCVisitor::visitIfStmt(pst_node_ptr_t node)
     retInfo.addInstr(elseStmtBB);
 
     // 绑定条件的真假出口
-    for (auto &target : retInfo.getTargetsOf(JR_TRUE_EXIT))
-    {
-        target->patch(stmtBB);
-    }
-    for (auto &target : retInfo.getTargetsOf(JR_FALSE_EXIT))
-    {
-        target->patch(elseStmtBB);
-    }
+    retInfo.backpatch(JR_TRUE_EXIT, stmtBB);
+    retInfo.backpatch(JR_FALSE_EXIT, elseStmtBB);
 
     return retInfo;
 }
 
 // WhileStmt -> while ( BoolExpr ) Stmt
-ret_info RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
 {
     context.symbolTable.newScope();
-    ret_info retInfo;
+    ret_info_t retInfo;
 
-    // 获取BoolExpr
-    ret_info boolExprInfo = visitBoolExpr(node->getChildAt(0));
+    // 获取BoolExpr，构造cond基本块
+    ret_info_t boolExprInfo = visitBoolExpr(node->getChildAt(0));
+    block_ptr_t condBB = make_block("while_cond");
+    condBB->addInstrList(boolExprInfo.instrList);
+    retInfo.addInstr(condBB);
 
-    // 获取Stmt
-    ret_info stmtInfo = visitStmt(node->getChildAt(1));
+    // 获取Stmt，构造stmt基本块
+    ret_info_t stmtInfo = visitStmt(node->getChildAt(1));
     block_ptr_t stmtBB = make_block("while_stmt");
+    stmtBB->addInstrList(stmtInfo.instrList);
+    retInfo.addInstr(stmtBB);
 
-    for (auto &instr : stmtInfo.instrList)
-    {
-        stmtBB->addInstr(instr);
-    }
-
+    // 回填BoolExpr的真出口，指向stmtBB
     for (auto &target : boolExprInfo.getTargetsOf(JR_TRUE_EXIT))
     {
         target->patch(stmtBB);
     }
 
+    // BoolExpr的假出口，指向while循环的出口（Fall through）
+    retInfo.appendJmpList(boolExprInfo.getTargetsOf(JR_FALSE_EXIT), JR_FALL_THROUGH);
+
+    // 回填Stmt中的break，指向while循环的出口（Fall through）
+    retInfo.appendJmpList(stmtInfo.getTargetsOf(JR_BREAK_OUT), JR_FALL_THROUGH);
+
+    // 回填Stmt中的continue，指向entryBB
+    stmtInfo.backpatch(JR_CONTINUE, condBB);
+
+    // while最后跳转到condBB
+    retInfo.addInstr(make_br(condBB));
+
+    context.symbolTable.popScope();
     return retInfo;
 }
 
-ret_info RSCVisitor::visitForStmt(pst_node_ptr_t node)
+// ForStmt -> for ( [VarDecl|Assignment] ; [BoolExpr] ; [Assignment] ) Stmt
+ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
 {
-    return ret_info();
+    context.symbolTable.newScope();
+    ret_info_t retInfo;
+
+    block_ptr_t initBB = make_block("for_init");
+    block_ptr_t condBB = make_block("for_cond");
+    block_ptr_t stmtBB = make_block("for_stmt");
+    block_ptr_t lastBB = make_block("for_last");
+
+    // 解析VarDecl|Assignment
+    pst_node_ptr_t varDeclOrAssignNode = node->getChildAt(0);
+    if (varDeclOrAssignNode->hasChild())
+    {
+        pst_node_ptr_t initNode = varDeclOrAssignNode->firstChild();
+        if (initNode->data.symbol == "VarDecl")
+        {
+            // VarDecl
+            ret_info_t varDeclInfo = visitVarDecl(initNode);
+            initBB->addInstrList(varDeclInfo.instrList);
+        }
+        else
+        {
+            // Assignment
+            ret_info_t assignInfo = visitAssignment(initNode);
+            initBB->addInstrList(assignInfo.instrList);
+        }
+        retInfo.addInstr(initBB);
+    }
+
+    // 解析BoolExpr
+    pst_node_ptr_t boolExprNode = node->getChildAt(1);
+    if (boolExprNode->hasChild())
+    {
+        ret_info_t boolExprInfo = visitBoolExpr(boolExprNode->firstChild());
+        condBB->addInstrList(boolExprInfo.instrList);
+        retInfo.addInstr(condBB);
+
+        // 回填BoolExpr的真出口，指向stmtBB
+        boolExprInfo.backpatch(JR_TRUE_EXIT, stmtBB);
+
+        // BoolExpr的假出口，指向for循环的出口（Fall through）
+        retInfo.appendJmpList(boolExprInfo.getTargetsOf(JR_FALSE_EXIT), JR_FALL_THROUGH);
+    }
+
+    // 解析Assignment
+    pst_node_ptr_t assignNode = node->getChildAt(2);
+    if (assignNode->hasChild())
+    {
+        ret_info_t assignInfo = visitAssignment(assignNode->firstChild());
+        lastBB->addInstrList(assignInfo.instrList);
+    }
+    lastBB->addInstr(make_br(condBB));
+    retInfo.addInstr(lastBB);
+
+    // 解析Stmt
+    pst_node_ptr_t stmtNode = node->getChildAt(3);
+    ret_info_t stmtInfo = visitStmt(stmtNode);
+    stmtBB->addInstrList(stmtInfo.instrList);
+    retInfo.addInstr(stmtBB);
+
+    // 处理Stmt中的break，指向for循环的出口（Fall through）
+    retInfo.appendJmpList(stmtInfo.getTargetsOf(JR_BREAK_OUT), JR_FALL_THROUGH);
+
+    // 回填Stmt中的continue，指向lastBB
+    stmtInfo.backpatch(JR_CONTINUE, lastBB);
+
+    return retInfo;
 }
 
 // Stmt -> break ;
-ret_info RSCVisitor::visitBreakStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitBreakStmt(pst_node_ptr_t node)
 {
     jmp_ptr_t instr = make_jmp();
-    ret_info retInfo{{instr}};
+    ret_info_t retInfo{{instr}};
     retInfo.addJmpTarget(instr, JR_BREAK_OUT);
     return retInfo;
 }
 
 // Stmt -> continue ;
-ret_info RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
 {
     jmp_ptr_t instr = make_jmp();
-    ret_info retInfo{{instr}};
+    ret_info_t retInfo{{instr}};
     retInfo.addJmpTarget(instr, JR_CONTINUE);
     return retInfo;
 }
 
 // Stmt -> return [Expr] ;
-ret_info RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
 {
     size_t childSum = node->childrenCount();
     assert(childSum == 1, "return stmt should have 1 child(ren)");
@@ -448,17 +522,17 @@ ret_info RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
         ret_ptr_t retInstr = make_ret(list.back());
         list.push_back(retInstr);
 
-        return ret_info{list};
+        return ret_info_t{list};
     }
     else
     {
         // Optional -> ;
-        return ret_info{instr_list_t{make_ret()}};
+        return ret_info_t{instr_list_t{make_ret()}};
     }
 }
 
 // Stmt -> Expr ;
-ret_info RSCVisitor::visitExprStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitExprStmt(pst_node_ptr_t node)
 {
     size_t childSum = node->childrenCount();
     assert(childSum == 1, "expr stmt should have 1 child(ren)");
@@ -470,11 +544,11 @@ ret_info RSCVisitor::visitExprStmt(pst_node_ptr_t node)
         return visitExpr(child->firstChild());
     }
 
-    return ret_info(); // 不可能执行到这里
+    return ret_info_t(); // 不可能执行到这里
 }
 
 // UnaryExpr -> ( `+` | `-` | `!` ) UnaryExpr | Factor
-ret_info RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
 {
     pst_node_ptr_t child = node->firstChild();
     if (child->data.symbol == "Factor")
@@ -483,7 +557,7 @@ ret_info RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
         return visitFactor(child);
     }
     // ( `+` | `-` | `!` ) UnaryExpr
-    ret_info exprInfo = visitUnaryExpr(child);
+    ret_info_t exprInfo = visitUnaryExpr(child);
 
     // 目前仅支持 - 操作，+ 和 ! 操作暂不支持
     auto op = getProSymAt(node, 0); // + | - | !
@@ -499,7 +573,7 @@ ret_info RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
 }
 
 // MulExpr -> MulExpr ( `*` | `/` | `%` ) UnaryExpr | UnaryExpr
-ret_info RSCVisitor::visitMulExpr(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 {
     pst_node_ptr_t child = node->firstChild();
     if (child->data.symbol == "UnaryExpr")
@@ -544,7 +618,7 @@ ret_info RSCVisitor::visitMulExpr(pst_node_ptr_t node)
         exit(1);
     }
 
-    ret_info retInfo{list_concat(lhsInfo.instrList, rhsInfo.instrList)};
+    ret_info_t retInfo{list_concat(lhsInfo.instrList, rhsInfo.instrList)};
     retInfo.addInstr(instr);
     retInfo.setValue(instr);
 
@@ -552,7 +626,7 @@ ret_info RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 }
 
 // Expr -> Expr ( `+` | `-` ) MulExpr | MulExpr
-ret_info RSCVisitor::visitExpr(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitExpr(pst_node_ptr_t node)
 {
     pst_node_ptr_t child = node->firstChild();
     if (child->data.symbol == "MulExpr")
@@ -594,7 +668,7 @@ ret_info RSCVisitor::visitExpr(pst_node_ptr_t node)
         exit(1);
     }
 
-    ret_info retInfo{list_concat(lhsInfo.instrList, rhsInfo.instrList)};
+    ret_info_t retInfo{list_concat(lhsInfo.instrList, rhsInfo.instrList)};
     retInfo.addInstr(instr);
     retInfo.setValue(instr);
 
@@ -602,7 +676,7 @@ ret_info RSCVisitor::visitExpr(pst_node_ptr_t node)
 }
 
 // RelExpr -> Expr ( `<` | `<=` | `>` | `>=` | `==` | `!=` ) Expr | Expr
-ret_info RSCVisitor::visitRelExpr(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitRelExpr(pst_node_ptr_t node)
 {
     // 在这一步，将底层传来的AlphaStmtRetInfo转换为BetaStmtRetInfo
     // 构造跳转指令，构造BasicBlock
@@ -617,7 +691,7 @@ ret_info RSCVisitor::visitRelExpr(pst_node_ptr_t node)
     {
         // 如果是单个Expr，则直接将其和0比较
         // 即设置为Expr != 0，以便将其和后续的逻辑运算符连接
-        ret_info exprInfo = visitExpr(node->firstChild());
+        ret_info_t exprInfo = visitExpr(node->firstChild());
 
         // 将原来的指令列表包装成BasicBlock
         bb->addInstrList(exprInfo.instrList);
@@ -634,8 +708,8 @@ ret_info RSCVisitor::visitRelExpr(pst_node_ptr_t node)
     {
         assert(childNum == 2, "rel expr should have 1 or 2 child(ren)");
 
-        ret_info lhsInfo = visitRelExpr(node->firstChild());
-        ret_info rhsInfo = visitExpr(node->getChildAt(1));
+        ret_info_t lhsInfo = visitRelExpr(node->firstChild());
+        ret_info_t rhsInfo = visitExpr(node->getChildAt(1));
 
         // 在产生式中获取具体的关系运算符
         auto op = getProSymAt(node, 1); // < | <= | > | >= | == | !=
@@ -663,11 +737,11 @@ ret_info RSCVisitor::visitRelExpr(pst_node_ptr_t node)
     bb->addInstr(brInstr);
 
     // 返回StmtRetInfo
-    return ret_info{{bb}}.addBrTarget(brInstr);
+    return ret_info_t{{bb}}.addBrTarget(brInstr);
 }
 
 // AndExpr -> AndExpr `&&` RelExpr | RelExpr
-ret_info RSCVisitor::visitAndExpr(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
 {
     size_t childNum = node->childrenCount();
     pst_node_ptr_t child = node->firstChild();
@@ -684,11 +758,11 @@ ret_info RSCVisitor::visitAndExpr(pst_node_ptr_t node)
     auto lhsInfo = visitAndExpr(child);
     auto rhsInfo = visitAndExpr(node->getChildAt(1));
 
-    ret_info lhs = lhsInfo;
-    ret_info rhs = rhsInfo;
+    ret_info_t lhs = lhsInfo;
+    ret_info_t rhs = rhsInfo;
 
     // 对于与运算，需要将lhs和rhs的bb连接起来
-    ret_info retInfo{list_concat(lhs.instrList, rhs.instrList)};
+    ret_info_t retInfo{list_concat(lhs.instrList, rhs.instrList)};
 
     retInfo.appendTrueList(rhs.getTargetsOf(JR_TRUE_EXIT));   // 将rhs的真出口作为retInfo的真出口
     retInfo.appendFalseList(lhs.getTargetsOf(JR_FALSE_EXIT)); // 将lhs的假出口作为retInfo的假出口
@@ -696,16 +770,13 @@ ret_info RSCVisitor::visitAndExpr(pst_node_ptr_t node)
 
     // 将lhs的真出口tc连接到rhs的入口bb entry
     const block_ptr_t bb = dynamic_pointer_cast<InstrBlock>(rhs.instrList.front());
-    for (auto &target : lhs.getTargetsOf(JR_TRUE_EXIT))
-    {
-        target->patch(bb);
-    }
+    lhs.backpatch(JR_TRUE_EXIT, bb);
 
     return retInfo;
 }
 
 // OrExpr -> OrExpr `||` AndExpr | AndExpr
-ret_info RSCVisitor::visitOrExpr(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
 {
     size_t childNum = node->childrenCount();
     pst_node_ptr_t child = node->firstChild();
@@ -722,34 +793,31 @@ ret_info RSCVisitor::visitOrExpr(pst_node_ptr_t node)
     auto lhsInfo = visitOrExpr(child);
     auto rhsInfo = visitOrExpr(node->getChildAt(1));
 
-    ret_info lhs = lhsInfo;
-    ret_info rhs = rhsInfo;
+    ret_info_t lhs = lhsInfo;
+    ret_info_t rhs = rhsInfo;
 
     // 对于或运算，需要将lhs和rhs的bb连接起来
-    ret_info retInfo{list_concat(lhs.instrList, rhs.instrList)};
+    ret_info_t retInfo{list_concat(lhs.instrList, rhs.instrList)};
     retInfo.appendTrueList(lhs.getTargetsOf(JR_TRUE_EXIT));   // 将lhs的真出口作为retInfo的真出口
     retInfo.appendTrueList(rhs.getTargetsOf(JR_TRUE_EXIT));   // 将rhs的真出口作为retInfo的真出口
     retInfo.appendFalseList(rhs.getTargetsOf(JR_FALSE_EXIT)); // 将rhs的假出口作为retInfo的假出口
 
     // 将lhs的假出口fc连接到rhs的入口bb entry
     const block_ptr_t bb = dynamic_pointer_cast<InstrBlock>(rhs.instrList.front());
-    for (auto &target : lhs.getTargetsOf(JR_FALSE_EXIT))
-    {
-        target->patch(bb);
-    }
+    lhs.backpatch(JR_FALSE_EXIT, bb);
 
     return retInfo;
 }
 
 // BoolExpr -> OrExpr
-ret_info RSCVisitor::visitBoolExpr(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitBoolExpr(pst_node_ptr_t node)
 {
     // 仅有一种情况，即OrExpr，直接返回即可
     return visitOrExpr(node->firstChild());
 }
 
 // Factor -> (Expr), LVal, Literal, FuncCall
-ret_info RSCVisitor::visitFactor(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitFactor(pst_node_ptr_t node)
 {
     pst_node_ptr_t child = node->firstChild();
 
@@ -776,7 +844,7 @@ ret_info RSCVisitor::visitFactor(pst_node_ptr_t node)
     }
 }
 
-ret_info RSCVisitor::visitLVal(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
 {
     alloc_ptr_t instr = context.symbolTable.find(node->firstChild()->data.symbol);
 
@@ -784,11 +852,11 @@ ret_info RSCVisitor::visitLVal(pst_node_ptr_t node)
         instr != nullptr,
         format("undefined symbol: $", node->firstChild()->data.symbol));
 
-    return ret_info{instr_list_t{instr}}.setValue(instr);
+    return ret_info_t{instr_list_t{instr}}.setValue(instr);
 }
 
 // Factor -> int, real, char, string, true, false
-ret_info RSCVisitor::visitLiteral(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitLiteral(pst_node_ptr_t node)
 {
     // 如果node自身是终结符节点，则可能是char, string, true, false
     // 先处理true, false，剩下的就是char, string
@@ -798,25 +866,25 @@ ret_info RSCVisitor::visitLiteral(pst_node_ptr_t node)
         {
             // true
             auto instr = make_const_bool(true);
-            return ret_info{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t{instr_list_t{instr}}.setValue(instr);
         }
         else if (node->data.symbol == "false")
         {
             // false
             auto instr = make_const_bool(false);
-            return ret_info{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t{instr_list_t{instr}}.setValue(instr);
         }
         else if (node->data.symbol[0] == '\'')
         {
             // char
             auto instr = make_const_char(node->data.symbol[1]);
-            return ret_info{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t{instr_list_t{instr}}.setValue(instr);
         }
         else if (node->data.symbol[0] == '\"')
         {
             // string
             auto instr = make_const_str(node->data.symbol.substr(1, node->data.symbol.size() - 2));
-            return ret_info{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t{instr_list_t{instr}}.setValue(instr);
         }
         else
         {
