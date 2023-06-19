@@ -331,24 +331,104 @@ StmtRetInfo RSCVisitor::visitStmt(pst_node_ptr_t node)
     return StmtRetInfo();
 }
 
+// Block -> { Stmt }
 StmtRetInfo RSCVisitor::visitBlock(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 遍历Stmt列表，处理每个Stmt
+    // 将每个Stmt的结果追加到list之后
+    AlphaStmtRetInfo retInfo;
+    pst_children_t children = node->getChildren();
+    for (pst_node_ptr_t child : children)
+    {
+        auto stmtInfo = visitStmt(child);
+        assert(is_alpha(stmtInfo), "stmt return info should be alpha");
+
+        retInfo.list.splice(retInfo.list.end(), get_alpha(stmtInfo).list);
+    }
+    return retInfo;
 }
 
+// Assignment -> ident = Expr ;
 StmtRetInfo RSCVisitor::visitAssignment(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    // 获取ident和Expr
+    std::string identStr = node->getChildAt(0)->data.symbol;
+    auto exprInfo = visitExpr(node->getChildAt(1));
+    assert(is_alpha(exprInfo), "expr return info should be alpha");
+
+    // 获取ident对应的内存分配指令
+    alloc_ptr_t alloc = context.symbolTable.find(identStr);
+    assert(alloc != nullptr, "variable has not been declared");
+
+    // 生成store指令并追加到list之后
+    store_ptr_t storeInstr = make_store(get_alpha(exprInfo).list.back(), alloc);
+    get_alpha(exprInfo).list.push_back(storeInstr);
+
+    return exprInfo;
 }
 
+// IfStmt -> if ( BoolExpr ) Stmt [else Stmt]
 StmtRetInfo RSCVisitor::visitIfStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    BetaStmtRetInfo retInfo;
+    // 获取BoolExpr
+    auto boolExprInfo = visitBoolExpr(node->getChildAt(0));
+    assert(is_beta(boolExprInfo), "bool expr return info should be beta");
+    BetaStmtRetInfo &boolExpr = get_beta(boolExprInfo);
+    // 将BoolExpr内容追加到list之后
+    retInfo.list.splice(retInfo.list.end(), boolExpr.list);
+
+    // 获取Stmt
+    auto stmtInfo = visitStmt(node->getChildAt(1));
+    assert(is_alpha(stmtInfo), "stmt return info should be alpha");
+    AlphaStmtRetInfo &stmt = get_alpha(stmtInfo);
+
+    // 将Stmt内容整合为基本块
+    block_ptr_t stmtBB = make_block("if_stmt");
+    retInfo.list.splice(retInfo.list.end(), stmt.list);
+    for (auto &instr : stmt.list)
+    {
+        stmtBB->addInstr(instr);
+    }
+
+    // 获取else Stmt
+    auto elseStmtInfo = visitStmt(node->getChildAt(2));
+    assert(is_alpha(elseStmtInfo), "else stmt return info should be alpha");
+    AlphaStmtRetInfo &elseStmt = get_alpha(elseStmtInfo);
+    // 生成jmp指令并追加到list之后
+    jmp_ptr_t jmpInstr = make_jmp();
+    elseStmt.list.push_back(jmpInstr);
+    retInfo.fallList.push_back(jmpInstr);
+
+    // 将else Stmt内容整合为基本块
+    block_ptr_t elseStmtBB = make_block("else_stmt");
+    retInfo.list.splice(retInfo.list.end(), elseStmt.list);
+    for (auto &instr : elseStmt.list)
+    {
+        elseStmtBB->addInstr(instr);
+    }
+
+    // 绑定条件的真假出口
+    for (auto &instr : boolExpr.trueList)
+    {
+        instr->setTrueTarget(stmtBB);
+    }
+    for (auto &instr : boolExpr.falseList)
+    {
+        instr->setFalseTarget(elseStmtBB);
+    }
+
+    return retInfo;
 }
 
+// WhileStmt -> while ( BoolExpr ) Stmt
 StmtRetInfo RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
 {
-    return StmtRetInfo();
+    BetaStmtRetInfo retInfo;
+    // 获取BoolExpr
+    auto boolExprInfo = visitBoolExpr(node->getChildAt(0));
+    assert(is_beta(boolExprInfo), "bool expr return info should be beta");
+    BetaStmtRetInfo &boolExpr = get_beta(boolExprInfo);
 }
 
 StmtRetInfo RSCVisitor::visitForStmt(pst_node_ptr_t node)
