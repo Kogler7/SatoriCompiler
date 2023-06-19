@@ -24,11 +24,11 @@ void SymbolTable::newScope()
 	}
 }
 
-std::vector<alloc_ptr_t> SymbolTable::popScope()
+std::vector<user_ptr_t> SymbolTable::popScope()
 {
 	assert(!tableStk.empty());
 	auto top = tableStk.top()->self();
-	auto r = std::vector<alloc_ptr_t>();
+	auto r = std::vector<user_ptr_t>();
 	for (auto &[_, ssa] : top)
 	{
 		r.emplace_back(ssa);
@@ -37,7 +37,7 @@ std::vector<alloc_ptr_t> SymbolTable::popScope()
 	return r;
 }
 
-alloc_ptr_t SymbolTable::find(const std::string &name)
+user_ptr_t SymbolTable::find(const std::string &name)
 {
 	scope_ptr_t top = tableStk.top();
 	if (top->has(name))
@@ -47,12 +47,22 @@ alloc_ptr_t SymbolTable::find(const std::string &name)
 	return nullptr;
 }
 
-alloc_ptr_t SymbolTable::registerSymbol(const std::string &name, type_ptr_t type)
+user_ptr_t SymbolTable::registerAlloca(const std::string &name, type_ptr_t type)
 {
 	scope_ptr_t top = tableStk.top();
-	assert(top != nullptr, "SymbolTable::registerSymbol: top is nullptr");
-	assert(!top->has(name), "SymbolTable::registerSymbol: symbol already exists");
-	alloc_ptr_t alloc = make_alloc(name, type);
+	assert(top != nullptr, "SymbolTable::registerAlloca: top is nullptr");
+	assert(!top->has(name), "SymbolTable::registerAlloca: symbol already exists");
+	alloca_ptr_t alloc = make_alloca(name, type);
 	top->insert(name, alloc);
 	return alloc;
+}
+
+user_ptr_t SymbolTable::registerGlobal(const std::string &name, type_ptr_t type, const_val_ptr_t init)
+{
+	scope_ptr_t top = tableStk.top();
+	assert(top != nullptr, "SymbolTable::registerGlobal: top is nullptr");
+	assert(!top->has(name), "SymbolTable::registerGlobal: symbol already exists");
+	global_ptr_t global = make_global(name, type, init);
+	top->insert(name, global);
+	return global;
 }

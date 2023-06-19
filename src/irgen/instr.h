@@ -64,19 +64,28 @@ inline CompareType opTermToType(std::string opStr)
 class LabelInstr;
 using label_ptr_t = std::shared_ptr<LabelInstr>;
 #define make_label(name) std::make_shared<LabelInstr>(name)
+#define cast_label(instr) std::dynamic_pointer_cast<LabelInstr>(instr)
 
 // Memory Access and Addressing Operations （内存访问和寻址操作）
-class AllocInstr;
-using alloc_ptr_t = std::shared_ptr<AllocInstr>;
-#define make_alloc(name, type) std::make_shared<AllocInstr>(name, type)
+class AllocaInstr;
+using alloca_ptr_t = std::shared_ptr<AllocaInstr>;
+#define make_alloca(name, type) std::make_shared<AllocaInstr>(name, type)
+#define cast_alloca(instr) std::dynamic_pointer_cast<AllocaInstr>(instr)
+
+class GlobalInstr;
+using global_ptr_t = std::shared_ptr<GlobalInstr>;
+#define make_global(name, type, value) std::make_shared<GlobalInstr>(name, type, value)
+#define cast_global(instr) std::dynamic_pointer_cast<GlobalInstr>(instr)
 
 class LoadInstr;
 using load_ptr_t = std::shared_ptr<LoadInstr>;
 #define make_load(from) std::make_shared<LoadInstr>(from)
+#define cast_load(instr) std::dynamic_pointer_cast<LoadInstr>(instr)
 
 class StoreInstr;
 using store_ptr_t = std::shared_ptr<StoreInstr>;
 #define make_store(from, to) std::make_shared<StoreInstr>(from, to)
+#define cast_store(instr) std::dynamic_pointer_cast<StoreInstr>(instr)
 
 class GEPInstr; // GetElementPtr
 using gep_ptr_t = std::shared_ptr<GEPInstr>;
@@ -85,64 +94,82 @@ using gep_ptr_t = std::shared_ptr<GEPInstr>;
 class FuncInstr; // 抽象指令，由其他指令组合而成
 using func_ptr_t = std::shared_ptr<FuncInstr>;
 #define make_func(name, retType) std::make_shared<FuncInstr>(name, retType)
+#define cast_func(instr) std::dynamic_pointer_cast<FuncInstr>(instr)
 
 class CallInstr;
 using call_ptr_t = std::shared_ptr<CallInstr>;
 #define make_call(func) std::make_shared<CallInstr>(func)
+#define cast_call(instr) std::dynamic_pointer_cast<CallInstr>(instr)
 
 // Terminator Instructions （终端指令）
 class RetInstr;
 using ret_ptr_t = std::shared_ptr<RetInstr>;
 #define make_ret(retval) std::make_shared<RetInstr>(retval)
+#define cast_ret(instr) std::dynamic_pointer_cast<RetInstr>(instr)
 
 class BrInstr;
 using br_ptr_t = std::shared_ptr<BrInstr>;
 #define make_br(cond) std::make_shared<BrInstr>(cond)
+#define cast_br(instr) std::dynamic_pointer_cast<BrInstr>(instr)
 
 class JmpInstr; // 无条件跳转
 using jmp_ptr_t = std::shared_ptr<JmpInstr>;
 #define make_jmp(target) std::make_shared<JmpInstr>(target)
+#define cast_jmp(instr) std::dynamic_pointer_cast<JmpInstr>(instr)
 
 // Unary Operations （一元运算）
 class NegInstr;
 using neg_ptr_t = std::shared_ptr<NegInstr>;
 #define make_neg(from, opType) std::make_shared<NegInstr>(from, opType)
+#define cast_neg(instr) std::dynamic_pointer_cast<NegInstr>(instr)
 
 // Binary Operations （二元运算）
 class AddInstr;
 using add_ptr_t = std::shared_ptr<AddInstr>;
 #define make_add(lhs, rhs, opType) std::make_shared<AddInstr>(lhs, rhs, opType)
+#define cast_add(instr) std::dynamic_pointer_cast<AddInstr>(instr)
 
 class SubInstr;
 using sub_ptr_t = std::shared_ptr<SubInstr>;
 #define make_sub(lhs, rhs, opType) std::make_shared<SubInstr>(lhs, rhs, opType)
+#define cast_sub(instr) std::dynamic_pointer_cast<SubInstr>(instr)
 
 class MulInstr;
 using mul_ptr_t = std::shared_ptr<MulInstr>;
 #define make_mul(lhs, rhs, opType) std::make_shared<MulInstr>(lhs, rhs, opType)
+#define cast_mul(instr) std::dynamic_pointer_cast<MulInstr>(instr)
 
 class DivInstr;
 using div_ptr_t = std::shared_ptr<DivInstr>;
 #define make_div(lhs, rhs, opType) std::make_shared<DivInstr>(lhs, rhs, opType)
+#define cast_div(instr) std::dynamic_pointer_cast<DivInstr>(instr)
 
 class RemInstr;
 using rem_ptr_t = std::shared_ptr<RemInstr>;
 #define make_rem(lhs, rhs, opType) std::make_shared<RemInstr>(lhs, rhs, opType)
+#define cast_rem(instr) std::dynamic_pointer_cast<RemInstr>(instr)
 
 class CmpInstr;
 using cmp_ptr_t = std::shared_ptr<CmpInstr>;
 #define make_cmp(lhs, rhs, opType, cmpType) std::make_shared<CmpInstr>(lhs, rhs, opType, cmpType)
+#define cast_cmp(instr) std::dynamic_pointer_cast<CmpInstr>(instr)
 
 // Block and Program
 class InstrBlock;
 using block_ptr_t = std::shared_ptr<InstrBlock>;
 #define make_block(name) std::make_shared<InstrBlock>(name)
+#define cast_block(instr) std::dynamic_pointer_cast<InstrBlock>(instr)
 
 class Program;
 using program_ptr_t = std::shared_ptr<Program>;
 #define make_program() std::make_shared<Program>()
+#define cast_program(instr) std::dynamic_pointer_cast<Program>(instr)
 
 // Constant Values
+class Constant;
+using const_val_ptr_t = std::shared_ptr<Constant>;
+#define cast_const(instr) std::dynamic_pointer_cast<Constant>(instr)
+
 class ConstantInt;
 using const_int_ptr_t = std::shared_ptr<ConstantInt>;
 #define make_const_int(value) std::make_shared<ConstantInt>(value)
@@ -173,11 +200,23 @@ public:
     std::string dump() const override;
 };
 
-class AllocInstr : public User
+class AllocaInstr : public User
 {
 public:
-    AllocInstr(std::string name, type_ptr_t type) : User(type, name) {}
-    ~AllocInstr() = default;
+    AllocaInstr(std::string name, type_ptr_t type) : User(type, name) {}
+    ~AllocaInstr() = default;
+
+    std::string dump() const override;
+};
+
+class GlobalInstr : public User
+{
+    const_val_ptr_t initValue;
+
+public:
+    GlobalInstr(std::string name, type_ptr_t type, const_val_ptr_t value)
+        : User(type, name), initValue(value) {}
+    ~GlobalInstr() = default;
 
     std::string dump() const override;
 };
@@ -364,7 +403,7 @@ class JmpInstr : public User
 
 public:
     JmpInstr() : target(make_target()) {}
-    JmpInstr(block_ptr_t target) : target(make_target())
+    JmpInstr(user_ptr_t target) : target(make_target())
     {
         this->target->patch(target);
     }
@@ -509,7 +548,18 @@ public:
     std::string dump() const override;
 };
 
-class ConstantInt : public User
+class Constant : public User
+{
+public:
+    Constant() = default;
+    ~Constant() = default;
+
+    bool isConstant() const override { return true; }
+
+    virtual std::string dump() const = 0;
+};
+
+class ConstantInt : public Constant
 {
     int value;
 
@@ -517,11 +567,10 @@ public:
     explicit ConstantInt(int value) : value(value) {}
     ~ConstantInt() = default;
 
-    bool isConstant() const override { return true; }
-    std::string dump() const;
+    std::string dump() const override;
 };
 
-class ConstantReal : public User
+class ConstantReal : public Constant
 {
     double value;
 
@@ -529,11 +578,10 @@ public:
     explicit ConstantReal(double value) : value(value) {}
     ~ConstantReal() = default;
 
-    bool isConstant() const override { return true; }
-    std::string dump() const;
+    std::string dump() const override;
 };
 
-class ConstantBool : public User
+class ConstantBool : public Constant
 {
     bool value;
 
@@ -541,11 +589,10 @@ public:
     explicit ConstantBool(bool value) : value(value) {}
     ~ConstantBool() = default;
 
-    bool isConstant() const override { return true; }
-    std::string dump() const;
+    std::string dump() const override;
 };
 
-class ConstantChar : public User
+class ConstantChar : public Constant
 {
     char value;
 
@@ -553,11 +600,10 @@ public:
     explicit ConstantChar(char value) : value(value) {}
     ~ConstantChar() = default;
 
-    bool isConstant() const override { return true; }
-    std::string dump() const;
+    std::string dump() const override;
 };
 
-class ConstantString : public User
+class ConstantString : public Constant
 {
     std::string value;
 
@@ -565,6 +611,5 @@ public:
     explicit ConstantString(std::string value) : value(std::move(value)) {}
     ~ConstantString() = default;
 
-    bool isConstant() const override { return true; }
-    std::string dump() const;
+    std::string dump() const override;
 };

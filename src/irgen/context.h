@@ -19,7 +19,7 @@ class Context
 {
 public:
     program_ptr_t program;
-    std::list<alloc_ptr_t> staticList;
+    std::list<alloca_ptr_t> staticList;
 	SymbolTable symbolTable;
     FunctionTable functionTable;
 	void clear();

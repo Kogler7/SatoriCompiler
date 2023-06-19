@@ -29,13 +29,16 @@ inline std::string getProSymAt(pst_node_ptr_t node, size_t idx)
 // Program -> { VarDeclStmt | FuncDeclStmt | FuncDef }
 ret_info_t RSCVisitor::visitProgram(pst_node_ptr_t node)
 {
+    context.symbolTable.newScope();
+    ret_info_t retInfo;
+
     pst_children_t children = node->getChildren();
 
     for (pst_node_ptr_t child : children)
     {
         if (child->data.symbol == "VarDeclStmt")
         {
-            visitVarDeclStmt(child);
+            visitVarDeclStmt(child, true);
         }
         else if (child->data.symbol == "FuncDeclStmt")
         {
@@ -51,16 +54,19 @@ ret_info_t RSCVisitor::visitProgram(pst_node_ptr_t node)
             exit(1);
         }
     }
+
+    context.symbolTable.popScope();
+    return ret_info_t();
 }
 
 // VarDeclStmt -> VarDecl ;
-ret_info_t RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node, bool global)
 {
-    return visitVarDecl(node->firstChild());
+    return visitVarDecl(node->firstChild(), global);
 }
 
 // VarDecl -> { VarDef }
-ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node)
+ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node, bool global)
 {
     ret_info_t retInfo;
     // 获取VarDef列表，遍历处理即可
@@ -68,25 +74,52 @@ ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node)
 
     for (pst_node_ptr_t child : children)
     {
-        ret_info_t varInfo = visitVarDef(child);
+        ret_info_t varInfo = visitVarDef(child, global);
         // 将VarDef的结果追加到list之后
         retInfo.appendInstrList(varInfo.instrList);
     }
     return retInfo;
 }
 
-// VarDef -> ident : Type
-ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node)
+// VarDef -> ident : Type [ InitVal ]
+ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
 {
+    ret_info_t retInfo;
     // 获取ident和Type
     // 暂时不考虑数组，因此剩余子节点暂时不处理
     std::string identStr = node->getChildAt(0)->data.symbol;
     std::string typeStr = node->getChildAt(1)->firstChild()->data.symbol;
 
     type_ptr_t type = make_prime_type(PrimitiveType::str2type(typeStr));
-    alloc_ptr_t alloc = context.symbolTable.registerSymbol(identStr, type);
+    user_ptr_t value = nullptr;
 
-    return ret_info_t{instr_list_t{alloc}};
+    pst_node_ptr_t initValNode = node->getChildAt(2);
+    user_ptr_t initVal = nullptr;
+    if (initValNode->hasChild())
+    {
+        ret_info_t initValInfo = visitInitVal(initValNode->firstChild());
+        initVal = initValInfo.getValue();
+    }
+
+    if (global)
+    {
+        assert(initVal != nullptr, "global variable must be initialized");
+        const_val_ptr_t init = cast_const(initVal);
+        value = context.symbolTable.registerGlobal(identStr, type, init);
+        retInfo.addInstr(value);
+    }
+    else
+    {
+        value = context.symbolTable.registerAlloca(identStr, type);
+        retInfo.addInstr(value);
+        if (initVal != nullptr)
+        {
+            store_ptr_t storeInstr = make_store(initVal, value);
+            retInfo.addInstr(storeInstr);
+        }
+    }
+
+    return retInfo;
 }
 
 // InitVal -> Expr | { Expr }
@@ -183,13 +216,13 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     // 首先构建函数的入口基本块 entry basic block
     block_ptr_t entryBB = make_block("func_entry");
     // 将函数体内变量的内存分配指令追加到entry之后
-    std::vector<alloc_ptr_t> vars = context.symbolTable.popScope();
-    for (alloc_ptr_t var : vars)
+    std::vector<user_ptr_t> vars = context.symbolTable.popScope();
+    for (user_ptr_t var : vars)
     {
         entryBB->addInstr(var);
     }
     // 为函数返回值分配内存
-    alloc_ptr_t retAlloc = make_alloc("retval", func->getRetType());
+    alloca_ptr_t retAlloc = make_alloca("retval", func->getRetType());
     entryBB->addInstr(retAlloc);
 
     // 构建函数的出口基本块 exit basic block
@@ -295,7 +328,7 @@ ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
     std::string typeStr = node->getChildAt(1)->firstChild()->data.symbol;
 
     type_ptr_t type = make_prime_type(PrimitiveType::str2type(typeStr));
-    alloc_ptr_t value = make_alloc(identStr, type);
+    alloca_ptr_t value = make_alloca(identStr, type);
 
     return ret_info_t().setValue(value); // 空指令列表，值为value
 }
@@ -404,7 +437,7 @@ ret_info_t RSCVisitor::visitAssignment(pst_node_ptr_t node)
     ret_info_t exprInfo = visitExpr(node->getChildAt(1));
 
     // 获取ident对应的内存分配指令
-    alloc_ptr_t alloc = context.symbolTable.find(identStr);
+    user_ptr_t alloc = context.symbolTable.find(identStr);
     assert(alloc != nullptr, "variable has not been declared");
 
     // 生成store指令并追加到list之后
@@ -921,7 +954,7 @@ ret_info_t RSCVisitor::visitFactor(pst_node_ptr_t node)
 
 ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
 {
-    alloc_ptr_t instr = context.symbolTable.find(node->firstChild()->data.symbol);
+    user_ptr_t instr = context.symbolTable.find(node->firstChild()->data.symbol);
 
     assert(
         instr != nullptr,

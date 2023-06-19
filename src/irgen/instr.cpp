@@ -38,9 +38,18 @@ std::string LabelInstr::dump() const
     return format("$:\n", getLabelTag(this));
 }
 
-std::string AllocInstr::dump() const
+std::string AllocaInstr::dump() const
 {
     return format("\t$ = alloca $\n", getValueTag(this), type->dump());
+}
+
+std::string GlobalInstr::dump() const
+{
+    return format(
+        "\t$ = global $ $\n",
+        getValueTag(this),
+        type->dump(),
+        initValue->dump());
 }
 
 std::string LoadInstr::dump() const

@@ -15,7 +15,7 @@
 
 #include <stack>
 
-using scope_t = NestedMap<std::string, alloc_ptr_t>;
+using scope_t = NestedMap<std::string, user_ptr_t>;
 using scope_ptr_t = std::shared_ptr<scope_t>;
 
 class SymbolTable
@@ -24,14 +24,15 @@ class SymbolTable
 
 public:
     void newScope();
-    std::vector<alloc_ptr_t> popScope();
-    [[nodiscard]] alloc_ptr_t find(const std::string &name);
-    [[nodiscard]] alloc_ptr_t registerSymbol(const std::string &name, type_ptr_t type);
+    std::vector<user_ptr_t> popScope();
+    [[nodiscard]] user_ptr_t find(const std::string &name);
+    [[nodiscard]] user_ptr_t registerAlloca(const std::string &name, type_ptr_t type);
+    [[nodiscard]] user_ptr_t registerGlobal(const std::string &name, type_ptr_t type, const_val_ptr_t init);
 };
 
 class StaticDataTable
 {
-    std::map<std::string, alloc_ptr_t> table;
+    std::map<std::string, user_ptr_t> table;
 };
 
 class FunctionTable
