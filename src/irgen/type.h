@@ -43,6 +43,8 @@ public:
     virtual type_ptr_t getDeRefed() const = 0;
 
     virtual OperandType getOpType() const { return OT_SIGNED; }
+
+    virtual bool operator==(const Type &other) const = 0;
 };
 
 class PrimitiveType : public Type
@@ -104,6 +106,13 @@ public:
         return PrimitiveType::INT;
     }
 
+    bool operator==(const Type &other) const override
+    {
+        if (auto other_prim = dynamic_cast<const PrimitiveType *>(&other))
+            return type == other_prim->type;
+        return false;
+    }
+
 protected:
     PrimType type;
 };
@@ -118,6 +127,13 @@ public:
     type_ptr_t getDeRefed() const override { return ptr; }
 
     OperandType getOpType() const override { return OT_UNSIGNED; }
+
+    bool operator==(const Type &other) const override
+    {
+        if (auto other_ptr = dynamic_cast<const PointerType *>(&other))
+            return ptr == other_ptr->ptr;
+        return false;
+    }
 
 protected:
     type_ptr_t ptr;

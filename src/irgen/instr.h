@@ -226,7 +226,8 @@ class LoadInstr : public User
     Use from;
 
 public:
-    LoadInstr(value_ptr_t from, std::string name = "") : User(from->getType(), name), from(from, this) {}
+    LoadInstr(value_ptr_t from)
+        : User(from->getType(), "load"), from(from, this) {}
     ~LoadInstr() = default;
 
     std::string dump() const override;
@@ -238,7 +239,8 @@ class StoreInstr : public User
     Use to;
 
 public:
-    StoreInstr(value_ptr_t from, value_ptr_t to) : User(), from(from, this), to(to, this) {}
+    StoreInstr(value_ptr_t from, value_ptr_t to)
+        : User(nullptr, "store"), from(from, this), to(to, this) {}
     ~StoreInstr() = default;
 
     std::string dump() const override;
@@ -345,7 +347,7 @@ class CallInstr : public User
     std::list<user_ptr_t> args;
 
 public:
-    CallInstr(func_ptr_t func) : User(func->getRetType(), name), func(func) {}
+    CallInstr(func_ptr_t func) : User(func->getRetType(), "call"), func(func) {}
     ~CallInstr() = default;
 
     void addArgs(std::list<user_ptr_t> argList)
@@ -361,7 +363,7 @@ class RetInstr : public User
     use_ptr_t retval;
 
 public:
-    RetInstr() : retval(make_use(nullptr, this)) {}
+    RetInstr() : retval(make_use(nullptr, this)), User(nullptr, "return") {}
     explicit RetInstr(value_ptr_t retval) : retval(make_use(std::move(retval), this)) {}
     ~RetInstr() = default;
 
@@ -387,7 +389,7 @@ class BrInstr : public User
 
 public:
     explicit BrInstr(value_ptr_t cond)
-        : cond(make_use(std::move(cond), this)), tc(make_target()), fc(make_target()) {}
+        : cond(make_use(std::move(cond), this)), tc(make_target()), fc(make_target()), User(nullptr, "branch") {}
     ~BrInstr() = default;
 
     std::pair<target_ptr_t, target_ptr_t> getTargets() { return {tc, fc}; }
@@ -402,7 +404,7 @@ class JmpInstr : public User
     target_ptr_t target;
 
 public:
-    JmpInstr() : target(make_target()) {}
+    JmpInstr() : target(make_target()), User(nullptr, "jump") {}
     JmpInstr(user_ptr_t target) : target(make_target())
     {
         this->target->patch(target);
@@ -423,7 +425,7 @@ class NegInstr : public User
 
 public:
     explicit NegInstr(value_ptr_t from, OperandType opType)
-        : from(make_use(std::move(from), this)), opType(opType) {}
+        : from(make_use(std::move(from), this)), opType(opType), User(nullptr, "neg") {}
     ~NegInstr() = default;
 
     std::string dump() const override;
@@ -436,8 +438,18 @@ class AddInstr : public User
     OperandType opType;
 
 public:
-    AddInstr(value_ptr_t lhs, value_ptr_t rhs, OperandType opType)
-        : lhs(make_use(std::move(lhs), this)), rhs(make_use(std::move(rhs), this)), opType(opType) {}
+    AddInstr(user_ptr_t lhs, user_ptr_t rhs, OperandType opType)
+        : opType(opType), User(lhs->getType(), "add")
+    {
+        assert(
+            *lhs->getType() == *rhs->getType(),
+            format(
+                "AddInstr: lhs and rhs type mismatch: $ and $",
+                lhs->getType()->dump(),
+                rhs->getType()->dump()));
+        this->lhs = make_use(std::move(lhs), this);
+        this->rhs = make_use(std::move(rhs), this);
+    }
     ~AddInstr() = default;
 
     std::string dump() const override;
@@ -450,8 +462,18 @@ class SubInstr : public User
     OperandType opType;
 
 public:
-    SubInstr(value_ptr_t lhs, value_ptr_t rhs, OperandType opType)
-        : lhs(make_use(std::move(lhs), this)), rhs(make_use(std::move(rhs), this)), opType(opType) {}
+    SubInstr(user_ptr_t lhs, user_ptr_t rhs, OperandType opType)
+        : opType(opType), User(lhs->getType(), "sub")
+    {
+        assert(
+            *lhs->getType() == *rhs->getType(),
+            format(
+                "MulInstr: lhs and rhs type mismatch: $ and $",
+                lhs->getType()->dump(),
+                rhs->getType()->dump()));
+        this->lhs = make_use(std::move(lhs), this);
+        this->rhs = make_use(std::move(rhs), this);
+    }
     ~SubInstr() = default;
 
     std::string dump() const override;
@@ -464,8 +486,18 @@ class MulInstr : public User
     OperandType opType;
 
 public:
-    MulInstr(value_ptr_t lhs, value_ptr_t rhs, OperandType opType)
-        : lhs(make_use(std::move(lhs), this)), rhs(make_use(std::move(rhs), this)), opType(opType) {}
+    MulInstr(user_ptr_t lhs, user_ptr_t rhs, OperandType opType)
+        : opType(opType), User(lhs->getType(), "mul")
+    {
+        assert(
+            *lhs->getType() == *rhs->getType(),
+            format(
+                "MulInstr: lhs and rhs type mismatch: $ and $",
+                lhs->getType()->dump(),
+                rhs->getType()->dump()));
+        this->lhs = make_use(std::move(lhs), this);
+        this->rhs = make_use(std::move(rhs), this);
+    }
     ~MulInstr() = default;
 
     std::string dump() const override;
@@ -478,8 +510,18 @@ class DivInstr : public User
     OperandType opType;
 
 public:
-    DivInstr(value_ptr_t lhs, value_ptr_t rhs, OperandType opType)
-        : lhs(make_use(std::move(lhs), this)), rhs(make_use(std::move(rhs), this)), opType(opType) {}
+    DivInstr(user_ptr_t lhs, user_ptr_t rhs, OperandType opType)
+        : opType(opType), User(lhs->getType(), "div")
+    {
+        assert(
+            *lhs->getType() == *rhs->getType(),
+            format(
+                "DivInstr: lhs and rhs type mismatch: $ and $",
+                lhs->getType()->dump(),
+                rhs->getType()->dump()));
+        this->lhs = make_use(std::move(lhs), this);
+        this->rhs = make_use(std::move(rhs), this);
+    }
     ~DivInstr() = default;
 
     std::string dump() const override;
@@ -492,8 +534,18 @@ class RemInstr : public User
     OperandType opType;
 
 public:
-    RemInstr(value_ptr_t lhs, value_ptr_t rhs, OperandType opType)
-        : lhs(make_use(std::move(lhs), this)), rhs(make_use(std::move(rhs), this)), opType(opType) {}
+    RemInstr(user_ptr_t lhs, user_ptr_t rhs, OperandType opType)
+        : opType(opType), User(lhs->getType(), "rem")
+    {
+        assert(
+            *lhs->getType() == *rhs->getType(),
+            format(
+                "RemInstr: lhs and rhs type mismatch: $ and $",
+                lhs->getType()->dump(),
+                rhs->getType()->dump()));
+        this->lhs = make_use(std::move(lhs), this);
+        this->rhs = make_use(std::move(rhs), this);
+    }
     ~RemInstr() = default;
 
     std::string dump() const override;
@@ -508,7 +560,17 @@ class CmpInstr : public User
 
 public:
     CmpInstr(user_ptr_t lhs, user_ptr_t rhs, OperandType opType, CompareType cmpType)
-        : lhs(make_use(std::move(lhs), this)), rhs(make_use(std::move(rhs), this)), opType(opType), cmpType(cmpType) {}
+        : opType(opType), cmpType(cmpType), User(make_prime_type(PrimitiveType::PrimType::BOOL), "cmp")
+    {
+        assert(
+            *lhs->getType() == *rhs->getType(),
+            format(
+                "CmpInstr: lhs and rhs type mismatch: $ and $",
+                lhs->getType()->dump(),
+                rhs->getType()->dump()));
+        this->lhs = make_use(std::move(lhs), this);
+        this->rhs = make_use(std::move(rhs), this);
+    }
     ~CmpInstr() = default;
 
     std::string dump() const override;
@@ -541,7 +603,7 @@ class Program : public User
     std::list<use_ptr_t> funcs;
 
 public:
-    Program() = default;
+    Program() : User(nullptr, "program") {}
     ~Program() = default;
 
     void addGlobal(user_ptr_t global) { globals.push_back(make_use(std::move(global), this)); }
@@ -553,7 +615,7 @@ public:
 class Constant : public User
 {
 public:
-    Constant() = default;
+    Constant(type_ptr_t type, std::string name) : User(type, name) {}
     ~Constant() = default;
 
     bool isConstant() const override { return true; }
@@ -563,10 +625,11 @@ public:
 
 class ConstantInt : public Constant
 {
-    int value;
+    int constVal;
 
 public:
-    explicit ConstantInt(int value) : value(value) {}
+    explicit ConstantInt(int constVal)
+        : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::INT), "const int") {}
     ~ConstantInt() = default;
 
     std::string dump() const override;
@@ -574,10 +637,11 @@ public:
 
 class ConstantReal : public Constant
 {
-    double value;
+    double constVal;
 
 public:
-    explicit ConstantReal(double value) : value(value) {}
+    explicit ConstantReal(double constVal)
+        : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::REAL), "const real") {}
     ~ConstantReal() = default;
 
     std::string dump() const override;
@@ -585,10 +649,11 @@ public:
 
 class ConstantBool : public Constant
 {
-    bool value;
+    bool constVal;
 
 public:
-    explicit ConstantBool(bool value) : value(value) {}
+    explicit ConstantBool(bool constVal)
+        : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::BOOL), "const bool") {}
     ~ConstantBool() = default;
 
     std::string dump() const override;
@@ -596,10 +661,11 @@ public:
 
 class ConstantChar : public Constant
 {
-    char value;
+    char constVal;
 
 public:
-    explicit ConstantChar(char value) : value(value) {}
+    explicit ConstantChar(char constVal)
+        : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::CHAR), "const char") {}
     ~ConstantChar() = default;
 
     std::string dump() const override;
@@ -607,10 +673,11 @@ public:
 
 class ConstantString : public Constant
 {
-    std::string value;
+    std::string constVal;
 
 public:
-    explicit ConstantString(std::string value) : value(std::move(value)) {}
+    explicit ConstantString(std::string constVal)
+        : constVal(std::move(constVal)), Constant(make_prime_type(PrimitiveType::PrimType::STR), "const str") {}
     ~ConstantString() = default;
 
     std::string dump() const override;

@@ -37,14 +37,20 @@ public:
     Value(type_ptr_t type, std::string name) : type(type), name(name) {}
     ~Value() = default;
 
-    type_ptr_t getType() { return type; }
+    type_ptr_t getType()
+    {
+        assert(
+            type != nullptr,
+            format("Value::getType: type of value [$] is nullptr", name));
+        return type;
+    }
 
     void addUse(Use *use) { uses.insert(use); }
     bool delUse(Use *use) { return uses.erase(use); }
 
     void setName(std::string name) { this->name = name; }
     std::string getName() const { return name; }
-    
+
     virtual bool isConstant() const { return false; }
     virtual std::string dump() const { return name; }
 };
@@ -74,6 +80,6 @@ public:
     User *getUser() { return user; }
 
     void setUser(User *user) { this->user = user; }
-    
+
     void setValue(value_ptr_t value) { this->value = value; }
 };

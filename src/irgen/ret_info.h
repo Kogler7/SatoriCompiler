@@ -25,6 +25,7 @@ public:
 	instr_list_t valueList;
 	std::map<JumpReason, target_list_t> gotoListMap;
 
+	bool hasValue() const;
 	user_ptr_t getValue() const;
 	VisitorRetInfo &setValue(user_ptr_t value);
 

@@ -32,7 +32,7 @@ inline std::string getProSymAt(pst_node_ptr_t node, size_t idx)
 // Program -> { VarDeclStmt | FuncDeclStmt | FuncDef }
 program_ptr_t RSCVisitor::visitProgram(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting program..." << std::endl;
+    info << "RSCVisitor: visiting program..." << node->data.symbol << std::endl;
     context.symbolTable.newScope();
 
     program_ptr_t program = make_program();
@@ -69,14 +69,14 @@ program_ptr_t RSCVisitor::visitProgram(pst_node_ptr_t node)
 // VarDeclStmt -> VarDecl ;
 ret_info_t RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node, bool global)
 {
-    info << "RSCVisitor: visiting var decl stmt..." << std::endl;
+    info << "RSCVisitor: visiting var decl stmt..." << node->data.symbol << std::endl;
     return visitVarDecl(node->firstChild(), global);
 }
 
 // VarDecl -> { VarDef }
 ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node, bool global)
 {
-    info << "RSCVisitor: visiting var decl..." << std::endl;
+    info << "RSCVisitor: visiting var decl..." << node->data.symbol << std::endl;
     ret_info_t retInfo;
     // 获取VarDef列表，遍历处理即可
     pst_children_t children = node->getChildren();
@@ -94,7 +94,7 @@ ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node, bool global)
 // VarDef -> ident : Type [ InitVal ]
 ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
 {
-    info << "RSCVisitor: visiting var def..." << std::endl;
+    info << "RSCVisitor: visiting var def..." << node->data.symbol << std::endl;
     ret_info_t retInfo;
     // 获取ident和Type
     // 暂时不考虑数组，因此剩余子节点暂时不处理
@@ -104,7 +104,7 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
     type_ptr_t type = make_prime_type(PrimitiveType::str2type(typeStr));
     user_ptr_t value = nullptr;
 
-    pst_node_ptr_t initValNode = node->getChildAt(2);
+    pst_node_ptr_t initValNode = node->getChildAt(3);
     user_ptr_t initVal = nullptr;
     if (initValNode->hasChild())
     {
@@ -114,7 +114,9 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
 
     if (global)
     {
-        assert(initVal != nullptr, "global variable must be initialized");
+        assert(
+            initVal != nullptr,
+            format("global variable $ must be initialized", identStr));
         const_val_ptr_t init = cast_const(initVal);
         value = context.symbolTable.registerGlobal(identStr, type, init);
         retInfo.addInstr(value);
@@ -138,12 +140,18 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
 // InitVal -> Expr | { Expr }
 ret_info_t RSCVisitor::visitInitVal(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting init val..." << std::endl;
+    info << "RSCVisitor: visiting init val..." << node->data.symbol << std::endl;
     // 暂时不考虑数组，因此只需要处理Expr即可
-    if (node->childrenCount() == 1)
+    if (node->data.product_opt.value().second[0] == "Expr")
     {
         // InitVal -> Expr
         return visitExpr(node->firstChild());
+    }
+    else
+    {
+        // InitVal -> { Expr }
+        // 暂时不考虑数组，因此不需要处理
+        warn << "array is not supported yet" << std::endl;
     }
     return ret_info_t();
 }
@@ -151,14 +159,14 @@ ret_info_t RSCVisitor::visitInitVal(pst_node_ptr_t node)
 // FuncDeclStmt -> FuncDecl ;
 ret_info_t RSCVisitor::visitFuncDeclStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func decl stmt..." << std::endl;
+    info << "RSCVisitor: visiting func decl stmt..." << node->data.symbol << std::endl;
     return visitFuncDecl(node->firstChild());
 }
 
 // FuncDecl -> ident ( [ParamList] ) [: Type] ;
 ret_info_t RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func decl..." << std::endl;
+    info << "RSCVisitor: visiting func decl..." << node->data.symbol << std::endl;
     pst_children_t children = node->getChildren();
 
     std::string identStr = children[0]->data.symbol;
@@ -181,13 +189,17 @@ ret_info_t RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
         retType = make_prime_type(PrimitiveType::VOID);
     }
 
-    assert(context.functionTable.find(identStr) == nullptr, "function has been declared!");
+    assert(
+        context.functionTable.find(identStr) == nullptr,
+        format("function $ has already been declared", identStr));
     func_ptr_t func = context.functionTable.registerFunction(identStr, retType);
 
     // 解析参数列表，为函数添加参数
-    ret_info_t paramsInfo = visitParamList(paramsNode);
-
-    func->addParams(paramsInfo.instrList);
+    if (paramsNode->hasChild())
+    {
+        ret_info_t paramsInfo = visitParamList(paramsNode->firstChild());
+        func->addParams(paramsInfo.instrList);
+    }
 
     return ret_info_t{instr_list_t{func}};
 }
@@ -195,7 +207,7 @@ ret_info_t RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
 // FuncDef -> FuncDecl Block
 ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func def..." << std::endl;
+    info << "RSCVisitor: visiting func def..." << node->data.symbol << std::endl;
     // 首先检查函数是否已经声明
     // 如果已经声明，则需要对比函数声明和函数定义是否一致
     // 如果没有声明，则直接注册函数
@@ -266,7 +278,7 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
 // FuncCall -> ident ( [ArgList] )
 ret_info_t RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func call..." << std::endl;
+    info << "RSCVisitor: visiting func call..." << node->data.symbol << std::endl;
     // 获取ident和ArgList
     std::string ident = node->getChildAt(0)->data.symbol;
     if (ident == "print")
@@ -305,7 +317,7 @@ ret_info_t RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 // ArgList -> { Expr }
 ret_info_t RSCVisitor::visitArgList(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting arg list..." << std::endl;
+    info << "RSCVisitor: visiting arg list..." << node->data.symbol << std::endl;
     // 获取Expr列表，遍历处理即可
     // 将Expr的结果追加到list之后
     // 将每个Expr的结果列表单独放到context中传递
@@ -325,7 +337,7 @@ ret_info_t RSCVisitor::visitArgList(pst_node_ptr_t node)
 // ParamList -> { Param }
 ret_info_t RSCVisitor::visitParamList(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting param list..." << std::endl;
+    info << "RSCVisitor: visiting param list..." << node->data.symbol << std::endl;
     // 获取Param列表，遍历处理即可
     ret_info_t retInfo;
     pst_children_t children = node->getChildren();
@@ -343,7 +355,7 @@ ret_info_t RSCVisitor::visitParamList(pst_node_ptr_t node)
 // Param -> ident : Type
 ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting param..." << std::endl;
+    info << "RSCVisitor: visiting param..." << node->data.symbol << std::endl;
     // 获取ident和Type
     // 暂时不考虑数组，因此剩余子节点暂时不处理
     std::string identStr = node->getChildAt(0)->data.symbol;
@@ -371,7 +383,7 @@ ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
  */
 ret_info_t RSCVisitor::visitStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting stmt..." << std::endl;
+    info << "RSCVisitor: visiting stmt..." << node->data.symbol << std::endl;
     // 根据产生式的第一个符号判断Stmt的类型
     product_t &product = node->data.product_opt.value();
     symbol_t &firstSym = product.second[0];
@@ -432,7 +444,7 @@ ret_info_t RSCVisitor::visitStmt(pst_node_ptr_t node)
 // Block -> { Stmt }
 ret_info_t RSCVisitor::visitBlock(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting block..." << std::endl;
+    info << "RSCVisitor: visiting block..." << node->data.symbol << std::endl;
     // 遍历Stmt列表，处理每个Stmt
     // 将每个Stmt的结果追加到list之后
     ret_info_t retInfo;
@@ -456,7 +468,7 @@ ret_info_t RSCVisitor::visitBlock(pst_node_ptr_t node)
 // Assignment -> ident = Expr ;
 ret_info_t RSCVisitor::visitAssignment(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting assignment..." << std::endl;
+    info << "RSCVisitor: visiting assignment..." << node->data.symbol << std::endl;
     // 获取ident和Expr
     std::string identStr = node->getChildAt(0)->data.symbol;
     ret_info_t exprInfo = visitExpr(node->getChildAt(1));
@@ -476,7 +488,7 @@ ret_info_t RSCVisitor::visitAssignment(pst_node_ptr_t node)
 // IfStmt -> if ( BoolExpr ) Stmt [else Stmt]
 ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting if stmt..." << std::endl;
+    info << "RSCVisitor: visiting if stmt..." << node->data.symbol << std::endl;
     // 直接将BoolExpr返回值作为If返回info
     ret_info_t retInfo = visitBoolExpr(node->getChildAt(0));
     // 将BoolExpr内容追加到list之后
@@ -512,7 +524,7 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
 // WhileStmt -> while ( BoolExpr ) Stmt
 ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting while stmt..." << std::endl;
+    info << "RSCVisitor: visiting while stmt..." << node->data.symbol << std::endl;
     context.symbolTable.newScope();
     ret_info_t retInfo;
 
@@ -553,7 +565,7 @@ ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
 // ForStmt -> for ( [VarDecl|Assignment] ; [BoolExpr] ; [Assignment] ) Stmt
 ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting for stmt..." << std::endl;
+    info << "RSCVisitor: visiting for stmt..." << node->data.symbol << std::endl;
     context.symbolTable.newScope();
     ret_info_t retInfo;
 
@@ -625,7 +637,7 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
 // Stmt -> break ;
 ret_info_t RSCVisitor::visitBreakStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting break stmt..." << std::endl;
+    info << "RSCVisitor: visiting break stmt..." << node->data.symbol << std::endl;
     jmp_ptr_t instr = make_jmp();
     ret_info_t retInfo{{instr}};
     retInfo.addJmpTarget(instr, JR_BREAK_OUT);
@@ -635,7 +647,7 @@ ret_info_t RSCVisitor::visitBreakStmt(pst_node_ptr_t node)
 // Stmt -> continue ;
 ret_info_t RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting continue stmt..." << std::endl;
+    info << "RSCVisitor: visiting continue stmt..." << node->data.symbol << std::endl;
     jmp_ptr_t instr = make_jmp();
     ret_info_t retInfo{{instr}};
     retInfo.addJmpTarget(instr, JR_CONTINUE);
@@ -645,7 +657,7 @@ ret_info_t RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
 // Stmt -> return [Expr] ;
 ret_info_t RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting return stmt..." << std::endl;
+    info << "RSCVisitor: visiting return stmt..." << node->data.symbol << std::endl;
     size_t childSum = node->childrenCount();
     assert(childSum == 1, "return stmt should have 1 child(ren)");
 
@@ -673,7 +685,7 @@ ret_info_t RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
 // Stmt -> Expr ;
 ret_info_t RSCVisitor::visitExprStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting expr stmt..." << std::endl;
+    info << "RSCVisitor: visiting expr stmt..." << node->data.symbol << std::endl;
     size_t childSum = node->childrenCount();
     assert(childSum == 1, "expr stmt should have 1 child(ren)");
 
@@ -690,7 +702,7 @@ ret_info_t RSCVisitor::visitExprStmt(pst_node_ptr_t node)
 // UnaryExpr -> ( `+` | `-` | `!` ) UnaryExpr | Factor
 ret_info_t RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting unary expr..." << std::endl;
+    info << "RSCVisitor: visiting unary expr..." << node->data.symbol << std::endl;
     pst_node_ptr_t child = node->firstChild();
     if (child->data.symbol == "Factor")
     {
@@ -716,7 +728,7 @@ ret_info_t RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
 // MulExpr -> MulExpr ( `*` | `/` | `%` ) UnaryExpr | UnaryExpr
 ret_info_t RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting mul expr..." << std::endl;
+    info << "RSCVisitor: visiting mul expr..." << node->data.symbol << std::endl;
     pst_node_ptr_t child = node->firstChild();
     if (child->data.symbol == "UnaryExpr")
     {
@@ -733,11 +745,6 @@ ret_info_t RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 
     user_ptr_t lhs = lhsInfo.getValue();
     user_ptr_t rhs = rhsInfo.getValue();
-
-    // 检查类型是否匹配
-    assert(
-        lhs->getType()->getOpType() == rhs->getType()->getOpType(),
-        "type of lhs and rhs should be the same");
 
     // 生成相关指令并追加到list之后
     user_ptr_t instr = nullptr;
@@ -770,7 +777,7 @@ ret_info_t RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 // Expr -> Expr ( `+` | `-` ) MulExpr | MulExpr
 ret_info_t RSCVisitor::visitExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting expr..." << std::endl;
+    info << "RSCVisitor: visiting expr..." << node->data.symbol << std::endl;
     pst_node_ptr_t child = node->firstChild();
     if (child->data.symbol == "MulExpr")
     {
@@ -778,8 +785,16 @@ ret_info_t RSCVisitor::visitExpr(pst_node_ptr_t node)
         return visitMulExpr(child);
     }
 
+    assert(
+        child->data.symbol == "Expr",
+        format(
+            "first child of expr should be expr or mul expr, but got $",
+            child->data.symbol));
+
     // Expr ( `+` | `-` ) MulExpr
-    assert(node->childrenCount() == 2, "expr should have 1 or 2 child(ren)");
+    assert(
+        node->childrenCount() == 2,
+        format("expr should have 1 or 2 child(ren), but got $", node->childrenCount()));
 
     auto lhsInfo = visitExpr(child);
     auto rhsInfo = visitMulExpr(node->getChildAt(1));
@@ -788,11 +803,6 @@ ret_info_t RSCVisitor::visitExpr(pst_node_ptr_t node)
 
     user_ptr_t lhs = lhsInfo.getValue();
     user_ptr_t rhs = rhsInfo.getValue();
-
-    // 检查类型是否匹配
-    assert(
-        lhs->getType()->getOpType() == rhs->getType()->getOpType(),
-        "type of lhs and rhs should be the same");
 
     // 生成相关指令并追加到list之后
     user_ptr_t instr = nullptr;
@@ -821,7 +831,7 @@ ret_info_t RSCVisitor::visitExpr(pst_node_ptr_t node)
 // RelExpr -> Expr ( `<` | `<=` | `>` | `>=` | `==` | `!=` ) Expr | Expr
 ret_info_t RSCVisitor::visitRelExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting rel expr..." << std::endl;
+    info << "RSCVisitor: visiting rel expr..." << node->data.symbol << std::endl;
     // 在这一步，将底层传来的AlphaStmtRetInfo转换为BetaStmtRetInfo
     // 构造跳转指令，构造BasicBlock
     size_t childNum = node->childrenCount();
@@ -852,7 +862,7 @@ ret_info_t RSCVisitor::visitRelExpr(pst_node_ptr_t node)
     {
         assert(childNum == 2, "rel expr should have 1 or 2 child(ren)");
 
-        ret_info_t lhsInfo = visitRelExpr(node->firstChild());
+        ret_info_t lhsInfo = visitExpr(node->firstChild());
         ret_info_t rhsInfo = visitExpr(node->getChildAt(1));
 
         // 在产生式中获取具体的关系运算符
@@ -887,7 +897,7 @@ ret_info_t RSCVisitor::visitRelExpr(pst_node_ptr_t node)
 // AndExpr -> AndExpr `&&` RelExpr | RelExpr
 ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting and expr..." << std::endl;
+    info << "RSCVisitor: visiting and expr..." << node->data.symbol << std::endl;
     size_t childNum = node->childrenCount();
     pst_node_ptr_t child = node->firstChild();
 
@@ -897,11 +907,18 @@ ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
         // 直接返回RelExpr的结果即可
         return visitRelExpr(child);
     }
-    assert(childNum == 2, "and expr should have 1 or 2 child(ren)");
+
+    assert(
+        child->data.symbol == "AndExpr",
+        format("first child of and expr should be AndExpr or RelExpr, but got $", child->data.symbol));
+
+    assert(
+        childNum == 2,
+        format("AndExpr should have 1 or 2 child(ren), but got $", childNum));
 
     // 处理与运算
     auto lhsInfo = visitAndExpr(child);
-    auto rhsInfo = visitAndExpr(node->getChildAt(1));
+    auto rhsInfo = visitRelExpr(node->getChildAt(1));
 
     ret_info_t lhs = lhsInfo;
     ret_info_t rhs = rhsInfo;
@@ -923,7 +940,7 @@ ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
 // OrExpr -> OrExpr `||` AndExpr | AndExpr
 ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting or expr..." << std::endl;
+    info << "RSCVisitor: visiting or expr..." << node->data.symbol << std::endl;
     size_t childNum = node->childrenCount();
     pst_node_ptr_t child = node->firstChild();
     if (childNum == 1 && child->data.symbol == "AndExpr")
@@ -933,11 +950,15 @@ ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
         return visitAndExpr(child);
     }
 
+    assert(
+        child->data.symbol == "OrExpr",
+        format("first child of or expr should be OrExpr or AndExpr, but got $", child->data.symbol));
+
     assert(childNum == 2, "or expr should have 1 or 2 child(ren)");
 
     // 处理或运算
     auto lhsInfo = visitOrExpr(child);
-    auto rhsInfo = visitOrExpr(node->getChildAt(1));
+    auto rhsInfo = visitAndExpr(node->getChildAt(1));
 
     ret_info_t lhs = lhsInfo;
     ret_info_t rhs = rhsInfo;
@@ -958,7 +979,7 @@ ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
 // BoolExpr -> OrExpr
 ret_info_t RSCVisitor::visitBoolExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting bool expr..." << std::endl;
+    info << "RSCVisitor: visiting bool expr..." << node->data.symbol << std::endl;
     // 仅有一种情况，即OrExpr，直接返回即可
     return visitOrExpr(node->firstChild());
 }
@@ -966,19 +987,23 @@ ret_info_t RSCVisitor::visitBoolExpr(pst_node_ptr_t node)
 // Factor -> (Expr), LVal, Literal, FuncCall
 ret_info_t RSCVisitor::visitFactor(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting factor..." << std::endl;
+    info << "RSCVisitor: visiting factor..." << node->data.symbol << std::endl;
     pst_node_ptr_t child = node->firstChild();
 
     // 先处理(Expr), LVal, FuncCall
     if (child->data.symbol == "Expr")
     {
         // (Expr)
-        return visitExpr(child);
+        ret_info_t retInfo = visitExpr(child);
+        assert(retInfo.hasValue(), "expr should have value");
+        return retInfo;
     }
     else if (child->data.symbol == "LVal")
     {
         // LVal
-        return visitLVal(child);
+        ret_info_t retInfo = visitLVal(child);
+        assert(retInfo.hasValue(), "lval should have value");
+        return retInfo;
     }
     else if (child->data.symbol == "FuncCall")
     {
@@ -988,13 +1013,15 @@ ret_info_t RSCVisitor::visitFactor(pst_node_ptr_t node)
     else
     {
         // Literal
-        return visitLiteral(child);
+        ret_info_t retInfo = visitLiteral(child);
+        assert(retInfo.hasValue(), "literal should have value");
+        return retInfo;
     }
 }
 
 ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting lval..." << std::endl;
+    info << "RSCVisitor: visiting lval..." << node->data.symbol << std::endl;
     user_ptr_t instr = context.symbolTable.find(node->firstChild()->data.symbol);
 
     assert(
@@ -1007,7 +1034,7 @@ ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
 // Factor -> int, real, char, string, true, false
 ret_info_t RSCVisitor::visitLiteral(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting literal..." << std::endl;
+    info << "RSCVisitor: visiting literal..." << node->data.symbol << std::endl;
     // 如果node自身是终结符节点，则可能是char, string, true, false
     // 先处理true, false，剩下的就是char, string
     if (_is_term_node(node))

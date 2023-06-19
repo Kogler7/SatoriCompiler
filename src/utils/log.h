@@ -32,7 +32,6 @@
 	if (level <= DEBUG_LEVEL) \
 	std::cout
 
-
 #define assert(x, msg)                                    \
 	if (!(x))                                             \
 	{                                                     \
@@ -41,5 +40,6 @@
 		std::cout << __FILE__ << ":" << __LINE__;         \
 		std::cout << "\033[0m" << std::endl;              \
 		print_ln(msg);                                    \
+		throw std::runtime_error("Assertion Failed");     \
 		exit(1);                                          \
 	}

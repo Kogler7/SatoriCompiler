@@ -10,9 +10,15 @@
 
 #include "ret_info.h"
 
+bool VisitorRetInfo::hasValue() const
+{
+    return !valueList.empty();
+}
+
 user_ptr_t VisitorRetInfo::getValue() const
 {
-    assert(valueList.size() == 1, "VisitorRetInfo: Value list size is not 1");
+    assert(!valueList.empty(), "VisitorRetInfo::getValue: Value list is empty");
+    assert(valueList.size() == 1, "VisitorRetInfo::getValue: Value list size is not 1");
     return valueList.front();
 }
 

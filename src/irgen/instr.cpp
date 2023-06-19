@@ -229,25 +229,25 @@ std::string Program::dump() const
 
 std::string ConstantInt::dump() const
 {
-    return std::to_string(value);
+    return std::to_string(constVal);
 }
 
 std::string ConstantReal::dump() const
 {
-    return std::to_string(value);
+    return std::to_string(constVal);
 }
 
 std::string ConstantBool::dump() const
 {
-    return value ? "true" : "false";
+    return constVal ? "true" : "false";
 }
 
 std::string ConstantChar::dump() const
 {
-    return "'" + std::string(1, value) + "'";
+    return "'" + std::string(1, constVal) + "'";
 }
 
 std::string ConstantString::dump() const
 {
-    return "\"" + value + "\"";
+    return "\"" + constVal + "\"";
 }

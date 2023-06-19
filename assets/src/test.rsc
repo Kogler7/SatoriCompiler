@@ -3,7 +3,7 @@
 */
 
 decl func add(x : int, y : int) : int;
-decl func add(x : int, y : int, z : real, s : str) : int;
+decl func add2(x : int, y : int, z : real, s : str) : int;
 func sub() { return; }
 
 var x : int = 10;                // integer variable
@@ -12,7 +12,7 @@ var y : bool = true;             // integer variable in scientific notation
 
 func main() : int
 {
-    var a : int = 10, b : int[10] = {1, 2, 3}, c : bool = false;
+    var a : int = 10, b : int = 1, c : bool = false;
     var d : int = +3e10;                    // integer variable in scientific notation
     var e : int = 0x3f;                     // integer variable in hexadecimal notation
     var o : real = 3.14;                    // float variable
