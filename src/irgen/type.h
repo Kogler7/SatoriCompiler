@@ -98,7 +98,9 @@ public:
             return PrimitiveType::CHAR;
         if (str == "str")
             return PrimitiveType::STR;
-        assert(false, "unknown primitive type");
+        assert(
+            false,
+            format("unknown primitive type: $", str));
         return PrimitiveType::INT;
     }
 

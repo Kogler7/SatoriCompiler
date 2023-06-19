@@ -21,7 +21,7 @@ class RSCVisitor
     Context context;
 
 public:
-    ret_info_t visitProgram(pst_node_ptr_t node);
+    program_ptr_t visitProgram(pst_node_ptr_t node);
 
     ret_info_t visitVarDeclStmt(pst_node_ptr_t node, bool global = false);
     ret_info_t visitVarDecl(pst_node_ptr_t node, bool global = false);
