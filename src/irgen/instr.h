@@ -28,6 +28,21 @@ enum CompareType
     CT_LE = 'L',
 };
 
+enum JumpReason
+{
+    JR_FALL_THROUGH,
+    JR_BREAK_OUT,
+    JR_CONTINUE,
+    JR_TRUE_EXIT,
+    JR_FALSE_EXIT,
+};
+
+class JumpTarget;
+
+using target_ptr_t = std::shared_ptr<JumpTarget>;
+using target_list_t = std::list<target_ptr_t>;
+#define make_target() std::make_shared<JumpTarget>()
+
 inline CompareType opTermToType(std::string opStr)
 {
     if (opStr == "==")
@@ -82,7 +97,7 @@ using br_ptr_t = std::shared_ptr<BrInstr>;
 
 class JmpInstr; // 无条件跳转
 using jmp_ptr_t = std::shared_ptr<JmpInstr>;
-#define make_jmp(target) std::make_shared<JmpInstr>(target)
+#define make_jmp() std::make_shared<JmpInstr>()
 
 // Unary Operations （一元运算）
 class NegInstr;
@@ -300,21 +315,29 @@ public:
     std::string dump() const override;
 };
 
+class JumpTarget
+{
+public:
+    block_ptr_t target;
+
+    JumpTarget() : target(nullptr) {}
+    void patch(block_ptr_t target)
+    {
+        this->target = target;
+    }
+};
+
 class BrInstr : public User
 {
     use_ptr_t cond;
-    block_ptr_t tc, fc;
+    target_ptr_t tc, fc;
 
 public:
     explicit BrInstr(value_ptr_t cond)
-        : cond(make_use(std::move(cond), this)), tc(nullptr), fc(nullptr) {}
-    BrInstr(value_ptr_t cond, const block_ptr_t &tc, const block_ptr_t &fc)
-        : cond(make_use(std::move(cond), this)), tc(std::move(tc)), fc(std::move(fc)) {}
+        : cond(make_use(std::move(cond), this)), tc(make_target()), fc(make_target()) {}
     ~BrInstr() = default;
 
-    void setTrueTarget(const block_ptr_t &tc) { this->tc = tc; }
-
-    void setFalseTarget(const block_ptr_t &fc) { this->fc = fc; }
+    std::pair<target_ptr_t, target_ptr_t> getTargets() { return {tc, fc}; }
 
     bool isTerminator() override { return true; }
 
@@ -323,14 +346,13 @@ public:
 
 class JmpInstr : public User
 {
-    block_ptr_t target;
+    target_ptr_t target;
 
 public:
-    JmpInstr() : target(nullptr) {}
-    explicit JmpInstr(const block_ptr_t &target) : target(std::move(target)) {}
+    JmpInstr() : target(make_target()) {}
     ~JmpInstr() = default;
 
-    void setTarget(const block_ptr_t &target) { this->target = target; }
+    target_ptr_t getTarget() { return target; }
 
     bool isTerminator() override { return true; }
 
@@ -437,7 +459,7 @@ public:
 
 class InstrBlock : public User
 {
-    std::vector<use_ptr_t> instrs;
+    std::list<use_ptr_t> instrs;
 
 public:
     InstrBlock() = default;
@@ -445,13 +467,20 @@ public:
     ~InstrBlock() = default;
 
     void addInstr(user_ptr_t instr) { instrs.push_back(make_use(instr, this)); }
+    void addInstrList(std::list<user_ptr_t> instrList)
+    {
+        for (auto &instr : instrList)
+        {
+            instrs.push_back(make_use(instr, this));
+        }
+    }
 
     std::string dump() const override;
 };
 
 class Program : public User
 {
-    std::vector<use_ptr_t> funcs;
+    std::list<use_ptr_t> funcs;
 
 public:
     Program() = default;

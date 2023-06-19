@@ -13,38 +13,42 @@
 #include "instr.h"
 #include "use.h"
 
+#include <map>
 #include <list>
-#include <variant>
-
-struct AlphaStmtRetInfo
-{
-	std::list<user_ptr_t> list;
-};
-
-struct BetaStmtRetInfo
-{
-	std::list<user_ptr_t> list;
-	std::list<jmp_ptr_t> fallList;
-	std::list<br_ptr_t> trueList;
-	std::list<br_ptr_t> falseList;
-};
-
-struct ThetaStmtRetInfo
-{
-	std::list<user_ptr_t> list;
-	jmp_ptr_t jmpInstr;
-};
 
 using instr_list_t = std::list<user_ptr_t>;
-using br_list_t = std::list<br_ptr_t>;
-using jmp_list_t = std::list<jmp_ptr_t>;
 
-using StmtRetInfo = std::variant<AlphaStmtRetInfo, BetaStmtRetInfo, ThetaStmtRetInfo>;
+class VisitorRetInfo
+{
+public:
+	instr_list_t instrList;
+	instr_list_t valueList;
+	std::map<JumpReason, target_list_t> gotoListMap;
 
-#define is_alpha(info) (std::holds_alternative<AlphaStmtRetInfo>(info))
-#define is_beta(info) (std::holds_alternative<BetaStmtRetInfo>(info))
-#define is_theta(info) (std::holds_alternative<ThetaStmtRetInfo>(info))
+	user_ptr_t getValue() const;
+	VisitorRetInfo &setValue(user_ptr_t value);
 
-#define get_alpha(info) (std::get<AlphaStmtRetInfo>(info))
-#define get_beta(info) (std::get<BetaStmtRetInfo>(info))
-#define get_theta(info) (std::get<ThetaStmtRetInfo>(info))
+	VisitorRetInfo &addJmpTarget(jmp_ptr_t instr, JumpReason reason);
+	VisitorRetInfo &addBrTarget(br_ptr_t instr);
+	VisitorRetInfo &addInstr(user_ptr_t instr);
+	VisitorRetInfo &addValue(user_ptr_t value);
+
+	VisitorRetInfo &appendInstrList(instr_list_t &list);
+	VisitorRetInfo &appendValueList(instr_list_t &list);
+	VisitorRetInfo &appendTrueList(target_list_t &list);
+	VisitorRetInfo &appendFalseList(target_list_t &list);
+	VisitorRetInfo &appendJmpList(target_list_t &list, JumpReason reason);
+
+	VisitorRetInfo &unionInfo(VisitorRetInfo &another);
+
+	target_list_t &getTargetsOf(JumpReason reason);
+};
+
+using ret_info = VisitorRetInfo;
+
+template<typename T>
+inline std::list<T> &list_concat(std::list<T> &list1, std::list<T> &list2)
+{
+	list1.splice(list1.end(), list2);
+	return list1;
+}

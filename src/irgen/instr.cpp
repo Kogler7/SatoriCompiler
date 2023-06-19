@@ -104,16 +104,19 @@ std::string RetInstr::dump() const
 
 std::string BrInstr::dump() const
 {
+    assert(tc->target != nullptr, "BrInstr: true target is nullptr");
+    assert(fc->target != nullptr, "BrInstr: false target is nullptr");
     return format(
         "\tbr i1 $, label $, label $\n",
         getValueTag(cond->getValue().get()),
-        getLabelTag(tc.get()),
-        getLabelTag(fc.get()));
+        getLabelTag(tc->target.get()),
+        getLabelTag(fc->target.get()));
 }
 
 std::string JmpInstr::dump() const
 {
-    return format("\tbr label $\n", getLabelTag(target.get()));
+    assert(target != nullptr, "JmpInstr: target is nullptr");
+    return format("\tbr label $\n", getLabelTag(target->target.get()));
 }
 
 std::string NegInstr::dump() const

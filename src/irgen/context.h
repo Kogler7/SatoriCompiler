@@ -13,15 +13,13 @@
 #include "instr.h"
 #include "sym_tbl.h"
 
-#include <vector>
-
-class Context;
+#include <list>
 
 class Context
 {
 public:
-    program_ptr_t programSsa;
-    std::list<alloc_ptr_t> allocList;
+    program_ptr_t program;
+    std::list<alloc_ptr_t> staticList;
 	SymbolTable symbolTable;
     FunctionTable functionTable;
 	void clear();
