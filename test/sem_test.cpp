@@ -9,7 +9,6 @@
  */
 
 #include "test.h"
-#include "irgen/sem.h"
 #include "lexer/lexer.h"
 #include "parser/syntax.h"
 #include "parser/slr1/parser.h"
