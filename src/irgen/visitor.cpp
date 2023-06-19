@@ -300,6 +300,20 @@ ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
     return ret_info_t().setValue(value); // 空指令列表，值为value
 }
 
+/**
+ * Stmt -> Assignment `;`
+ *     |   VarDeclStmt
+ *     |   `if` `(` BoolExpr `)` Stmt [ `else` Stmt ]
+ *     |   `while` `(` BoolExpr `)` Stmt
+ *     |   `for` `(` [ VarDecl | Assignment ] `;` [ BoolExpr ] `;` [ Assignment ] `)` Stmt
+ *     |   `break` `;`
+ *     |   `continue` `;`
+ *     |   `print` Expr `;`
+ *     |   `return` [ Expr ] `;`
+ *     |   [ Expr ] `;`
+ *     |   Block
+ *     ;
+ */
 ret_info_t RSCVisitor::visitStmt(pst_node_ptr_t node)
 {
     return ret_info_t();
@@ -409,7 +423,7 @@ ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
     stmtInfo.backpatch(JR_CONTINUE, condBB);
 
     // while最后跳转到condBB
-    retInfo.addInstr(make_br(condBB));
+    retInfo.addInstr(make_jmp(condBB));
 
     context.symbolTable.popScope();
     return retInfo;
@@ -468,7 +482,7 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
         ret_info_t assignInfo = visitAssignment(assignNode->firstChild());
         lastBB->addInstrList(assignInfo.instrList);
     }
-    lastBB->addInstr(make_br(condBB));
+    lastBB->addInstr(make_jmp(boolExprNode->hasChild() ? condBB : stmtBB));
     retInfo.addInstr(lastBB);
 
     // 解析Stmt

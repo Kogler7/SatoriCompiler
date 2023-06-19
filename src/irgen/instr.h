@@ -97,7 +97,7 @@ using br_ptr_t = std::shared_ptr<BrInstr>;
 
 class JmpInstr; // 无条件跳转
 using jmp_ptr_t = std::shared_ptr<JmpInstr>;
-#define make_jmp() std::make_shared<JmpInstr>()
+#define make_jmp(target) std::make_shared<JmpInstr>(target)
 
 // Unary Operations （一元运算）
 class NegInstr;
@@ -350,6 +350,10 @@ class JmpInstr : public User
 
 public:
     JmpInstr() : target(make_target()) {}
+    JmpInstr(block_ptr_t target) : target(make_target())
+    {
+        this->target->patch(target);
+    }
     ~JmpInstr() = default;
 
     target_ptr_t getTarget() { return target; }
