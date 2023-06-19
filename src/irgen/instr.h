@@ -61,6 +61,10 @@ inline CompareType opTermToType(std::string opStr)
     return CT_EQ;
 }
 
+class LabelInstr;
+using label_ptr_t = std::shared_ptr<LabelInstr>;
+#define make_label(name) std::make_shared<LabelInstr>(name)
+
 // Memory Access and Addressing Operations （内存访问和寻址操作）
 class AllocInstr;
 using alloc_ptr_t = std::shared_ptr<AllocInstr>;
@@ -158,6 +162,16 @@ using const_char_ptr_t = std::shared_ptr<ConstantChar>;
 class ConstantString;
 using const_str_ptr_t = std::shared_ptr<ConstantString>;
 #define make_const_str(value) std::make_shared<ConstantString>(value)
+
+class LabelInstr : public User
+{
+public:
+    LabelInstr() = default;
+    explicit LabelInstr(const std::string &name) : User(nullptr, name) {}
+    ~LabelInstr() = default;
+
+    std::string dump() const override;
+};
 
 class AllocInstr : public User
 {
@@ -318,10 +332,10 @@ public:
 class JumpTarget
 {
 public:
-    block_ptr_t target;
+    user_ptr_t target;
 
     JumpTarget() : target(nullptr) {}
-    void patch(block_ptr_t target)
+    void patch(user_ptr_t target)
     {
         this->target = target;
     }

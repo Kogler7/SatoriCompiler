@@ -23,7 +23,7 @@ std::string getIdOf(const Value *v)
     return std::to_string(valueIdMap[v]);
 }
 
-inline std::string getLabelTag(const InstrBlock *b)
+inline std::string getLabelTag(const Value *b)
 {
     return format("l_$_$", b->getName(), getIdOf(b));
 }
@@ -31,6 +31,11 @@ inline std::string getLabelTag(const InstrBlock *b)
 inline std::string getValueTag(const Value *v)
 {
     return format("%v_$_$", v->getName(), getIdOf(v));
+}
+
+std::string LabelInstr::dump() const
+{
+    return format("$:\n", getLabelTag(this));
 }
 
 std::string AllocInstr::dump() const

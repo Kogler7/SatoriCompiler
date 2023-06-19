@@ -43,7 +43,9 @@ public:
 
 	target_list_t &getTargetsOf(JumpReason reason);
 
-	VisitorRetInfo & backpatch(JumpReason reason, block_ptr_t instr);
+	bool hasFallThrough() const;
+
+	VisitorRetInfo & backpatch(JumpReason reason, user_ptr_t instr);
 };
 
 using ret_info_t = VisitorRetInfo;

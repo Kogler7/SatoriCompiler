@@ -89,6 +89,13 @@ target_list_t &VisitorRetInfo::getTargetsOf(JumpReason reason)
     return gotoListMap.at(reason);
 }
 
+bool VisitorRetInfo::hasFallThrough() const
+{
+    if (gotoListMap.count(JR_FALL_THROUGH))
+        return !gotoListMap.at(JR_FALL_THROUGH).empty();
+    return false;
+}
+
 VisitorRetInfo &VisitorRetInfo::unionInfo(VisitorRetInfo &another)
 {
     instrList.splice(instrList.end(), another.instrList);
@@ -98,7 +105,7 @@ VisitorRetInfo &VisitorRetInfo::unionInfo(VisitorRetInfo &another)
     return *this;
 }
 
-VisitorRetInfo & VisitorRetInfo::backpatch(JumpReason reason, block_ptr_t instr)
+VisitorRetInfo &VisitorRetInfo::backpatch(JumpReason reason, user_ptr_t instr)
 {
     target_list_t &list = getTargetsOf(reason);
     for (auto &target : list)

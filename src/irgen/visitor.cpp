@@ -316,6 +316,60 @@ ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
  */
 ret_info_t RSCVisitor::visitStmt(pst_node_ptr_t node)
 {
+    // 根据产生式的第一个符号判断Stmt的类型
+    product_t &product = node->data.product_opt.value();
+    symbol_t &firstSym = product.second[0];
+
+    if (firstSym == "Assignment")
+    {
+        return visitAssignment(node->firstChild());
+    }
+    else if (firstSym == "VarDeclStmt")
+    {
+        return visitVarDeclStmt(node->firstChild());
+    }
+    else if (firstSym == "if")
+    {
+        return visitIfStmt(node);
+    }
+    else if (firstSym == "while")
+    {
+        return visitWhileStmt(node);
+    }
+    else if (firstSym == "for")
+    {
+        return visitForStmt(node);
+    }
+    else if (firstSym == "break")
+    {
+        return visitBreakStmt(node);
+    }
+    else if (firstSym == "continue")
+    {
+        return visitContinueStmt(node);
+    }
+    else if (firstSym == "print")
+    {
+        warn << "print function is not supported yet" << std::endl;
+        // return visitPrintStmt(node);
+    }
+    else if (firstSym == "return")
+    {
+        return visitReturnStmt(node);
+    }
+    else if (firstSym == "Block")
+    {
+        return visitBlock(node->firstChild());
+    }
+    else // [Expr]
+    {
+        pst_node_ptr_t opt = node->firstChild();
+        if (opt->hasChild())
+        {
+            // Stmt -> [ Expr ] ; (Optional)
+            return visitExprStmt(opt->firstChild());
+        }
+    }
     return ret_info_t();
 }
 
@@ -331,6 +385,13 @@ ret_info_t RSCVisitor::visitBlock(pst_node_ptr_t node)
         ret_info_t stmtInfo = visitStmt(child);
         // 将Stmt的所有信息整合到retInfo中
         retInfo.unionInfo(stmtInfo);
+        // 尝试回填fall through
+        if (retInfo.hasFallThrough())
+        {
+            label_ptr_t fallThroughLabel = make_label("fall");
+            retInfo.addInstr(fallThroughLabel);
+            retInfo.backpatch(JR_FALL_THROUGH, fallThroughLabel);
+        }
     }
     return retInfo;
 }
