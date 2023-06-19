@@ -25,9 +25,10 @@ std::string PrimitiveType::dump() const
         return "i8";
     case STR:
         return "str";
+    case VOID:
+        return "void";
     default:
-        error << "unknown primitive type" << std::endl;
-        exit(1);
+        assert(false, "PrimitiveType::dump: unknown primitive type");
     }
     return "";
 }

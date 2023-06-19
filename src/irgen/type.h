@@ -138,3 +138,10 @@ public:
 protected:
     type_ptr_t ptr;
 };
+
+#define is_prim_int(type) (type->getType() == PrimitiveType::INT)
+#define is_prim_real(type) (type->getType() == PrimitiveType::REAL)
+#define is_prim_bool(type) (type->getType() == PrimitiveType::BOOL)
+#define is_prim_char(type) (type->getType() == PrimitiveType::CHAR)
+#define is_prim_str(type) (type->getType() == PrimitiveType::STR)
+#define is_prim_void(type) (type->getType() == PrimitiveType::VOID)

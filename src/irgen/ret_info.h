@@ -47,6 +47,7 @@ public:
 	bool hasFallThrough() const;
 
 	VisitorRetInfo & backpatch(JumpReason reason, user_ptr_t instr);
+	VisitorRetInfo & shiftReason(JumpReason from, JumpReason to);
 };
 
 using ret_info_t = VisitorRetInfo;

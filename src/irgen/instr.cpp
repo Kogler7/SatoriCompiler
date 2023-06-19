@@ -14,6 +14,26 @@
 #include <map>
 #include <string>
 
+std::string opType2Str(OperandType op)
+{
+    switch (op)
+    {
+    case OT_UNSIGNED:
+        return "u";
+    case OT_SIGNED:
+        return "s";
+    case OT_FLOAT:
+        return "f";
+    default:
+        assert(false, "opType2Str: unknown operand type");
+    }
+}
+
+std::string cmpType2Str(CompareType cmp)
+{
+    return std::string(1, cmp);
+}
+
 std::string getIdOf(const Value *v)
 {
     static size_t id = 0;
@@ -143,7 +163,7 @@ std::string AddInstr::dump() const
     return format(
         "\t$ = $add $ $, $\n",
         getValueTag(this),
-        opType,
+        opType2Str(opType),
         getValueTag(lhs->getValue().get()),
         getValueTag(rhs->getValue().get()));
 }
@@ -153,7 +173,7 @@ std::string SubInstr::dump() const
     return format(
         "\t$ = $sub $ $, $\n",
         getValueTag(this),
-        opType,
+        opType2Str(opType),
         getValueTag(lhs->getValue().get()),
         getValueTag(rhs->getValue().get()));
 }
@@ -163,7 +183,7 @@ std::string MulInstr::dump() const
     return format(
         "\t$ = $mul $ $, $\n",
         getValueTag(this),
-        opType,
+        opType2Str(opType),
         getValueTag(lhs->getValue().get()),
         getValueTag(rhs->getValue().get()));
 }
@@ -173,7 +193,7 @@ std::string DivInstr::dump() const
     return format(
         "\t$ = $div $ $, $\n",
         getValueTag(this),
-        opType,
+        opType2Str(opType),
         getValueTag(lhs->getValue().get()),
         getValueTag(rhs->getValue().get()));
 }
@@ -183,7 +203,7 @@ std::string RemInstr::dump() const
     return format(
         "\t$ = $rem $ $, $\n",
         getValueTag(this),
-        opType,
+        opType2Str(opType),
         getValueTag(lhs->getValue().get()),
         getValueTag(rhs->getValue().get()));
 }
@@ -193,8 +213,8 @@ std::string CmpInstr::dump() const
     std::string s = format(
         "\t$ = $cmp $ $ $, $\n",
         getValueTag(this),
-        opType,
-        cmpType,
+        opType2Str(opType),
+        cmpType2Str(cmpType),
         getValueTag(lhs->getValue().get()),
         getValueTag(rhs->getValue().get()));
     return s;
@@ -223,7 +243,7 @@ std::string Program::dump() const
     {
         s += func->getValue()->dump();
     }
-    
+
     return s;
 }
 

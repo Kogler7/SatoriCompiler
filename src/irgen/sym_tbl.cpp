@@ -61,6 +61,7 @@ user_ptr_t SymbolTable::registerGlobal(const std::string &name, type_ptr_t type,
 {
 	scope_ptr_t top = tableStk.top();
 	assert(top != nullptr, "SymbolTable::registerGlobal: top is nullptr");
+	assert(top->isRoot(), "SymbolTable::registerGlobal: not in root scope");
 	assert(!top->has(name), "SymbolTable::registerGlobal: symbol already exists");
 	global_ptr_t global = make_global(name, type, init);
 	top->insert(name, global);

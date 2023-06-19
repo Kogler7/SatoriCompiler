@@ -304,6 +304,16 @@ public:
         return params[name];
     }
 
+    std::vector<user_ptr_t> getParams()
+    {
+        std::vector<user_ptr_t> r;
+        for (auto &[_, param] : params)
+        {
+            r.push_back(param);
+        }
+        return r;
+    }
+
     bool matchRetType(PrimitiveType::PrimType pType)
     {
         return pType == retType->getType();
@@ -425,7 +435,7 @@ class NegInstr : public User
 
 public:
     explicit NegInstr(value_ptr_t from, OperandType opType)
-        : from(make_use(std::move(from), this)), opType(opType), User(nullptr, "neg") {}
+        : from(make_use(std::move(from), this)), opType(opType), User(from->getType(), "neg") {}
     ~NegInstr() = default;
 
     std::string dump() const override;

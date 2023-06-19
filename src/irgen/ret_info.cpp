@@ -91,8 +91,7 @@ VisitorRetInfo &VisitorRetInfo::appendJmpList(target_list_t &list, JumpReason re
 
 target_list_t &VisitorRetInfo::getTargetsOf(JumpReason reason)
 {
-    assert(gotoListMap.count(reason), "VisitorRetInfo: No jump target for this reason");
-    return gotoListMap.at(reason);
+    return gotoListMap[reason];
 }
 
 bool VisitorRetInfo::hasFallThrough() const
@@ -117,5 +116,12 @@ VisitorRetInfo &VisitorRetInfo::backpatch(JumpReason reason, user_ptr_t instr)
     for (auto &target : list)
         target->patch(instr);
     list.clear();
+    return *this;
+}
+
+VisitorRetInfo & VisitorRetInfo::shiftReason(JumpReason from, JumpReason to)
+{
+    target_list_t &list = getTargetsOf(from);
+    gotoListMap[to].splice(gotoListMap[to].end(), list);
     return *this;
 }
