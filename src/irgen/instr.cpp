@@ -213,10 +213,17 @@ std::string InstrBlock::dump() const
 std::string Program::dump() const
 {
     std::string s;
+
+    for (auto &global : globals)
+    {
+        s += global->getValue()->dump();
+    }
+
     for (auto &func : funcs)
     {
         s += func->getValue()->dump();
     }
+    
     return s;
 }
 

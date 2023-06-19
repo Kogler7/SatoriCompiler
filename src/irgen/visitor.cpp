@@ -32,13 +32,16 @@ ret_info_t RSCVisitor::visitProgram(pst_node_ptr_t node)
     context.symbolTable.newScope();
     ret_info_t retInfo;
 
+    program_ptr_t program = make_program();
+
     pst_children_t children = node->getChildren();
 
     for (pst_node_ptr_t child : children)
     {
         if (child->data.symbol == "VarDeclStmt")
         {
-            visitVarDeclStmt(child, true);
+            ret_info_t globalInfo = visitVarDeclStmt(child, true);
+            program->addGlobal(globalInfo.getValue());
         }
         else if (child->data.symbol == "FuncDeclStmt")
         {
@@ -46,7 +49,8 @@ ret_info_t RSCVisitor::visitProgram(pst_node_ptr_t node)
         }
         else if (child->data.symbol == "FuncDef")
         {
-            visitFuncDef(child);
+            ret_info_t funcInfo = visitFuncDef(child);
+            program->addFunc(funcInfo.getValue());
         }
         else
         {
@@ -77,6 +81,7 @@ ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node, bool global)
         ret_info_t varInfo = visitVarDef(child, global);
         // 将VarDef的结果追加到list之后
         retInfo.appendInstrList(varInfo.instrList);
+        retInfo.setValue(varInfo.getValue());
     }
     return retInfo;
 }
@@ -118,6 +123,8 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
             retInfo.addInstr(storeInstr);
         }
     }
+
+    retInfo.setValue(value);
 
     return retInfo;
 }
@@ -243,7 +250,7 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     func->addBlock(mainBB);
     func->addBlock(exitBB);
 
-    return ret_info_t{std::list<user_ptr_t>{func}};
+    return ret_info_t{std::list<user_ptr_t>{func}}.setValue(func);
 }
 
 // FuncCall -> ident ( [ArgList] )
@@ -279,6 +286,7 @@ ret_info_t RSCVisitor::visitFuncCall(pst_node_ptr_t node)
     callInstr->addArgs(args);
     retInfo.appendInstrList(argListInfo.instrList);
     retInfo.addInstr(callInstr);
+    retInfo.setValue(callInstr);
 
     return retInfo;
 }

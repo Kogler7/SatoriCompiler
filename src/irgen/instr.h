@@ -537,12 +537,14 @@ public:
 
 class Program : public User
 {
+    std::list<use_ptr_t> globals;
     std::list<use_ptr_t> funcs;
 
 public:
     Program() = default;
     ~Program() = default;
 
+    void addGlobal(user_ptr_t global) { globals.push_back(make_use(std::move(global), this)); }
     void addFunc(user_ptr_t func) { funcs.push_back(make_use(std::move(func), this)); }
 
     std::string dump() const override;
