@@ -303,7 +303,6 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     // 构建函数的主体基本块 main basic block
     block_ptr_t mainBB = make_block("body");
     mainBB->addInstrList(blockInfo.instrList);
-    entryBB->addInstr(make_br(mainBB));
 
     // 将entry, main, exit基本块追加到函数中
     func->addBlock(entryBB);
@@ -555,11 +554,17 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
+    // 获取BoolExpr返回值
+    ret_info_t retInfo;
+    ret_info_t boolInfo = visitBoolExpr(node->getChildAt(0));
+    // 构造条件基本块
+    block_ptr_t condBB = make_block("if.cond");
+    condBB->addInstrList(boolInfo.instrList);
+    retInfo.addInstr(condBB);
+    retInfo.appendFalseList(boolInfo.getTargetsOf(JR_FALSE_EXIT));
+
+    // 构造条件为真时的作用域
     context.symbolTable.newScope();
-    // 直接将BoolExpr返回值作为If返回info
-    ret_info_t retInfo = visitBoolExpr(node->getChildAt(0));
-    // 将BoolExpr内容追加到list之后
-    retInfo.appendInstrList(retInfo.instrList);
 
     // 获取Stmt
     auto stmtInfo = visitStmt(node->getChildAt(1));
@@ -570,12 +575,18 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
     retInfo.addInstr(stmtBB);
 
     // 绑定条件的真出口
-    retInfo.backpatch(JR_TRUE_EXIT, stmtBB);
+    boolInfo.backpatch(JR_TRUE_EXIT, stmtBB);
+
+    auto trueAllocas = context.symbolTable.popScope();
+    stmtBB->addInstrListFromFront(trueAllocas);
 
     // 获取else Stmt
     pst_node_ptr_t elseStmtNode = node->getChildAt(2);
     if (elseStmtNode->hasChild())
     {
+        // 构造条件为假时的作用域
+        context.symbolTable.newScope();
+
         ret_info_t elseStmtInfo = visitStmt(elseStmtNode->firstChild());
 
         // 将else Stmt内容整合为基本块
@@ -585,14 +596,15 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
 
         // 绑定条件的假出口
         retInfo.backpatch(JR_FALSE_EXIT, elseStmtBB);
+
+        auto falseAllocas = context.symbolTable.popScope();
+        elseStmtBB->addInstrListFromFront(falseAllocas);
     }
     else
     {
         // 修改条件的假出口为fall through
         retInfo.shiftReason(JR_FALSE_EXIT, JR_FALL_THROUGH);
     }
-
-    context.symbolTable.popScope();
 
     return retInfo;
 }
@@ -634,7 +646,9 @@ ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
     // while最后跳转到condBB
     retInfo.addInstr(make_jmp(condBB));
 
-    context.symbolTable.popScope();
+    auto allocas = context.symbolTable.popScope();
+    stmtBB->addInstrListFromFront(allocas);
+
     return retInfo;
 }
 
@@ -688,6 +702,12 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
         retInfo.appendJmpList(boolExprInfo.getTargetsOf(JR_FALSE_EXIT), JR_FALL_THROUGH);
     }
 
+    // 解析Stmt
+    pst_node_ptr_t stmtNode = node->getChildAt(3);
+    ret_info_t stmtInfo = visitStmt(stmtNode);
+    stmtBB->addInstrList(stmtInfo.instrList);
+    retInfo.addInstr(stmtBB);
+
     // 解析Assignment
     pst_node_ptr_t assignNode = node->getChildAt(2);
     if (assignNode->hasChild())
@@ -698,19 +718,14 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
     lastBB->addInstr(make_jmp(boolExprNode->hasChild() ? condBB : stmtBB));
     retInfo.addInstr(lastBB);
 
-    // 解析Stmt
-    pst_node_ptr_t stmtNode = node->getChildAt(3);
-    ret_info_t stmtInfo = visitStmt(stmtNode);
-    stmtBB->addInstrList(stmtInfo.instrList);
-    retInfo.addInstr(stmtBB);
-
     // 处理Stmt中的break，指向for循环的出口（Fall through）
     retInfo.appendJmpList(stmtInfo.getTargetsOf(JR_BREAK_OUT), JR_FALL_THROUGH);
 
     // 回填Stmt中的continue，指向lastBB
     stmtInfo.backpatch(JR_CONTINUE, lastBB);
 
-    context.symbolTable.popScope();
+    auto allocas = context.symbolTable.popScope();
+    initBB->addInstrListFromFront(allocas);
 
     return retInfo;
 }
@@ -1057,7 +1072,7 @@ ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
     ret_info_t rhs = rhsInfo;
 
     // 对于与运算，需要将lhs和rhs的bb连接起来
-    ret_info_t retInfo{list_concat(lhs.instrList, rhs.instrList)};
+    ret_info_t retInfo{lhs.instrList};
 
     retInfo.appendTrueList(rhs.getTargetsOf(JR_TRUE_EXIT));   // 将rhs的真出口作为retInfo的真出口
     retInfo.appendFalseList(lhs.getTargetsOf(JR_FALSE_EXIT)); // 将lhs的假出口作为retInfo的假出口
@@ -1066,6 +1081,8 @@ ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
     // 将lhs的真出口tc连接到rhs的入口bb entry
     block_ptr_t bb = make_block("and.rhs");
     bb->addInstrList(rhs.instrList);
+    retInfo.addInstr(bb);
+
     lhs.backpatch(JR_TRUE_EXIT, bb);
 
     return retInfo;
@@ -1101,7 +1118,7 @@ ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
     ret_info_t rhs = rhsInfo;
 
     // 对于或运算，需要将lhs和rhs的bb连接起来
-    ret_info_t retInfo{list_concat(lhs.instrList, rhs.instrList)};
+    ret_info_t retInfo{lhs.instrList};
     retInfo.appendTrueList(lhs.getTargetsOf(JR_TRUE_EXIT));   // 将lhs的真出口作为retInfo的真出口
     retInfo.appendTrueList(rhs.getTargetsOf(JR_TRUE_EXIT));   // 将rhs的真出口作为retInfo的真出口
     retInfo.appendFalseList(rhs.getTargetsOf(JR_FALSE_EXIT)); // 将rhs的假出口作为retInfo的假出口
@@ -1109,6 +1126,8 @@ ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
     // 将lhs的假出口fc连接到rhs的入口bb entry
     block_ptr_t bb = make_block("or.rhs");
     bb->addInstrList(rhs.instrList);
+    retInfo.addInstr(bb);
+
     lhs.backpatch(JR_FALSE_EXIT, bb);
 
     return retInfo;

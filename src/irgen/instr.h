@@ -20,12 +20,12 @@
 
 enum CompareType
 {
-    CT_EQ = 'e',
-    CT_NE = 'n',
-    CT_GT = 'g',
-    CT_GE = 'G',
-    CT_LT = 'l',
-    CT_LE = 'L',
+    CT_EQ,
+    CT_NE,
+    CT_GT,
+    CT_GE,
+    CT_LT,
+    CT_LE,
 };
 
 enum JumpReason
@@ -427,9 +427,10 @@ class JmpInstr : public User
 
 public:
     JmpInstr() : target(make_target()), User(nullptr, "jump") {}
-    JmpInstr(user_ptr_t target) : target(make_target())
+    JmpInstr(user_ptr_t targetInstr) : target(make_target())
     {
-        this->target->patch(target);
+        error << targetInstr->dump();
+        target->patch(targetInstr);
     }
     ~JmpInstr() = default;
 
@@ -613,6 +614,13 @@ public:
         for (auto &instr : instrList)
         {
             instrs.push_back(make_use(instr, this));
+        }
+    }
+    void addInstrListFromFront(std::list<user_ptr_t> instrList)
+    {
+        for (auto rit = instrList.rbegin(); rit != instrList.rend(); ++rit)
+        {
+            instrs.push_front(make_use(*rit, this));
         }
     }
 

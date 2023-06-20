@@ -23,7 +23,7 @@ func main() : int
 
     if (d > e && a < b || -b == add(a, d) || 1)
     {
-        print "Hello World!";
+        d = 2;
     }
 
     /*
@@ -35,17 +35,21 @@ func main() : int
         var flag : bool = true;
         while (flag)
         {
+            var x : int = 1;
             if (b[i] == 0)
             {
                 flag = false;
+                var m : int = 0;
             }
             if (b[i] == 1)
             {
+                var n : int = 1;
                 continue;
             }
             else
             {
-                b[i] = b[i] - 1;
+                b[i] = x - 1;
+                break;
             }
         }
     }

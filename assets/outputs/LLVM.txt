@@ -1,0 +1,155 @@
+@x.1 = global i32 10
+@y.1 = global i1 true
+
+define void @sub() {
+entry.1:
+    %retval = alloca void
+
+body.1:
+    ret void
+
+exit.1:
+    %load.1 = load void, void* %retval
+    ret void %load.1
+
+}
+
+define i32 @main() {
+entry.2:
+    %q = alloca float
+    %a = alloca i32
+    %b = alloca i32
+    %c = alloca i1
+    %d = alloca i32
+    %e = alloca i32
+    %o = alloca float
+    %p = alloca float
+    %result = alloca i32
+    %retval = alloca i32
+
+body.2:
+    store i32 10, i32* %a
+    store i32 1, i32* %b
+    store i1 false, i1* %c
+    store i32 3, i32* %d
+    store i32 -3, i32* %e
+    store float 3.14, float* %o
+    store float -2.72, float* %p
+    store float 1.00, float* %q
+    %sub.1 = ssub i32 %d, %e
+    %mul.1 = smul i32 2, %sub.1
+    %add.1 = sadd i32 %a, %mul.1
+    store i32 %add.1, i32* %result
+if.cond.1:
+expr.rel.3:
+    %cmp.3 = scmp gt i32 %d, %e
+    br i1 %cmp.3, label and.rhs.1, label or.rhs.1
+
+and.rhs.1:
+expr.rel.4:
+    %cmp.4 = scmp lt i32 %a, %b
+    br i1 %cmp.4, label if.then.1, label or.rhs.1
+
+
+or.rhs.1:
+expr.rel.5:
+    %neg.1 = sneg %b
+    %call.1 = call add(%a, %d)
+    %cmp.5 = scmp eq i32 %neg.1, %call.1
+    br i1 %cmp.5, label if.then.1, label or.rhs.2
+
+
+or.rhs.2:
+expr.rel.6:
+    %cmp.6 = scmp ne i32 1, 0
+    br i1 %cmp.6, label if.then.1, label fall.1
+
+
+
+if.then.1:
+    store i32 2, i32* %d
+
+fall.1:
+for.init.1:
+    %i = alloca i32
+    %flag = alloca i1
+    store i32 0, i32* %i
+
+for.cond.1:
+expr.rel.2:
+    %cmp.2 = scmp lt i32 %i, 10
+    br i1 %cmp.2, label for.body.1, label fall.2
+
+
+for.body.1:
+    store i1 true, i1* %flag
+while.cond.1:
+expr.rel.1:
+    %cmp.1 = ucmp ne i1 %flag, false
+    br i1 %cmp.1, label while.body.1, label fall.3
+
+
+while.body.1:
+    %x = alloca i32
+    store i32 1, i32* %x
+if.cond.2:
+expr.rel.7:
+    %cmp.7 = scmp eq i32 %b, 0
+    br i1 %cmp.7, label if.then.2, label fall.4
+
+
+if.then.2:
+    %m = alloca i32
+    store i1 false, i1* %flag
+    store i32 0, i32* %m
+
+fall.4:
+if.cond.3:
+expr.rel.8:
+    %cmp.8 = scmp eq i32 %b, 1
+    br i1 %cmp.8, label if.then.3, label if.else.1
+
+
+if.then.3:
+    %n = alloca i32
+    store i32 1, i32* %n
+*   br nullptr
+
+if.else.1:
+    %sub.2 = ssub i32 %x, 1
+    store i32 %sub.2, i32* %b
+*   br nullptr
+
+
+    br label while.cond.1
+fall.3:
+
+for.last.1:
+    %add.2 = sadd i32 %i, 1
+    store i32 %add.2, i32* %i
+    br label for.cond.1
+
+fall.2:
+    ret i32 0
+
+exit.2:
+    %load.2 = load i32, i32* %retval
+    ret i32 %load.2
+
+}
+
+define i32 @add(i32 x, i32 y) {
+entry.3:
+    %x = alloca i32
+    %y = alloca i32
+    %retval = alloca i32
+
+body.3:
+    %add.3 = sadd i32 %x, %y
+    ret i32 %add.3
+
+exit.3:
+    %load.3 = load i32, i32* %retval
+    ret i32 %load.3
+
+}

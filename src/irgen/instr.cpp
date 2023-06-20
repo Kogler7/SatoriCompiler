@@ -33,7 +33,23 @@ std::string opType2Str(OperandType op)
 
 std::string cmpType2Str(CompareType cmp)
 {
-    return std::string(1, cmp);
+    switch (cmp)
+    {
+    case CT_EQ:
+        return "eq";
+    case CT_NE:
+        return "ne";
+    case CT_GT:
+        return "gt";
+    case CT_GE:
+        return "ge";
+    case CT_LT:
+        return "lt";
+    case CT_LE:
+        return "le";
+    default:
+        assert(false, "cmpType2Str: unknown compare type");
+    }
 }
 
 std::string getIdOf(const Value *v)
@@ -49,7 +65,7 @@ std::string getIdOf(const Value *v)
 
 inline std::string getLabelTag(const Value *b)
 {
-    return format("$_$", b->getName(), getIdOf(b));
+    return format("$.$", b->getName(), getIdOf(b));
 }
 
 inline std::string getValueTag(const Value *v, bool global = false)
@@ -58,7 +74,7 @@ inline std::string getValueTag(const Value *v, bool global = false)
         return v->dump();
     std::string lead = global ? "@" : "%";
     std::string name = v->getName();
-    std::string id = v->nameIsUnique() ? "" : "_" + getIdOf(v);
+    std::string id = v->nameIsUnique() ? "" : "." + getIdOf(v);
     return lead + name + id;
 }
 
@@ -147,7 +163,10 @@ std::string RetInstr::dump() const
 
 std::string BrInstr::dump() const
 {
-    return "    br tmp\n";
+    bool lf = tc->target == nullptr;
+    bool rf = fc->target == nullptr;
+    if (lf || rf)
+        return format("*   br nullptr $ $\n", lf ? "true" : "false", rf ? "true" : "false");
     assert(tc->target != nullptr, "BrInstr: true target is nullptr");
     assert(fc->target != nullptr, "BrInstr: false target is nullptr");
     return format(
@@ -159,14 +178,19 @@ std::string BrInstr::dump() const
 
 std::string JmpInstr::dump() const
 {
-    return "    jmp tmp\n";
-    assert(target != nullptr, "JmpInstr: target is nullptr");
+    if (target->target == nullptr)
+        return "*   br nullptr\n";
+    assert(target->target != nullptr, "JmpInstr: target is nullptr");
     return format("    br label $\n", getLabelTag(target->target.get()));
 }
 
 std::string NegInstr::dump() const
 {
-    return format("    $ = $neg $ $\n", getValueTag(this), opType, getValueTag(from->getValue().get()));
+    return format(
+        "    $ = $neg $ $\n",
+        getValueTag(this),
+        opType2Str(opType),
+        getValueTag(from->getValue().get()));
 }
 
 std::string AddInstr::dump() const
