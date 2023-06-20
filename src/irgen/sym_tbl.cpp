@@ -51,7 +51,7 @@ user_ptr_t SymbolTable::registerAlloca(const std::string &name, type_ptr_t type)
 {
 	scope_ptr_t top = tableStk.top();
 	assert(top != nullptr, "SymbolTable::registerAlloca: top is nullptr");
-	assert(!top->has(name), "SymbolTable::registerAlloca: symbol already exists");
+	assert(!top->has(name, false), "SymbolTable::registerAlloca: symbol already exists");
 	alloca_ptr_t alloc = make_alloca(name, type);
 	top->insert(name, alloc);
 	return alloc;
@@ -62,7 +62,7 @@ user_ptr_t SymbolTable::registerGlobal(const std::string &name, type_ptr_t type,
 	scope_ptr_t top = tableStk.top();
 	assert(top != nullptr, "SymbolTable::registerGlobal: top is nullptr");
 	assert(top->isRoot(), "SymbolTable::registerGlobal: not in root scope");
-	assert(!top->has(name), "SymbolTable::registerGlobal: symbol already exists");
+	assert(!top->has(name, false), "SymbolTable::registerGlobal: symbol already exists");
 	global_ptr_t global = make_global(name, type, init);
 	top->insert(name, global);
 	return global;

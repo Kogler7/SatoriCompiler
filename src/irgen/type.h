@@ -45,6 +45,7 @@ public:
     virtual OperandType getOpType() const { return OT_SIGNED; }
 
     virtual bool operator==(const Type &other) const = 0;
+    virtual bool operator!=(const Type &other) const { return !(*this == other); }
 };
 
 class PrimitiveType : public Type
@@ -112,6 +113,7 @@ public:
             return type == other_prim->type;
         return false;
     }
+    bool operator!=(const Type &other) const override { return !(*this == other); }
 
 protected:
     PrimType type;
@@ -134,6 +136,7 @@ public:
             return ptr == other_ptr->ptr;
         return false;
     }
+    bool operator!=(const Type &other) const override { return !(*this == other); }
 
 protected:
     type_ptr_t ptr;

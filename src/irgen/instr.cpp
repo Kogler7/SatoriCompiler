@@ -138,6 +138,7 @@ std::string RetInstr::dump() const
 
 std::string BrInstr::dump() const
 {
+    return "\tbr\n";
     assert(tc->target != nullptr, "BrInstr: true target is nullptr");
     assert(fc->target != nullptr, "BrInstr: false target is nullptr");
     return format(

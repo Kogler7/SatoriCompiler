@@ -56,6 +56,15 @@ program_ptr_t RSCVisitor::visitProgram(pst_node_ptr_t node)
         else if (child->data.symbol == "FuncDef")
         {
             ret_info_t funcInfo = visitFuncDef(child);
+            try
+            {
+                info << "RSCVisitor: function \n"
+                     << funcInfo.getValue()->dump() << std::endl;
+            }
+            catch (const std::exception &e)
+            {
+                error << e.what() << std::endl;
+            }
             program->addFunc(funcInfo.getValue());
         }
         else
@@ -219,7 +228,7 @@ ret_info_t RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
     if (paramsNode->hasChild())
     {
         ret_info_t paramsInfo = visitParamList(paramsNode->firstChild());
-        func->addParams(paramsInfo.instrList);
+        func->addParams(paramsInfo.valueList);
     }
 
     return ret_info_t{instr_list_t{func}}.setValue(func);
@@ -266,7 +275,7 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
 
             assert(
                 func->matchRetType(PrimitiveType::str2type(retTypeStr)) &&
-                    func->matchArgs(paramsInfo.instrList),
+                    func->matchArgs(paramsInfo.valueList),
                 "function declaration and definition mismatch.");
         }
     }
@@ -274,12 +283,9 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     // 新建作用域，访问解析函数体
     context.symbolTable.newScope();
 
-    warn << func->dump() << std::endl;
-
     // 注册函数参数
     for (user_ptr_t param : func->getParams())
     {
-        info << "registering param " << param->getName() << " " << param->getType()->dump() << std::endl;
         context.symbolTable.registerAlloca(param->getName(), param->getType());
     }
 
@@ -350,7 +356,7 @@ ret_info_t RSCVisitor::visitFuncCall(pst_node_ptr_t node)
     {
         ret_info_t argListInfo = visitArgList(argListNode->firstChild());
         retInfo.appendInstrList(argListInfo.instrList);
-        instr_list_t &list = argListInfo.instrList;
+        instr_list_t &list = argListInfo.valueList;
         // 做一步类型转换，将list转换为list<user_ptr_t>
         std::list<user_ptr_t> args(list.begin(), list.end());
 
@@ -766,11 +772,6 @@ ret_info_t RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
         ret_ptr_t retInstr = make_ret(exprInfo.getValue());
         exprInfo.addInstr(retInstr);
 
-        for (auto instr : exprInfo.instrList)
-        {
-            warn << instr->dump() << std::endl;
-        }
-
         return exprInfo;
     }
     else
@@ -1181,8 +1182,6 @@ ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
         node->data.symbol == "LVal",
         format("Expected node LVal, but got $ instead.", node->data.symbol));
     user_ptr_t instr = context.symbolTable.find(node->firstChild()->data.symbol);
-
-    info << "LVal: " << instr->dump();
 
     assert(
         instr != nullptr,

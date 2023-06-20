@@ -329,8 +329,12 @@ public:
         auto it2 = args.begin();
         while (it1 != this->params.end())
         {
-            if (it1->second->getType() != (*it2)->getType())
+            if (*it1->second->getType() != *(*it2)->getType())
             {
+                error << format(
+                    "FuncInstr: argument type mismatch: $ and $.\n",
+                    it1->second->getType()->dump(),
+                    (*it2)->getType()->dump());
                 return false;
             }
             ++it1;
