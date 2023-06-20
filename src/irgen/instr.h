@@ -212,6 +212,7 @@ public:
     ~AllocaInstr() = default;
 
     type_ptr_t getPtrType() const { return ptrType; }
+    bool nameIsUnique() const override { return true; }
 
     std::string dump() const override;
 };

@@ -18,7 +18,6 @@ func main() : int
     var o : real = 3.14;                    // float variable
     var p : real = -2.71828;                // double variable
     var q : real = 1.0;                 // double variable in scientific notation
-    var s : str = "Hello World!";           // string variable
 
     var result : int = a + 2 * (d - e);
 

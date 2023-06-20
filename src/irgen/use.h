@@ -50,6 +50,7 @@ public:
 
     void setName(std::string name) { this->name = name; }
     std::string getName() const { return name; }
+    virtual bool nameIsUnique() const { return false; }
 
     virtual bool isConstant() const { return false; }
     virtual std::string dump() const { return name; }

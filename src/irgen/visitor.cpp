@@ -132,12 +132,10 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
             format("global variable $ must be initialized", identStr));
         const_val_ptr_t init = cast_const(initVal);
         value = context.symbolTable.registerGlobal(identStr, type, init);
-        retInfo.addInstr(value);
     }
     else
     {
         value = context.symbolTable.registerAlloca(identStr, type);
-        retInfo.addInstr(value);
         if (initVal != nullptr)
         {
             store_ptr_t storeInstr = make_store(initVal, cast_alloca(value));
@@ -229,7 +227,6 @@ ret_info_t RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
 // FuncDef -> FuncDecl Block
 ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func def..." << std::endl;
     assert(
         node->data.symbol == "FuncDef",
         format("Expected node FuncDef, but got $ instead.", node->data.symbol));
@@ -287,19 +284,16 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     // 下面开始构建函数定义
 
     // 首先构建函数的入口基本块 entry basic block
-    block_ptr_t entryBB = make_block("func_entry");
+    block_ptr_t entryBB = make_block("entry");
     // 将函数体内变量的内存分配指令追加到entry之后
-    std::vector<user_ptr_t> vars = context.symbolTable.popScope();
-    for (user_ptr_t var : vars)
-    {
-        entryBB->addInstr(var);
-    }
+    std::list<user_ptr_t> allocas = context.symbolTable.popScope();
+    entryBB->addInstrList(allocas);
     // 为函数返回值分配内存
     alloca_ptr_t retAlloc = make_alloca("retval", func->getRetType());
     entryBB->addInstr(retAlloc);
 
     // 构建函数的出口基本块 exit basic block
-    block_ptr_t exitBB = make_block("func_exit");
+    block_ptr_t exitBB = make_block("exit");
     // 为函数返回值赋值
     load_ptr_t loadInstr = make_load(retAlloc);
     ret_ptr_t retInstr = make_ret(loadInstr);
@@ -307,7 +301,7 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     exitBB->addInstr(retInstr);
 
     // 构建函数的主体基本块 main basic block
-    block_ptr_t mainBB = make_block("func_body");
+    block_ptr_t mainBB = make_block("body");
     mainBB->addInstrList(blockInfo.instrList);
     entryBB->addInstr(make_br(mainBB));
 
@@ -571,7 +565,7 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
     auto stmtInfo = visitStmt(node->getChildAt(1));
 
     // 将Stmt内容整合为基本块
-    block_ptr_t stmtBB = make_block("if_stmt");
+    block_ptr_t stmtBB = make_block("if.then");
     stmtBB->addInstrList(stmtInfo.instrList);
     retInfo.addInstr(stmtBB);
 
@@ -585,7 +579,7 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
         ret_info_t elseStmtInfo = visitStmt(elseStmtNode->firstChild());
 
         // 将else Stmt内容整合为基本块
-        block_ptr_t elseStmtBB = make_block("else_stmt");
+        block_ptr_t elseStmtBB = make_block("if.else");
         elseStmtBB->addInstrList(elseStmtInfo.instrList);
         retInfo.addInstr(elseStmtBB);
 
@@ -615,13 +609,13 @@ ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
 
     // 获取BoolExpr，构造cond基本块
     ret_info_t boolExprInfo = visitBoolExpr(node->getChildAt(0));
-    block_ptr_t condBB = make_block("while_cond");
+    block_ptr_t condBB = make_block("while.cond");
     condBB->addInstrList(boolExprInfo.instrList);
     retInfo.addInstr(condBB);
 
     // 获取Stmt，构造stmt基本块
     ret_info_t stmtInfo = visitStmt(node->getChildAt(1));
-    block_ptr_t stmtBB = make_block("while_stmt");
+    block_ptr_t stmtBB = make_block("while.body");
     stmtBB->addInstrList(stmtInfo.instrList);
     retInfo.addInstr(stmtBB);
 
@@ -654,10 +648,10 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
     context.symbolTable.newScope();
     ret_info_t retInfo;
 
-    block_ptr_t initBB = make_block("for_init");
-    block_ptr_t condBB = make_block("for_cond");
-    block_ptr_t stmtBB = make_block("for_stmt");
-    block_ptr_t lastBB = make_block("for_last");
+    block_ptr_t initBB = make_block("for.init");
+    block_ptr_t condBB = make_block("for.cond");
+    block_ptr_t stmtBB = make_block("for.body");
+    block_ptr_t lastBB = make_block("for.last");
 
     // 解析VarDecl|Assignment
     pst_node_ptr_t varDeclOrAssignNode = node->getChildAt(0);
@@ -715,6 +709,8 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
 
     // 回填Stmt中的continue，指向lastBB
     stmtInfo.backpatch(JR_CONTINUE, lastBB);
+
+    context.symbolTable.popScope();
 
     return retInfo;
 }
@@ -951,7 +947,7 @@ ret_info_t RSCVisitor::visitRelExpr(pst_node_ptr_t node)
     // 构造跳转指令，构造BasicBlock
     size_t childNum = node->childrenCount();
 
-    block_ptr_t bb = make_block("rel_expr");
+    block_ptr_t bb = make_block("expr.rel");
 
     cmp_ptr_t cmpInstr = nullptr;
     br_ptr_t brInstr = nullptr;
@@ -1068,7 +1064,7 @@ ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
     retInfo.appendFalseList(rhs.getTargetsOf(JR_FALSE_EXIT)); // 将rhs的假出口作为retInfo的假出口
 
     // 将lhs的真出口tc连接到rhs的入口bb entry
-    block_ptr_t bb = make_block("and_rhs");
+    block_ptr_t bb = make_block("and.rhs");
     bb->addInstrList(rhs.instrList);
     lhs.backpatch(JR_TRUE_EXIT, bb);
 
@@ -1111,7 +1107,7 @@ ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
     retInfo.appendFalseList(rhs.getTargetsOf(JR_FALSE_EXIT)); // 将rhs的假出口作为retInfo的假出口
 
     // 将lhs的假出口fc连接到rhs的入口bb entry
-    block_ptr_t bb = make_block("or_rhs");
+    block_ptr_t bb = make_block("or.rhs");
     bb->addInstrList(rhs.instrList);
     lhs.backpatch(JR_FALSE_EXIT, bb);
 
@@ -1179,7 +1175,7 @@ ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
         instr != nullptr,
         format("undefined symbol: $", node->firstChild()->data.symbol));
 
-    return ret_info_t{instr_list_t{instr}}.setValue(instr);
+    return ret_info_t().setValue(instr);
 }
 
 // Factor -> int, real, char, string, true, false

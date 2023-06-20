@@ -19,19 +19,18 @@ void SymbolTable::newScope()
 	}
 	else
 	{
-		auto newTable = std::make_shared<scope_t>(tableStk.top());
 		tableStk.emplace(std::make_shared<scope_t>(tableStk.top()));
 	}
 }
 
-std::vector<user_ptr_t> SymbolTable::popScope()
+std::list<user_ptr_t> SymbolTable::popScope()
 {
 	assert(!tableStk.empty());
 	auto top = tableStk.top()->self();
-	auto r = std::vector<user_ptr_t>();
-	for (auto &[_, ssa] : top)
+	auto r = std::list<user_ptr_t>();
+	for (auto &[_, instr] : top)
 	{
-		r.emplace_back(ssa);
+		r.push_back(instr);
 	}
 	tableStk.pop();
 	return r;

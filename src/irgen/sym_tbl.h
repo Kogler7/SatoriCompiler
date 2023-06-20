@@ -24,7 +24,7 @@ class SymbolTable
 
 public:
     void newScope();
-    std::vector<user_ptr_t> popScope();
+    std::list<user_ptr_t> popScope();
     [[nodiscard]] user_ptr_t find(const std::string &name);
     [[nodiscard]] user_ptr_t registerAlloca(const std::string &name, type_ptr_t type);
     [[nodiscard]] user_ptr_t registerGlobal(const std::string &name, type_ptr_t type, const_val_ptr_t init);

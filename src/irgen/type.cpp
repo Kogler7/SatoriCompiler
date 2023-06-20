@@ -18,7 +18,7 @@ std::string PrimitiveType::dump() const
     case INT:
         return "i32";
     case REAL:
-        return "double";
+        return "float";
     case BOOL:
         return "i1";
     case CHAR:
