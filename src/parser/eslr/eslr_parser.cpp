@@ -118,7 +118,7 @@ inline void printRemainingTreeNodes(stack<pst_node_ptr_t> &pstStk)
 }
 
 /**
- * @brief ESLR核心方分析过程，用于解析输入的token序列并构建CST
+ * @brief ESLR核心分析过程，用于解析输入的token序列并构建CST
  *
  * @param input 输入的token序列
  * @param code 上下文浏览器，这里仅用于在出错时打印相关上下文信息
