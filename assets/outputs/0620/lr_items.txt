@@ -1,0 +1,314 @@
+[info] LR items:
++---------------------------------------------------------------------------------------------------------------------------------+
+|                                                              Items                                                              |
++---------------------------------------------------------------------------------------------------------------------------------+
+|   Program_star_1 ->                                                      . VarDeclStmt Program_star_1                           |
+|   Program_star_1 ->                                          VarDeclStmt . Program_star_1                                       |
+|   Program_star_1 ->                           VarDeclStmt Program_star_1 .                                                      |
+|   Program_star_1 ->                                                      . FuncDeclStmt Program_star_1                          |
+|   Program_star_1 ->                                         FuncDeclStmt . Program_star_1                                       |
+|   Program_star_1 ->                          FuncDeclStmt Program_star_1 .                                                      |
+|   Program_star_1 ->                                                      . FuncDef Program_star_1                               |
+|   Program_star_1 ->                                              FuncDef . Program_star_1                                       |
+|   Program_star_1 ->                               FuncDef Program_star_1 .                                                      |
+|   Program_star_1 ->                                                      .                                                      |
+|          Program ->                                                      . Program_star_1                                       |
+|          Program ->                                       Program_star_1 .                                                      |
+|      VarDeclStmt ->                                                      . VarDecl ;                                            |
+|      VarDeclStmt ->                                              VarDecl . ;                                                    |
+|      VarDeclStmt ->                                            VarDecl ; .                                                      |
+|   VarDecl_star_1 ->                                                      . , VarDef VarDecl_star_1                              |
+|   VarDecl_star_1 ->                                                    , . VarDef VarDecl_star_1                                |
+|   VarDecl_star_1 ->                                             , VarDef . VarDecl_star_1                                       |
+|   VarDecl_star_1 ->                              , VarDef VarDecl_star_1 .                                                      |
+|   VarDecl_star_1 ->                                                      .                                                      |
+|          VarDecl ->                                                      . var VarDef VarDecl_star_1                            |
+|          VarDecl ->                                                  var . VarDef VarDecl_star_1                                |
+|          VarDecl ->                                           var VarDef . VarDecl_star_1                                       |
+|          VarDecl ->                            var VarDef VarDecl_star_1 .                                                      |
+|          VarType ->                                                      . int                                                  |
+|          VarType ->                                                  int .                                                      |
+|          VarType ->                                                      . real                                                 |
+|          VarType ->                                                 real .                                                      |
+|          VarType ->                                                      . bool                                                 |
+|          VarType ->                                                 bool .                                                      |
+|          VarType ->                                                      . char                                                 |
+|          VarType ->                                                 char .                                                      |
+|          VarType ->                                                      . str                                                  |
+|          VarType ->                                                  str .                                                      |
+|    VarDef_star_1 ->                                                      . [ Integer ] VarDef_star_1                            |
+|    VarDef_star_1 ->                                                    [ . Integer ] VarDef_star_1                              |
+|    VarDef_star_1 ->                                            [ Integer . ] VarDef_star_1                                      |
+|    VarDef_star_1 ->                                          [ Integer ] . VarDef_star_1                                        |
+|    VarDef_star_1 ->                            [ Integer ] VarDef_star_1 .                                                      |
+|    VarDef_star_1 ->                                                      .                                                      |
+|    VarDef_opti_2 ->                                                      . = InitVal                                            |
+|    VarDef_opti_2 ->                                                    = . InitVal                                              |
+|    VarDef_opti_2 ->                                            = InitVal .                                                      |
+|    VarDef_opti_2 ->                                                      .                                                      |
+|           VarDef ->                                                      . Ident : VarType VarDef_star_1 VarDef_opti_2          |
+|           VarDef ->                                                Ident . : VarType VarDef_star_1 VarDef_opti_2                |
+|           VarDef ->                                              Ident : . VarType VarDef_star_1 VarDef_opti_2                  |
+|           VarDef ->                                      Ident : VarType . VarDef_star_1 VarDef_opti_2                          |
+|           VarDef ->                        Ident : VarType VarDef_star_1 . VarDef_opti_2                                        |
+|           VarDef ->          Ident : VarType VarDef_star_1 VarDef_opti_2 .                                                      |
+|   InitVal_star_1 ->                                                      . , InitVal InitVal_star_1                             |
+|   InitVal_star_1 ->                                                    , . InitVal InitVal_star_1                               |
+|   InitVal_star_1 ->                                            , InitVal . InitVal_star_1                                       |
+|   InitVal_star_1 ->                             , InitVal InitVal_star_1 .                                                      |
+|   InitVal_star_1 ->                                                      .                                                      |
+|   InitVal_opti_2 ->                                                      . InitVal InitVal_star_1                               |
+|   InitVal_opti_2 ->                                              InitVal . InitVal_star_1                                       |
+|   InitVal_opti_2 ->                               InitVal InitVal_star_1 .                                                      |
+|   InitVal_opti_2 ->                                                      .                                                      |
+|          InitVal ->                                                      . Expr                                                 |
+|          InitVal ->                                                 Expr .                                                      |
+|          InitVal ->                                                      . { InitVal_opti_2 }                                   |
+|          InitVal ->                                                    { . InitVal_opti_2 }                                     |
+|          InitVal ->                                     { InitVal_opti_2 . }                                                    |
+|          InitVal ->                                   { InitVal_opti_2 } .                                                      |
+|     FuncDeclStmt ->                                                      . decl FuncDecl ;                                      |
+|     FuncDeclStmt ->                                                 decl . FuncDecl ;                                           |
+|     FuncDeclStmt ->                                        decl FuncDecl . ;                                                    |
+|     FuncDeclStmt ->                                      decl FuncDecl ; .                                                      |
+|  FuncDecl_opti_1 ->                                                      . ParamList                                            |
+|  FuncDecl_opti_1 ->                                            ParamList .                                                      |
+|  FuncDecl_opti_1 ->                                                      .                                                      |
+|  FuncDecl_opti_2 ->                                                      . : VarType                                            |
+|  FuncDecl_opti_2 ->                                                    : . VarType                                              |
+|  FuncDecl_opti_2 ->                                            : VarType .                                                      |
+|  FuncDecl_opti_2 ->                                                      .                                                      |
+|         FuncDecl ->                                                      . func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2       |
+|         FuncDecl ->                                                 func . Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2            |
+|         FuncDecl ->                                           func Ident . ( FuncDecl_opti_1 ) FuncDecl_opti_2                  |
+|         FuncDecl ->                                         func Ident ( . FuncDecl_opti_1 ) FuncDecl_opti_2                    |
+|         FuncDecl ->                         func Ident ( FuncDecl_opti_1 . ) FuncDecl_opti_2                                    |
+|         FuncDecl ->                       func Ident ( FuncDecl_opti_1 ) . FuncDecl_opti_2                                      |
+|         FuncDecl ->       func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2 .                                                      |
+|          FuncDef ->                                                      . FuncDecl Block                                       |
+|          FuncDef ->                                             FuncDecl . Block                                                |
+|          FuncDef ->                                       FuncDecl Block .                                                      |
+|  FuncCall_opti_1 ->                                                      . ArgList                                              |
+|  FuncCall_opti_1 ->                                              ArgList .                                                      |
+|  FuncCall_opti_1 ->                                                      .                                                      |
+|         FuncCall ->                                                      . Ident ( FuncCall_opti_1 )                            |
+|         FuncCall ->                                                Ident . ( FuncCall_opti_1 )                                  |
+|         FuncCall ->                                              Ident ( . FuncCall_opti_1 )                                    |
+|         FuncCall ->                              Ident ( FuncCall_opti_1 . )                                                    |
+|         FuncCall ->                            Ident ( FuncCall_opti_1 ) .                                                      |
+|   ArgList_star_1 ->                                                      . , Expr ArgList_star_1                                |
+|   ArgList_star_1 ->                                                    , . Expr ArgList_star_1                                  |
+|   ArgList_star_1 ->                                               , Expr . ArgList_star_1                                       |
+|   ArgList_star_1 ->                                , Expr ArgList_star_1 .                                                      |
+|   ArgList_star_1 ->                                                      .                                                      |
+|          ArgList ->                                                      . Expr ArgList_star_1                                  |
+|          ArgList ->                                                 Expr . ArgList_star_1                                       |
+|          ArgList ->                                  Expr ArgList_star_1 .                                                      |
+| ParamList_star_1 ->                                                      . , Param ParamList_star_1                             |
+| ParamList_star_1 ->                                                    , . Param ParamList_star_1                               |
+| ParamList_star_1 ->                                              , Param . ParamList_star_1                                     |
+| ParamList_star_1 ->                             , Param ParamList_star_1 .                                                      |
+| ParamList_star_1 ->                                                      .                                                      |
+|        ParamList ->                                                      . Param ParamList_star_1                               |
+|        ParamList ->                                                Param . ParamList_star_1                                     |
+|        ParamList ->                               Param ParamList_star_1 .                                                      |
+|     Param_star_1 ->                                                      . [ Integer ] Param_star_1                             |
+|     Param_star_1 ->                                                    [ . Integer ] Param_star_1                               |
+|     Param_star_1 ->                                            [ Integer . ] Param_star_1                                       |
+|     Param_star_1 ->                                          [ Integer ] . Param_star_1                                         |
+|     Param_star_1 ->                             [ Integer ] Param_star_1 .                                                      |
+|     Param_star_1 ->                                                      .                                                      |
+|            Param ->                                                      . Ident : VarType Param_star_1                         |
+|            Param ->                                                Ident . : VarType Param_star_1                               |
+|            Param ->                                              Ident : . VarType Param_star_1                                 |
+|            Param ->                                      Ident : VarType . Param_star_1                                         |
+|            Param ->                         Ident : VarType Param_star_1 .                                                      |
+|      Stmt_opti_1 ->                                                      . else Stmt                                            |
+|      Stmt_opti_1 ->                                                 else . Stmt                                                 |
+|      Stmt_opti_1 ->                                            else Stmt .                                                      |
+|      Stmt_opti_1 ->                                                      .                                                      |
+|      Stmt_opti_2 ->                                                      . VarDecl                                              |
+|      Stmt_opti_2 ->                                              VarDecl .                                                      |
+|      Stmt_opti_2 ->                                                      . Assignment                                           |
+|      Stmt_opti_2 ->                                           Assignment .                                                      |
+|      Stmt_opti_2 ->                                                      .                                                      |
+|      Stmt_opti_3 ->                                                      . BoolExpr                                             |
+|      Stmt_opti_3 ->                                             BoolExpr .                                                      |
+|      Stmt_opti_3 ->                                                      .                                                      |
+|      Stmt_opti_4 ->                                                      . Assignment                                           |
+|      Stmt_opti_4 ->                                           Assignment .                                                      |
+|      Stmt_opti_4 ->                                                      .                                                      |
+|      Stmt_opti_5 ->                                                      . Expr                                                 |
+|      Stmt_opti_5 ->                                                 Expr .                                                      |
+|      Stmt_opti_5 ->                                                      .                                                      |
+|      Stmt_opti_6 ->                                                      . Expr                                                 |
+|      Stmt_opti_6 ->                                                 Expr .                                                      |
+|      Stmt_opti_6 ->                                                      .                                                      |
+|             Stmt ->                                                      . Assignment ;                                         |
+|             Stmt ->                                           Assignment . ;                                                    |
+|             Stmt ->                                         Assignment ; .                                                      |
+|             Stmt ->                                                      . VarDeclStmt                                          |
+|             Stmt ->                                          VarDeclStmt .                                                      |
+|             Stmt ->                                                      . if ( BoolExpr ) Stmt Stmt_opti_1                     |
+|             Stmt ->                                                   if . ( BoolExpr ) Stmt Stmt_opti_1                        |
+|             Stmt ->                                                 if ( . BoolExpr ) Stmt Stmt_opti_1                          |
+|             Stmt ->                                        if ( BoolExpr . ) Stmt Stmt_opti_1                                   |
+|             Stmt ->                                      if ( BoolExpr ) . Stmt Stmt_opti_1                                     |
+|             Stmt ->                                 if ( BoolExpr ) Stmt . Stmt_opti_1                                          |
+|             Stmt ->                     if ( BoolExpr ) Stmt Stmt_opti_1 .                                                      |
+|             Stmt ->                                                      . while ( BoolExpr ) Stmt                              |
+|             Stmt ->                                                while . ( BoolExpr ) Stmt                                    |
+|             Stmt ->                                              while ( . BoolExpr ) Stmt                                      |
+|             Stmt ->                                     while ( BoolExpr . ) Stmt                                               |
+|             Stmt ->                                   while ( BoolExpr ) . Stmt                                                 |
+|             Stmt ->                              while ( BoolExpr ) Stmt .                                                      |
+|             Stmt ->                                                      . for ( Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 ) Stmt |
+|             Stmt ->                                                  for . ( Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 ) Stmt     |
+|             Stmt ->                                                for ( . Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 ) Stmt       |
+|             Stmt ->                                    for ( Stmt_opti_2 . ; Stmt_opti_3 ; Stmt_opti_4 ) Stmt                   |
+|             Stmt ->                                  for ( Stmt_opti_2 ; . Stmt_opti_3 ; Stmt_opti_4 ) Stmt                     |
+|             Stmt ->                      for ( Stmt_opti_2 ; Stmt_opti_3 . ; Stmt_opti_4 ) Stmt                                 |
+|             Stmt ->                    for ( Stmt_opti_2 ; Stmt_opti_3 ; . Stmt_opti_4 ) Stmt                                   |
+|             Stmt ->        for ( Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 . ) Stmt                                               |
+|             Stmt ->      for ( Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 ) . Stmt                                                 |
+|             Stmt -> for ( Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 ) Stmt .                                                      |
+|             Stmt ->                                                      . break ;                                              |
+|             Stmt ->                                                break . ;                                                    |
+|             Stmt ->                                              break ; .                                                      |
+|             Stmt ->                                                      . continue ;                                           |
+|             Stmt ->                                             continue . ;                                                    |
+|             Stmt ->                                           continue ; .                                                      |
+|             Stmt ->                                                      . print Expr ;                                         |
+|             Stmt ->                                                print . Expr ;                                               |
+|             Stmt ->                                           print Expr . ;                                                    |
+|             Stmt ->                                         print Expr ; .                                                      |
+|             Stmt ->                                                      . return Stmt_opti_5 ;                                 |
+|             Stmt ->                                               return . Stmt_opti_5 ;                                        |
+|             Stmt ->                                   return Stmt_opti_5 . ;                                                    |
+|             Stmt ->                                 return Stmt_opti_5 ; .                                                      |
+|             Stmt ->                                                      . Stmt_opti_6 ;                                        |
+|             Stmt ->                                          Stmt_opti_6 . ;                                                    |
+|             Stmt ->                                        Stmt_opti_6 ; .                                                      |
+|             Stmt ->                                                      . Block                                                |
+|             Stmt ->                                                Block .                                                      |
+|       Assignment ->                                                      . LVal = Expr                                          |
+|       Assignment ->                                                 LVal . = Expr                                               |
+|       Assignment ->                                               LVal = . Expr                                                 |
+|       Assignment ->                                          LVal = Expr .                                                      |
+|     Block_star_1 ->                                                      . Stmt Block_star_1                                    |
+|     Block_star_1 ->                                                 Stmt . Block_star_1                                         |
+|     Block_star_1 ->                                    Stmt Block_star_1 .                                                      |
+|     Block_star_1 ->                                                      .                                                      |
+|            Block ->                                                      . { Block_star_1 }                                     |
+|            Block ->                                                    { . Block_star_1 }                                       |
+|            Block ->                                       { Block_star_1 . }                                                    |
+|            Block ->                                     { Block_star_1 } .                                                      |
+|        UnaryExpr ->                                                      . + UnaryExpr                                          |
+|        UnaryExpr ->                                                    + . UnaryExpr                                            |
+|        UnaryExpr ->                                          + UnaryExpr .                                                      |
+|        UnaryExpr ->                                                      . - UnaryExpr                                          |
+|        UnaryExpr ->                                                    - . UnaryExpr                                            |
+|        UnaryExpr ->                                          - UnaryExpr .                                                      |
+|        UnaryExpr ->                                                      . ! UnaryExpr                                          |
+|        UnaryExpr ->                                                    ! . UnaryExpr                                            |
+|        UnaryExpr ->                                          ! UnaryExpr .                                                      |
+|        UnaryExpr ->                                                      . Factor                                               |
+|        UnaryExpr ->                                               Factor .                                                      |
+|          MulExpr ->                                                      . MulExpr * UnaryExpr                                  |
+|          MulExpr ->                                              MulExpr . * UnaryExpr                                          |
+|          MulExpr ->                                            MulExpr * . UnaryExpr                                            |
+|          MulExpr ->                                  MulExpr * UnaryExpr .                                                      |
+|          MulExpr ->                                                      . MulExpr / UnaryExpr                                  |
+|          MulExpr ->                                              MulExpr . / UnaryExpr                                          |
+|          MulExpr ->                                            MulExpr / . UnaryExpr                                            |
+|          MulExpr ->                                  MulExpr / UnaryExpr .                                                      |
+|          MulExpr ->                                                      . MulExpr % UnaryExpr                                  |
+|          MulExpr ->                                              MulExpr . % UnaryExpr                                          |
+|          MulExpr ->                                            MulExpr % . UnaryExpr                                            |
+|          MulExpr ->                                  MulExpr % UnaryExpr .                                                      |
+|          MulExpr ->                                                      . UnaryExpr                                            |
+|          MulExpr ->                                            UnaryExpr .                                                      |
+|             Expr ->                                                      . Expr + MulExpr                                       |
+|             Expr ->                                                 Expr . + MulExpr                                            |
+|             Expr ->                                               Expr + . MulExpr                                              |
+|             Expr ->                                       Expr + MulExpr .                                                      |
+|             Expr ->                                                      . Expr - MulExpr                                       |
+|             Expr ->                                                 Expr . - MulExpr                                            |
+|             Expr ->                                               Expr - . MulExpr                                              |
+|             Expr ->                                       Expr - MulExpr .                                                      |
+|             Expr ->                                                      . MulExpr                                              |
+|             Expr ->                                              MulExpr .                                                      |
+|          RelExpr ->                                                      . Expr < Expr                                          |
+|          RelExpr ->                                                 Expr . < Expr                                               |
+|          RelExpr ->                                               Expr < . Expr                                                 |
+|          RelExpr ->                                          Expr < Expr .                                                      |
+|          RelExpr ->                                                      . Expr <= Expr                                         |
+|          RelExpr ->                                                 Expr . <= Expr                                              |
+|          RelExpr ->                                              Expr <= . Expr                                                 |
+|          RelExpr ->                                         Expr <= Expr .                                                      |
+|          RelExpr ->                                                      . Expr > Expr                                          |
+|          RelExpr ->                                                 Expr . > Expr                                               |
+|          RelExpr ->                                               Expr > . Expr                                                 |
+|          RelExpr ->                                          Expr > Expr .                                                      |
+|          RelExpr ->                                                      . Expr >= Expr                                         |
+|          RelExpr ->                                                 Expr . >= Expr                                              |
+|          RelExpr ->                                              Expr >= . Expr                                                 |
+|          RelExpr ->                                         Expr >= Expr .                                                      |
+|          RelExpr ->                                                      . Expr == Expr                                         |
+|          RelExpr ->                                                 Expr . == Expr                                              |
+|          RelExpr ->                                              Expr == . Expr                                                 |
+|          RelExpr ->                                         Expr == Expr .                                                      |
+|          RelExpr ->                                                      . Expr != Expr                                         |
+|          RelExpr ->                                                 Expr . != Expr                                              |
+|          RelExpr ->                                              Expr != . Expr                                                 |
+|          RelExpr ->                                         Expr != Expr .                                                      |
+|          RelExpr ->                                                      . Expr                                                 |
+|          RelExpr ->                                                 Expr .                                                      |
+|          AndExpr ->                                                      . AndExpr && RelExpr                                   |
+|          AndExpr ->                                              AndExpr . && RelExpr                                           |
+|          AndExpr ->                                           AndExpr && . RelExpr                                              |
+|          AndExpr ->                                   AndExpr && RelExpr .                                                      |
+|          AndExpr ->                                                      . RelExpr                                              |
+|          AndExpr ->                                              RelExpr .                                                      |
+|           OrExpr ->                                                      . OrExpr || AndExpr                                    |
+|           OrExpr ->                                               OrExpr . || AndExpr                                           |
+|           OrExpr ->                                            OrExpr || . AndExpr                                              |
+|           OrExpr ->                                    OrExpr || AndExpr .                                                      |
+|           OrExpr ->                                                      . AndExpr                                              |
+|           OrExpr ->                                              AndExpr .                                                      |
+|         BoolExpr ->                                                      . OrExpr                                               |
+|         BoolExpr ->                                               OrExpr .                                                      |
+|           Factor ->                                                      . LVal                                                 |
+|           Factor ->                                                 LVal .                                                      |
+|           Factor ->                                                      . FuncCall                                             |
+|           Factor ->                                             FuncCall .                                                      |
+|           Factor ->                                                      . ( Expr )                                             |
+|           Factor ->                                                    ( . Expr )                                               |
+|           Factor ->                                               ( Expr . )                                                    |
+|           Factor ->                                             ( Expr ) .                                                      |
+|           Factor ->                                                      . IntLiteral                                           |
+|           Factor ->                                           IntLiteral .                                                      |
+|           Factor ->                                                      . RealLiteral                                          |
+|           Factor ->                                          RealLiteral .                                                      |
+|           Factor ->                                                      . String                                               |
+|           Factor ->                                               String .                                                      |
+|           Factor ->                                                      . Char                                                 |
+|           Factor ->                                                 Char .                                                      |
+|           Factor ->                                                      . true                                                 |
+|           Factor ->                                                 true .                                                      |
+|           Factor ->                                                      . false                                                |
+|           Factor ->                                                false .                                                      |
+|       IntLiteral ->                                                      . Integer                                              |
+|       IntLiteral ->                                              Integer .                                                      |
+|      RealLiteral ->                                                      . Real                                                 |
+|      RealLiteral ->                                                 Real .                                                      |
+|      LVal_star_1 ->                                                      . [ Expr ] LVal_star_1                                 |
+|      LVal_star_1 ->                                                    [ . Expr ] LVal_star_1                                   |
+|      LVal_star_1 ->                                               [ Expr . ] LVal_star_1                                        |
+|      LVal_star_1 ->                                             [ Expr ] . LVal_star_1                                          |
+|      LVal_star_1 ->                                 [ Expr ] LVal_star_1 .                                                      |
+|      LVal_star_1 ->                                                      .                                                      |
+|             LVal ->                                                      . Ident LVal_star_1                                    |
+|             LVal ->                                                Ident . LVal_star_1                                          |
+|             LVal ->                                    Ident LVal_star_1 .                                                      |
++---------------------------------------------------------------------------------------------------------------------------------+

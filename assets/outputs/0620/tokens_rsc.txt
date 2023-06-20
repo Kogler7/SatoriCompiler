@@ -1,0 +1,582 @@
+[info] Tokenizing...
+[info] Tokens:
+-----------+---------
+      Type | Value
+-----------+---------
+IDENTIFIER | decl
+IDENTIFIER | func
+IDENTIFIER | add
+ SEPARATOR | (
+IDENTIFIER | x
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | ,
+IDENTIFIER | y
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | )
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | ;
+IDENTIFIER | decl
+IDENTIFIER | func
+IDENTIFIER | add2
+ SEPARATOR | (
+IDENTIFIER | x
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | ,
+IDENTIFIER | y
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | ,
+IDENTIFIER | z
+ SEPARATOR | :
+IDENTIFIER | real
+ SEPARATOR | ,
+IDENTIFIER | s
+ SEPARATOR | :
+IDENTIFIER | str
+ SEPARATOR | )
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | ;
+IDENTIFIER | func
+IDENTIFIER | sub
+ SEPARATOR | (
+ SEPARATOR | )
+ SEPARATOR | {
+IDENTIFIER | return
+ SEPARATOR | ;
+ SEPARATOR | }
+IDENTIFIER | var
+IDENTIFIER | x
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | 10
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | y
+ SEPARATOR | :
+IDENTIFIER | bool
+ SEPARATOR | =
+IDENTIFIER | true
+ SEPARATOR | ;
+IDENTIFIER | func
+IDENTIFIER | main
+ SEPARATOR | (
+ SEPARATOR | )
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | {
+IDENTIFIER | var
+IDENTIFIER | a
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | 10
+ SEPARATOR | ,
+IDENTIFIER | b
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | 1
+ SEPARATOR | ,
+IDENTIFIER | c
+ SEPARATOR | :
+IDENTIFIER | bool
+ SEPARATOR | =
+IDENTIFIER | false
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | d
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | +3
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | e
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | -3
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | o
+ SEPARATOR | :
+IDENTIFIER | real
+ SEPARATOR | =
+      REAL | 3.14
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | p
+ SEPARATOR | :
+IDENTIFIER | real
+ SEPARATOR | =
+      REAL | -2.71828
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | q
+ SEPARATOR | :
+IDENTIFIER | real
+ SEPARATOR | =
+      REAL | 1.0
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | result
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+IDENTIFIER | a
+ SEPARATOR | +
+   INTEGER | 2
+ SEPARATOR | *
+ SEPARATOR | (
+IDENTIFIER | d
+ SEPARATOR | -
+IDENTIFIER | e
+ SEPARATOR | )
+ SEPARATOR | ;
+IDENTIFIER | if
+ SEPARATOR | (
+IDENTIFIER | d
+ SEPARATOR | >
+IDENTIFIER | e
+ SEPARATOR | &&
+IDENTIFIER | a
+ SEPARATOR | <
+IDENTIFIER | b
+ SEPARATOR | ||
+ SEPARATOR | -
+IDENTIFIER | b
+ SEPARATOR | ==
+IDENTIFIER | add
+ SEPARATOR | (
+IDENTIFIER | a
+ SEPARATOR | ,
+IDENTIFIER | d
+ SEPARATOR | )
+ SEPARATOR | ||
+   INTEGER | 1
+ SEPARATOR | )
+ SEPARATOR | {
+IDENTIFIER | d
+ SEPARATOR | =
+   INTEGER | 2
+ SEPARATOR | ;
+ SEPARATOR | }
+IDENTIFIER | for
+ SEPARATOR | (
+IDENTIFIER | var
+IDENTIFIER | i
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | 0
+ SEPARATOR | ;
+IDENTIFIER | i
+ SEPARATOR | <
+   INTEGER | 10
+ SEPARATOR | ;
+IDENTIFIER | i
+ SEPARATOR | =
+IDENTIFIER | i
+ SEPARATOR | +
+   INTEGER | 1
+ SEPARATOR | )
+ SEPARATOR | {
+IDENTIFIER | var
+IDENTIFIER | flag
+ SEPARATOR | :
+IDENTIFIER | bool
+ SEPARATOR | =
+IDENTIFIER | true
+ SEPARATOR | ;
+IDENTIFIER | while
+ SEPARATOR | (
+IDENTIFIER | flag
+ SEPARATOR | )
+ SEPARATOR | {
+IDENTIFIER | var
+IDENTIFIER | x
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | 1
+ SEPARATOR | ;
+IDENTIFIER | if
+ SEPARATOR | (
+IDENTIFIER | b
+ SEPARATOR | [
+IDENTIFIER | i
+ SEPARATOR | ]
+ SEPARATOR | ==
+   INTEGER | 0
+ SEPARATOR | )
+ SEPARATOR | {
+IDENTIFIER | flag
+ SEPARATOR | =
+IDENTIFIER | false
+ SEPARATOR | ;
+IDENTIFIER | var
+IDENTIFIER | m
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | 0
+ SEPARATOR | ;
+ SEPARATOR | }
+IDENTIFIER | if
+ SEPARATOR | (
+IDENTIFIER | b
+ SEPARATOR | [
+IDENTIFIER | i
+ SEPARATOR | ]
+ SEPARATOR | ==
+   INTEGER | 1
+ SEPARATOR | )
+ SEPARATOR | {
+IDENTIFIER | var
+IDENTIFIER | n
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | =
+   INTEGER | 1
+ SEPARATOR | ;
+IDENTIFIER | continue
+ SEPARATOR | ;
+ SEPARATOR | }
+IDENTIFIER | else
+ SEPARATOR | {
+IDENTIFIER | b
+ SEPARATOR | [
+IDENTIFIER | i
+ SEPARATOR | ]
+ SEPARATOR | =
+IDENTIFIER | x
+ SEPARATOR | -
+   INTEGER | 1
+ SEPARATOR | ;
+IDENTIFIER | break
+ SEPARATOR | ;
+ SEPARATOR | }
+ SEPARATOR | }
+ SEPARATOR | }
+IDENTIFIER | return
+   INTEGER | 0
+ SEPARATOR | ;
+ SEPARATOR | }
+IDENTIFIER | func
+IDENTIFIER | add
+ SEPARATOR | (
+IDENTIFIER | x
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | ,
+IDENTIFIER | y
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | )
+ SEPARATOR | :
+IDENTIFIER | int
+ SEPARATOR | {
+IDENTIFIER | return
+IDENTIFIER | x
+ SEPARATOR | +
+IDENTIFIER | y
+ SEPARATOR | ;
+ SEPARATOR | }
+-----------+---------
+[info] Transferring tokens...
+[info] Tokens:
+---------+---------
+    Type | Value
+---------+---------
+    decl | decl
+    func | func
+   Ident | add
+       ( | (
+   Ident | x
+       : | :
+     int | int
+       , | ,
+   Ident | y
+       : | :
+     int | int
+       ) | )
+       : | :
+     int | int
+       ; | ;
+    decl | decl
+    func | func
+   Ident | add2
+       ( | (
+   Ident | x
+       : | :
+     int | int
+       , | ,
+   Ident | y
+       : | :
+     int | int
+       , | ,
+   Ident | z
+       : | :
+    real | real
+       , | ,
+   Ident | s
+       : | :
+     str | str
+       ) | )
+       : | :
+     int | int
+       ; | ;
+    func | func
+   Ident | sub
+       ( | (
+       ) | )
+       { | {
+  return | return
+       ; | ;
+       } | }
+     var | var
+   Ident | x
+       : | :
+     int | int
+       = | =
+ Integer | 10
+       ; | ;
+     var | var
+   Ident | y
+       : | :
+    bool | bool
+       = | =
+    true | true
+       ; | ;
+    func | func
+   Ident | main
+       ( | (
+       ) | )
+       : | :
+     int | int
+       { | {
+     var | var
+   Ident | a
+       : | :
+     int | int
+       = | =
+ Integer | 10
+       , | ,
+   Ident | b
+       : | :
+     int | int
+       = | =
+ Integer | 1
+       , | ,
+   Ident | c
+       : | :
+    bool | bool
+       = | =
+   false | false
+       ; | ;
+     var | var
+   Ident | d
+       : | :
+     int | int
+       = | =
+ Integer | +3
+       ; | ;
+     var | var
+   Ident | e
+       : | :
+     int | int
+       = | =
+ Integer | -3
+       ; | ;
+     var | var
+   Ident | o
+       : | :
+    real | real
+       = | =
+    Real | 3.14
+       ; | ;
+     var | var
+   Ident | p
+       : | :
+    real | real
+       = | =
+    Real | -2.71828
+       ; | ;
+     var | var
+   Ident | q
+       : | :
+    real | real
+       = | =
+    Real | 1.0
+       ; | ;
+     var | var
+   Ident | result
+       : | :
+     int | int
+       = | =
+   Ident | a
+       + | +
+ Integer | 2
+       * | *
+       ( | (
+   Ident | d
+       - | -
+   Ident | e
+       ) | )
+       ; | ;
+      if | if
+       ( | (
+   Ident | d
+       > | >
+   Ident | e
+      && | &&
+   Ident | a
+       < | <
+   Ident | b
+      || | ||
+       - | -
+   Ident | b
+      == | ==
+   Ident | add
+       ( | (
+   Ident | a
+       , | ,
+   Ident | d
+       ) | )
+      || | ||
+ Integer | 1
+       ) | )
+       { | {
+   Ident | d
+       = | =
+ Integer | 2
+       ; | ;
+       } | }
+     for | for
+       ( | (
+     var | var
+   Ident | i
+       : | :
+     int | int
+       = | =
+ Integer | 0
+       ; | ;
+   Ident | i
+       < | <
+ Integer | 10
+       ; | ;
+   Ident | i
+       = | =
+   Ident | i
+       + | +
+ Integer | 1
+       ) | )
+       { | {
+     var | var
+   Ident | flag
+       : | :
+    bool | bool
+       = | =
+    true | true
+       ; | ;
+   while | while
+       ( | (
+   Ident | flag
+       ) | )
+       { | {
+     var | var
+   Ident | x
+       : | :
+     int | int
+       = | =
+ Integer | 1
+       ; | ;
+      if | if
+       ( | (
+   Ident | b
+       [ | [
+   Ident | i
+       ] | ]
+      == | ==
+ Integer | 0
+       ) | )
+       { | {
+   Ident | flag
+       = | =
+   false | false
+       ; | ;
+     var | var
+   Ident | m
+       : | :
+     int | int
+       = | =
+ Integer | 0
+       ; | ;
+       } | }
+      if | if
+       ( | (
+   Ident | b
+       [ | [
+   Ident | i
+       ] | ]
+      == | ==
+ Integer | 1
+       ) | )
+       { | {
+     var | var
+   Ident | n
+       : | :
+     int | int
+       = | =
+ Integer | 1
+       ; | ;
+continue | continue
+       ; | ;
+       } | }
+    else | else
+       { | {
+   Ident | b
+       [ | [
+   Ident | i
+       ] | ]
+       = | =
+   Ident | x
+       - | -
+ Integer | 1
+       ; | ;
+   break | break
+       ; | ;
+       } | }
+       } | }
+       } | }
+  return | return
+ Integer | 0
+       ; | ;
+       } | }
+    func | func
+   Ident | add
+       ( | (
+   Ident | x
+       : | :
+     int | int
+       , | ,
+   Ident | y
+       : | :
+     int | int
+       ) | )
+       : | :
+     int | int
+       { | {
+  return | return
+   Ident | x
+       + | +
+   Ident | y
+       ; | ;
+       } | }
+---------+---------

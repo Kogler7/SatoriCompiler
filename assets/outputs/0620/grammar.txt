@@ -1,0 +1,174 @@
+[info] Grammar: Rules:
++---------------------------------------------------------------------------+
+|                                   Rules                                   |
++---------------------------------------------------------------------------+
+|          AndExpr ::= AndExpr && RelExpr                                   |
+|          AndExpr ::= RelExpr                                              |
+|          ArgList ::= Expr ArgList_star_1                                  |
+|   ArgList_star_1 ::=                                                      |
+|   ArgList_star_1 ::= , Expr ArgList_star_1                                |
+|       Assignment ::= LVal = Expr                                          |
+|            Block ::= { Block_star_1 }                                     |
+|     Block_star_1 ::=                                                      |
+|     Block_star_1 ::= Stmt Block_star_1                                    |
+|         BoolExpr ::= OrExpr                                               |
+|             Expr ::= Expr + MulExpr                                       |
+|             Expr ::= Expr - MulExpr                                       |
+|             Expr ::= MulExpr                                              |
+|           Factor ::= ( Expr )                                             |
+|           Factor ::= Char                                                 |
+|           Factor ::= FuncCall                                             |
+|           Factor ::= IntLiteral                                           |
+|           Factor ::= LVal                                                 |
+|           Factor ::= RealLiteral                                          |
+|           Factor ::= String                                               |
+|           Factor ::= false                                                |
+|           Factor ::= true                                                 |
+|         FuncCall ::= Ident ( FuncCall_opti_1 )                            |
+|  FuncCall_opti_1 ::=                                                      |
+|  FuncCall_opti_1 ::= ArgList                                              |
+|         FuncDecl ::= func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2       |
+|     FuncDeclStmt ::= decl FuncDecl ;                                      |
+|  FuncDecl_opti_1 ::=                                                      |
+|  FuncDecl_opti_1 ::= ParamList                                            |
+|  FuncDecl_opti_2 ::=                                                      |
+|  FuncDecl_opti_2 ::= : VarType                                            |
+|          FuncDef ::= FuncDecl Block                                       |
+|          InitVal ::= Expr                                                 |
+|          InitVal ::= { InitVal_opti_2 }                                   |
+|   InitVal_opti_2 ::=                                                      |
+|   InitVal_opti_2 ::= InitVal InitVal_star_1                               |
+|   InitVal_star_1 ::=                                                      |
+|   InitVal_star_1 ::= , InitVal InitVal_star_1                             |
+|       IntLiteral ::= Integer                                              |
+|             LVal ::= Ident LVal_star_1                                    |
+|      LVal_star_1 ::=                                                      |
+|      LVal_star_1 ::= [ Expr ] LVal_star_1                                 |
+|          MulExpr ::= MulExpr % UnaryExpr                                  |
+|          MulExpr ::= MulExpr * UnaryExpr                                  |
+|          MulExpr ::= MulExpr / UnaryExpr                                  |
+|          MulExpr ::= UnaryExpr                                            |
+|           OrExpr ::= AndExpr                                              |
+|           OrExpr ::= OrExpr || AndExpr                                    |
+|            Param ::= Ident : VarType Param_star_1                         |
+|        ParamList ::= Param ParamList_star_1                               |
+| ParamList_star_1 ::=                                                      |
+| ParamList_star_1 ::= , Param ParamList_star_1                             |
+|     Param_star_1 ::=                                                      |
+|     Param_star_1 ::= [ Integer ] Param_star_1                             |
+|          Program ::= Program_star_1                                       |
+|   Program_star_1 ::=                                                      |
+|   Program_star_1 ::= FuncDeclStmt Program_star_1                          |
+|   Program_star_1 ::= FuncDef Program_star_1                               |
+|   Program_star_1 ::= VarDeclStmt Program_star_1                           |
+|      RealLiteral ::= Real                                                 |
+|          RelExpr ::= Expr                                                 |
+|          RelExpr ::= Expr != Expr                                         |
+|          RelExpr ::= Expr < Expr                                          |
+|          RelExpr ::= Expr <= Expr                                         |
+|          RelExpr ::= Expr == Expr                                         |
+|          RelExpr ::= Expr > Expr                                          |
+|          RelExpr ::= Expr >= Expr                                         |
+|             Stmt ::= Assignment ;                                         |
+|             Stmt ::= Block                                                |
+|             Stmt ::= Stmt_opti_6 ;                                        |
+|             Stmt ::= VarDeclStmt                                          |
+|             Stmt ::= break ;                                              |
+|             Stmt ::= continue ;                                           |
+|             Stmt ::= for ( Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 ) Stmt |
+|             Stmt ::= if ( BoolExpr ) Stmt Stmt_opti_1                     |
+|             Stmt ::= print Expr ;                                         |
+|             Stmt ::= return Stmt_opti_5 ;                                 |
+|             Stmt ::= while ( BoolExpr ) Stmt                              |
+|      Stmt_opti_1 ::=                                                      |
+|      Stmt_opti_1 ::= else Stmt                                            |
+|      Stmt_opti_2 ::=                                                      |
+|      Stmt_opti_2 ::= Assignment                                           |
+|      Stmt_opti_2 ::= VarDecl                                              |
+|      Stmt_opti_3 ::=                                                      |
+|      Stmt_opti_3 ::= BoolExpr                                             |
+|      Stmt_opti_4 ::=                                                      |
+|      Stmt_opti_4 ::= Assignment                                           |
+|      Stmt_opti_5 ::=                                                      |
+|      Stmt_opti_5 ::= Expr                                                 |
+|      Stmt_opti_6 ::=                                                      |
+|      Stmt_opti_6 ::= Expr                                                 |
+|        UnaryExpr ::= ! UnaryExpr                                          |
+|        UnaryExpr ::= + UnaryExpr                                          |
+|        UnaryExpr ::= - UnaryExpr                                          |
+|        UnaryExpr ::= Factor                                               |
+|          VarDecl ::= var VarDef VarDecl_star_1                            |
+|      VarDeclStmt ::= VarDecl ;                                            |
+|   VarDecl_star_1 ::=                                                      |
+|   VarDecl_star_1 ::= , VarDef VarDecl_star_1                              |
+|           VarDef ::= Ident : VarType VarDef_star_1 VarDef_opti_2          |
+|    VarDef_opti_2 ::=                                                      |
+|    VarDef_opti_2 ::= = InitVal                                            |
+|    VarDef_star_1 ::=                                                      |
+|    VarDef_star_1 ::= [ Integer ] VarDef_star_1                            |
+|          VarType ::= bool                                                 |
+|          VarType ::= char                                                 |
+|          VarType ::= int                                                  |
+|          VarType ::= real                                                 |
+|          VarType ::= str                                                  |
++---------------------------------------------------------------------------+
+[info] Terminals:
+{!, !=, #, %, &&, (, ), *, +, ,, -, /, :, ;, <, <=, =, ==, >, >=, Char, Ident, Integer, Real, String, [, ], bool, break, char, continue, decl, else, false, for, func, if, int, print, real, return, str, true, var, while, {, ||, }}
+[info] Non-terminals:
+{AndExpr, ArgList, ArgList_star_1, Assignment, Block, Block_star_1, BoolExpr, Expr, Factor, FuncCall, FuncCall_opti_1, FuncDecl, FuncDeclStmt, FuncDecl_opti_1, FuncDecl_opti_2, FuncDef, InitVal, InitVal_opti_2, InitVal_star_1, IntLiteral, LVal, LVal_star_1, MulExpr, OrExpr, Param, ParamList, ParamList_star_1, Param_star_1, Program, Program_star_1, RealLiteral, RelExpr, Stmt, Stmt_opti_1, Stmt_opti_2, Stmt_opti_3, Stmt_opti_4, Stmt_opti_5, Stmt_opti_6, UnaryExpr, VarDecl, VarDeclStmt, VarDecl_star_1, VarDef, VarDef_opti_2, VarDef_star_1, VarType}
+[info] Grammar: Semantic Marks:
++----------------------------------------------------------------------+-------------------+
+|                               Product                                | Semantic          |
++----------------------------------------------------------------------+-------------------+
+|      AndExpr -> AndExpr && RelExpr                                   | SemAndExpr        |
+|      AndExpr -> RelExpr                                              | SemRelExpr        |
+|      ArgList -> Expr ArgList_star_1                                  | SemArgList        |
+|   Assignment -> LVal = Expr                                          | SemAssignment     |
+|        Block -> { Block_star_1 }                                     | SemBlock          |
+|     BoolExpr -> OrExpr                                               | SemBoolExpr       |
+|         Expr -> Expr - MulExpr                                       | SemExpr           |
+|         Expr -> MulExpr                                              | SemMulExpr        |
+|       Factor -> ( Expr )                                             | SemExpr           |
+|       Factor -> Char                                                 | SemChar           |
+|       Factor -> FuncCall                                             | SemFuncCall       |
+|       Factor -> IntLiteral                                           | SemInt            |
+|       Factor -> LVal                                                 | SemLVal           |
+|       Factor -> RealLiteral                                          | SemReal           |
+|       Factor -> String                                               | SemString         |
+|       Factor -> false                                                | SemFalse          |
+|       Factor -> true                                                 | SemTrue           |
+|     FuncCall -> Ident ( FuncCall_opti_1 )                            | SemFuncCall       |
+|     FuncDecl -> func Ident ( FuncDecl_opti_1 ) FuncDecl_opti_2       | SemFuncDecl       |
+| FuncDeclStmt -> decl FuncDecl ;                                      | SemFuncDeclStmt   |
+|      FuncDef -> FuncDecl Block                                       | SemFuncDef        |
+|      InitVal -> { InitVal_opti_2 }                                   | SemInitVal        |
+|   IntLiteral -> Integer                                              | SemInt            |
+|         LVal -> Ident LVal_star_1                                    | SemLVal           |
+|      MulExpr -> MulExpr % UnaryExpr                                  | SemMulExpr        |
+|      MulExpr -> UnaryExpr                                            | SemUnaryExpr      |
+|       OrExpr -> AndExpr                                              | SemAndExpr        |
+|       OrExpr -> OrExpr || AndExpr                                    | SemOrExpr         |
+|        Param -> Ident : VarType Param_star_1                         | SemParam          |
+|    ParamList -> Param ParamList_star_1                               | SemParamList      |
+|      Program -> Program_star_1                                       | SemProgram        |
+|  RealLiteral -> Real                                                 | SemReal           |
+|      RelExpr -> Expr                                                 | SemExpr           |
+|      RelExpr -> Expr != Expr                                         | SemRelExpr        |
+|         Stmt -> Assignment ;                                         | SemAssignmentStmt |
+|         Stmt -> Block                                                | SemBlockStmt      |
+|         Stmt -> Stmt_opti_6 ;                                        | SemExprStmt       |
+|         Stmt -> VarDeclStmt                                          | SemVarDeclStmt    |
+|         Stmt -> break ;                                              | SemBreakStmt      |
+|         Stmt -> continue ;                                           | SemContinueStmt   |
+|         Stmt -> for ( Stmt_opti_2 ; Stmt_opti_3 ; Stmt_opti_4 ) Stmt | SemForStmt        |
+|         Stmt -> if ( BoolExpr ) Stmt Stmt_opti_1                     | SemIfStmt         |
+|         Stmt -> print Expr ;                                         | SemPrintStmt      |
+|         Stmt -> return Stmt_opti_5 ;                                 | SemReturnStmt     |
+|         Stmt -> while ( BoolExpr ) Stmt                              | SemWhileStmt      |
+|    UnaryExpr -> ! UnaryExpr                                          | SemUnaryExpr      |
+|    UnaryExpr -> Factor                                               | SemFactor         |
+|      VarDecl -> var VarDef VarDecl_star_1                            | SemVarDecl        |
+|  VarDeclStmt -> VarDecl ;                                            | SemVarDeclStmt    |
+|       VarDef -> Ident : VarType VarDef_star_1 VarDef_opti_2          | SemVarDef         |
+|      VarType -> str                                                  | SemVarType        |
++----------------------------------------------------------------------+-------------------+

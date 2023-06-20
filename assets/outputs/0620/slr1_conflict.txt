@@ -1,0 +1,123 @@
+[info] Checking SLR(1) grammar...
+[warn] Shift-reduce conflict found in cluster 152!
+[info] Related cluster:
+[info] Cluster 152:
++---------------------------------------------------+
+|                    Cluster 152                    |
++---------------------------------------------------+
+|        Stmt -> if ( BoolExpr ) Stmt . Stmt_opti_1 |
+| Stmt_opti_1 ->                      .             |
+| Stmt_opti_1 ->                      . else Stmt   |
++---------------------------------------------------+
+[info] Set (1): {Stmt_opti_1, else}
+[info] Set (2): {!, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, else, false, for, if, print, return, true, var, while, {, }}
++-------+-------------+
+| State | Action/Goto |
++-------+-------------+
+| S152  |    S172     |
++-------+-------------+
+[info] SLR1 table of state 152:
++------------------+---------------+
+|           Symbol |  Action/Goto  |
++------------------+---------------+
+|              Action              |
++------------------+---------------+
+|                ! | Stmt_opti_1-> |
+|               != |               |
+|                # |               |
+|                % |               |
+|               && |               |
+|                ( | Stmt_opti_1-> |
+|                ) |               |
+|                * |               |
+|                + | Stmt_opti_1-> |
+|                , |               |
+|                - | Stmt_opti_1-> |
+|                / |               |
+|                : |               |
+|                ; | Stmt_opti_1-> |
+|                < |               |
+|               <= |               |
+|                = |               |
+|               == |               |
+|                > |               |
+|               >= |               |
+|             Char | Stmt_opti_1-> |
+|            Ident | Stmt_opti_1-> |
+|          Integer | Stmt_opti_1-> |
+|             Real | Stmt_opti_1-> |
+|           String | Stmt_opti_1-> |
+|                [ |               |
+|                ] |               |
+|             bool |               |
+|            break | Stmt_opti_1-> |
+|             char |               |
+|         continue | Stmt_opti_1-> |
+|             decl |               |
+|             else |     S172      |
+|            false | Stmt_opti_1-> |
+|              for | Stmt_opti_1-> |
+|             func |               |
+|               if | Stmt_opti_1-> |
+|              int |               |
+|            print | Stmt_opti_1-> |
+|             real |               |
+|           return | Stmt_opti_1-> |
+|              str |               |
+|             true | Stmt_opti_1-> |
+|              var | Stmt_opti_1-> |
+|            while | Stmt_opti_1-> |
+|                { | Stmt_opti_1-> |
+|               || |               |
+|                } | Stmt_opti_1-> |
++------------------+---------------+
+|               Goto               |
++------------------+---------------+
+|          AndExpr |               |
+|          ArgList |               |
+|   ArgList_star_1 |               |
+|       Assignment |               |
+|            Block |               |
+|     Block_star_1 |               |
+|         BoolExpr |               |
+|             Expr |               |
+|           Factor |               |
+|         FuncCall |               |
+|  FuncCall_opti_1 |               |
+|         FuncDecl |               |
+|     FuncDeclStmt |               |
+|  FuncDecl_opti_1 |               |
+|  FuncDecl_opti_2 |               |
+|          FuncDef |               |
+|          InitVal |               |
+|   InitVal_opti_2 |               |
+|   InitVal_star_1 |               |
+|       IntLiteral |               |
+|             LVal |               |
+|      LVal_star_1 |               |
+|          MulExpr |               |
+|           OrExpr |               |
+|            Param |               |
+|        ParamList |               |
+| ParamList_star_1 |               |
+|     Param_star_1 |               |
+|          Program |               |
+|   Program_star_1 |               |
+|      RealLiteral |               |
+|          RelExpr |               |
+|             Stmt |               |
+|      Stmt_opti_1 |     S171      |
+|      Stmt_opti_2 |               |
+|      Stmt_opti_3 |               |
+|      Stmt_opti_4 |               |
+|      Stmt_opti_5 |               |
+|      Stmt_opti_6 |               |
+|        UnaryExpr |               |
+|          VarDecl |               |
+|      VarDeclStmt |               |
+|   VarDecl_star_1 |               |
+|           VarDef |               |
+|    VarDef_opti_2 |               |
+|    VarDef_star_1 |               |
+|          VarType |               |
++------------------+---------------+

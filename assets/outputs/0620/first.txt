@@ -1,0 +1,175 @@
+[info] Calculating First(S)...
+[warn] Direct left recursion detected. Trying to calculate First with Left Recursion...
+[info] Calculating First with Left Recursion...
+[info] Calculating Follow...
+[info] Calculating Select...
+[info] Calculating LR items...
+[info] Calculating LR clusters...
+[info] Calculating SLR(1) table...
+[warn] Conflict found in SLR(1) table! Shift action will be applied!
+[info] First:
++------------------+-----------------------------------------------------------------------------------------------------------------------------+
+|          NonTerm | First                                                                                                                       |
++------------------+-----------------------------------------------------------------------------------------------------------------------------+
+|          AndExpr | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|          ArgList | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|   ArgList_star_1 | {$, ,}                                                                                                                      |
+|       Assignment | {Ident}                                                                                                                     |
+|            Block | {{}                                                                                                                         |
+|     Block_star_1 | {!, $, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, false, for, if, print, return, true, var, while, {} |
+|         BoolExpr | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|             Expr | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|           Factor | {(, Char, Ident, Integer, Real, String, false, true}                                                                        |
+|         FuncCall | {Ident}                                                                                                                     |
+|  FuncCall_opti_1 | {!, $, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|         FuncDecl | {func}                                                                                                                      |
+|     FuncDeclStmt | {decl}                                                                                                                      |
+|  FuncDecl_opti_1 | {$, Ident}                                                                                                                  |
+|  FuncDecl_opti_2 | {$, :}                                                                                                                      |
+|          FuncDef | {func}                                                                                                                      |
+|          InitVal | {!, (, +, -, Char, Ident, Integer, Real, String, false, true, {}                                                            |
+|   InitVal_opti_2 | {!, $, (, +, -, Char, Ident, Integer, Real, String, false, true, {}                                                         |
+|   InitVal_star_1 | {$, ,}                                                                                                                      |
+|       IntLiteral | {Integer}                                                                                                                   |
+|             LVal | {Ident}                                                                                                                     |
+|      LVal_star_1 | {$, [}                                                                                                                      |
+|          MulExpr | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|           OrExpr | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|            Param | {Ident}                                                                                                                     |
+|        ParamList | {Ident}                                                                                                                     |
+| ParamList_star_1 | {$, ,}                                                                                                                      |
+|     Param_star_1 | {$, [}                                                                                                                      |
+|          Program | {$, decl, func, var}                                                                                                        |
+|   Program_star_1 | {$, decl, func, var}                                                                                                        |
+|      RealLiteral | {Real}                                                                                                                      |
+|          RelExpr | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|             Stmt | {!, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, false, for, if, print, return, true, var, while, {}    |
+|      Stmt_opti_1 | {$, else}                                                                                                                   |
+|      Stmt_opti_2 | {$, Ident, var}                                                                                                             |
+|      Stmt_opti_3 | {!, $, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|      Stmt_opti_4 | {$, Ident}                                                                                                                  |
+|      Stmt_opti_5 | {!, $, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|      Stmt_opti_6 | {!, $, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|        UnaryExpr | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                               |
+|          VarDecl | {var}                                                                                                                       |
+|      VarDeclStmt | {var}                                                                                                                       |
+|   VarDecl_star_1 | {$, ,}                                                                                                                      |
+|           VarDef | {Ident}                                                                                                                     |
+|    VarDef_opti_2 | {$, =}                                                                                                                      |
+|    VarDef_star_1 | {$, [}                                                                                                                      |
+|          VarType | {bool, char, int, real, str}                                                                                                |
++------------------+-----------------------------------------------------------------------------------------------------------------------------+
+[info] First of Symstr:
++----------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+|                                                         Symstr | First                                                                                                                    |
++----------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+|                                  [VarDeclStmt, Program_star_1] | {var}                                                                                                                    |
+|                                 [FuncDeclStmt, Program_star_1] | {decl}                                                                                                                   |
+|                                      [FuncDef, Program_star_1] | {func}                                                                                                                   |
+|                                                             [] | {$}                                                                                                                      |
+|                                               [Program_star_1] | {$, decl, func, var}                                                                                                     |
+|                                                   [VarDecl, ;] | {var}                                                                                                                    |
+|                                    [,, VarDef, VarDecl_star_1] | {,}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|                                  [var, VarDef, VarDecl_star_1] | {var}                                                                                                                    |
+|                                                          [int] | {int}                                                                                                                    |
+|                                                         [real] | {real}                                                                                                                   |
+|                                                         [bool] | {bool}                                                                                                                   |
+|                                                         [char] | {char}                                                                                                                   |
+|                                                          [str] | {str}                                                                                                                    |
+|                                 [[, Integer, ], VarDef_star_1] | {[}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|                                                   [=, InitVal] | {=}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|              [Ident, :, VarType, VarDef_star_1, VarDef_opti_2] | {Ident}                                                                                                                  |
+|                                   [,, InitVal, InitVal_star_1] | {,}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|                                      [InitVal, InitVal_star_1] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true, {}                                                         |
+|                                                             [] | {$}                                                                                                                      |
+|                                                         [Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                         [{, InitVal_opti_2, }] | {{}                                                                                                                      |
+|                                            [decl, FuncDecl, ;] | {decl}                                                                                                                   |
+|                                                    [ParamList] | {Ident}                                                                                                                  |
+|                                                             [] | {$}                                                                                                                      |
+|                                                   [:, VarType] | {:}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|          [func, Ident, (, FuncDecl_opti_1, ), FuncDecl_opti_2] | {func}                                                                                                                   |
+|                                              [FuncDecl, Block] | {func}                                                                                                                   |
+|                                                      [ArgList] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                             [] | {$}                                                                                                                      |
+|                                 [Ident, (, FuncCall_opti_1, )] | {Ident}                                                                                                                  |
+|                                      [,, Expr, ArgList_star_1] | {,}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|                                         [Expr, ArgList_star_1] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                   [,, Param, ParamList_star_1] | {,}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|                                      [Param, ParamList_star_1] | {Ident}                                                                                                                  |
+|                                  [[, Integer, ], Param_star_1] | {[}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|                              [Ident, :, VarType, Param_star_1] | {Ident}                                                                                                                  |
+|                                                   [else, Stmt] | {else}                                                                                                                   |
+|                                                             [] | {$}                                                                                                                      |
+|                                                      [VarDecl] | {var}                                                                                                                    |
+|                                                   [Assignment] | {Ident}                                                                                                                  |
+|                                                             [] | {$}                                                                                                                      |
+|                                                     [BoolExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                             [] | {$}                                                                                                                      |
+|                                                   [Assignment] | {Ident}                                                                                                                  |
+|                                                             [] | {$}                                                                                                                      |
+|                                                         [Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                             [] | {$}                                                                                                                      |
+|                                                         [Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                             [] | {$}                                                                                                                      |
+|                                                [Assignment, ;] | {Ident}                                                                                                                  |
+|                                                  [VarDeclStmt] | {var}                                                                                                                    |
+|                        [if, (, BoolExpr, ), Stmt, Stmt_opti_1] | {if}                                                                                                                     |
+|                                  [while, (, BoolExpr, ), Stmt] | {while}                                                                                                                  |
+| [for, (, Stmt_opti_2, ;, Stmt_opti_3, ;, Stmt_opti_4, ), Stmt] | {for}                                                                                                                    |
+|                                                     [break, ;] | {break}                                                                                                                  |
+|                                                  [continue, ;] | {continue}                                                                                                               |
+|                                               [print, Expr, ;] | {print}                                                                                                                  |
+|                                       [return, Stmt_opti_5, ;] | {return}                                                                                                                 |
+|                                               [Stmt_opti_6, ;] | {!, $, (, +, -, ;, Char, Ident, Integer, Real, String, false, true}                                                      |
+|                                                        [Block] | {{}                                                                                                                      |
+|                                                [LVal, =, Expr] | {Ident}                                                                                                                  |
+|                                           [Stmt, Block_star_1] | {!, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, false, for, if, print, return, true, var, while, {} |
+|                                                             [] | {$}                                                                                                                      |
+|                                           [{, Block_star_1, }] | {{}                                                                                                                      |
+|                                                 [+, UnaryExpr] | {+}                                                                                                                      |
+|                                                 [-, UnaryExpr] | {-}                                                                                                                      |
+|                                                 [!, UnaryExpr] | {!}                                                                                                                      |
+|                                                       [Factor] | {(, Char, Ident, Integer, Real, String, false, true}                                                                     |
+|                                        [MulExpr, *, UnaryExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                        [MulExpr, /, UnaryExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                        [MulExpr, %, UnaryExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                    [UnaryExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                             [Expr, +, MulExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                             [Expr, -, MulExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                      [MulExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                [Expr, <, Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                               [Expr, <=, Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                [Expr, >, Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                               [Expr, >=, Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                               [Expr, ==, Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                               [Expr, !=, Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                         [Expr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                         [AndExpr, &&, RelExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                      [RelExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                          [OrExpr, ||, AndExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                      [AndExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                       [OrExpr] | {!, (, +, -, Char, Ident, Integer, Real, String, false, true}                                                            |
+|                                                         [LVal] | {Ident}                                                                                                                  |
+|                                                     [FuncCall] | {Ident}                                                                                                                  |
+|                                                   [(, Expr, )] | {(}                                                                                                                      |
+|                                                   [IntLiteral] | {Integer}                                                                                                                |
+|                                                  [RealLiteral] | {Real}                                                                                                                   |
+|                                                       [String] | {String}                                                                                                                 |
+|                                                         [Char] | {Char}                                                                                                                   |
+|                                                         [true] | {true}                                                                                                                   |
+|                                                        [false] | {false}                                                                                                                  |
+|                                                      [Integer] | {Integer}                                                                                                                |
+|                                                         [Real] | {Real}                                                                                                                   |
+|                                      [[, Expr, ], LVal_star_1] | {[}                                                                                                                      |
+|                                                             [] | {$}                                                                                                                      |
+|                                           [Ident, LVal_star_1] | {Ident}                                                                                                                  |
++----------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+

@@ -1,3 +1,4 @@
+[info] LLVM IR:
 @x.1 = global i32 10
 @y.1 = global i1 true
 
@@ -35,28 +36,28 @@ body.2:
     %add.1 = sadd i32 %a, %mul.1
     store i32 %add.1, i32* %result
 if.cond.1:
-expr.rel.3:
-    %cmp.3 = scmp gt i32 %d, %e
-    br i1 %cmp.3, label and.rhs.1, label or.rhs.1
+expr.rel.1:
+    %cmp.1 = scmp gt i32 %d, %e
+    br i1 %cmp.1, label and.rhs.1, label or.rhs.1
 
 and.rhs.1:
-expr.rel.4:
-    %cmp.4 = scmp lt i32 %a, %b
-    br i1 %cmp.4, label if.then.1, label or.rhs.1
+expr.rel.2:
+    %cmp.2 = scmp lt i32 %a, %b
+    br i1 %cmp.2, label if.then.1, label or.rhs.1
 
 
 or.rhs.1:
-expr.rel.5:
+expr.rel.3:
     %neg.1 = sneg %b
     %call.1 = call i32 @add(%a, %d)
-    %cmp.5 = scmp eq i32 %neg.1, %call.1
-    br i1 %cmp.5, label if.then.1, label or.rhs.2
+    %cmp.3 = scmp eq i32 %neg.1, %call.1
+    br i1 %cmp.3, label if.then.1, label or.rhs.2
 
 
 or.rhs.2:
-expr.rel.6:
-    %cmp.6 = scmp ne i32 1, 0
-    br i1 %cmp.6, label if.then.1, label fall.1
+expr.rel.4:
+    %cmp.4 = scmp ne i32 1, 0
+    br i1 %cmp.4, label if.then.1, label fall.1
 
 
 
@@ -70,17 +71,17 @@ for.init.1:
     store i32 0, i32* %i
 
 for.cond.1:
-expr.rel.2:
-    %cmp.2 = scmp lt i32 %i, 10
-    br i1 %cmp.2, label for.body.1, label fall.2
+expr.rel.5:
+    %cmp.5 = scmp lt i32 %i, 10
+    br i1 %cmp.5, label for.body.1, label fall.2
 
 
 for.body.1:
     store i1 true, i1* %flag
 while.cond.1:
-expr.rel.1:
-    %cmp.1 = ucmp ne i1 %flag, false
-    br i1 %cmp.1, label while.body.1, label fall.3
+expr.rel.6:
+    %cmp.6 = ucmp ne i1 %flag, false
+    br i1 %cmp.6, label while.body.1, label fall.3
 
 
 while.body.1:

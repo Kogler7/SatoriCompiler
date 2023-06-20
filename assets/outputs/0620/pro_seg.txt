@@ -1,0 +1,224 @@
+[info] SyntaxParser: Start symbol is Program
+[info] SyntaxParser: Segmenting product: Program -> { VarDeclStmt | FuncDeclStmt | FuncDef } SEMANTIC .
+[info] SyntaxParser: Segmenting product: Program -> VarDeclStmt | FuncDeclStmt | FuncDef .
+[info] SyntaxParser: lastIt: FuncDeclStmt
+[info] SyntaxParser: lastIt: FuncDef
+[info] SyntaxParser: Segmented product:
+Program -> VarDeclStmt
+Program -> FuncDeclStmt
+Program -> FuncDef
+[info] SyntaxParser: Segmented product:
+Program -> Program_star_1 SEMANTIC
+[info] SyntaxParser: Segmenting product: VarDeclStmt -> VarDecl `;` SEMANTIC .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: VarDecl -> `var` VarDef { `,` VarDef } SEMANTIC .
+[info] SyntaxParser: Segmenting product: VarDecl -> `,` VarDef .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+VarDecl -> `var` VarDef VarDecl_star_1 SEMANTIC
+[info] SyntaxParser: Segmenting product: VarType -> `int` | `real` | `bool` | `char` | `str` SEMANTIC .
+[info] SyntaxParser: lastIt: `real`
+[info] SyntaxParser: lastIt: `bool`
+[info] SyntaxParser: lastIt: `char`
+[info] SyntaxParser: lastIt: `str`
+[info] SyntaxParser: Segmented product:
+VarType -> `int`
+VarType -> `real`
+VarType -> `bool`
+VarType -> `char`
+VarType -> `str` SEMANTIC
+[info] SyntaxParser: Segmenting product: VarDef -> $Ident `:` VarType { `[` $Integer `]` } [ `=` InitVal ] SEMANTIC .
+[info] SyntaxParser: Segmenting product: VarDef -> `[` $Integer `]` .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: VarDef -> `=` InitVal .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+VarDef -> $Ident `:` VarType VarDef_star_1 VarDef_opti_2 SEMANTIC
+[info] SyntaxParser: Segmenting product: InitVal -> Expr | `{` [ InitVal { `,` InitVal } ] `}` SEMANTIC .
+[info] SyntaxParser: lastIt: `{`
+[info] SyntaxParser: Segmenting product: InitVal -> InitVal { `,` InitVal } .
+[info] SyntaxParser: Segmenting product: InitVal -> `,` InitVal .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+InitVal -> InitVal InitVal_star_1
+[info] SyntaxParser: Segmented product:
+InitVal -> Expr
+InitVal -> `{` InitVal_opti_2 `}` SEMANTIC
+[info] SyntaxParser: Segmenting product: FuncDeclStmt -> `decl` FuncDecl `;` SEMANTIC .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: FuncDecl -> `func` $Ident `(` [ ParamList ] `)` [ `:` VarType ] SEMANTIC .
+[info] SyntaxParser: Segmenting product: FuncDecl -> ParamList .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: FuncDecl -> `:` VarType .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+FuncDecl -> `func` $Ident `(` FuncDecl_opti_1 `)` FuncDecl_opti_2 SEMANTIC
+[info] SyntaxParser: Segmenting product: FuncDef -> FuncDecl Block SEMANTIC .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: FuncCall -> $Ident `(` [ ArgList ] `)` SEMANTIC .
+[info] SyntaxParser: Segmenting product: FuncCall -> ArgList .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+FuncCall -> $Ident `(` FuncCall_opti_1 `)` SEMANTIC
+[info] SyntaxParser: Segmenting product: ArgList -> Expr { `,` Expr } SEMANTIC .
+[info] SyntaxParser: Segmenting product: ArgList -> `,` Expr .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+ArgList -> Expr ArgList_star_1 SEMANTIC
+[info] SyntaxParser: Segmenting product: ParamList -> Param { `,` Param } SEMANTIC .
+[info] SyntaxParser: Segmenting product: ParamList -> `,` Param .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+ParamList -> Param ParamList_star_1 SEMANTIC
+[info] SyntaxParser: Segmenting product: Param -> $Ident `:` VarType { `[` $Integer `]` } SEMANTIC .
+[info] SyntaxParser: Segmenting product: Param -> `[` $Integer `]` .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+Param -> $Ident `:` VarType Param_star_1 SEMANTIC
+[info] SyntaxParser: Segmenting product: Stmt -> Assignment `;` SEMANTIC | VarDeclStmt SEMANTIC | `if` `(` BoolExpr `)` Stmt [ `else` Stmt ] SEMANTIC | `while` `(` BoolExpr `)` Stmt SEMANTIC | `for` `(` [ VarDecl | Assignment ] `;` [ BoolExpr ] `;` [ Assignment ] `)` Stmt SEMANTIC | `break` `;` SEMANTIC | `continue` `;` SEMANTIC | `print` Expr `;` SEMANTIC | `return` [ Expr ] `;` SEMANTIC | [ Expr ] `;` SEMANTIC | Block SEMANTIC .
+[info] SyntaxParser: lastIt: VarDeclStmt
+[info] SyntaxParser: lastIt: `if`
+[info] SyntaxParser: Segmenting product: Stmt -> `else` Stmt .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: lastIt: `while`
+[info] SyntaxParser: lastIt: `for`
+[info] SyntaxParser: Segmenting product: Stmt -> VarDecl | Assignment .
+[info] SyntaxParser: lastIt: Assignment
+[info] SyntaxParser: Segmented product:
+Stmt -> VarDecl
+Stmt -> Assignment
+[info] SyntaxParser: Segmenting product: Stmt -> BoolExpr .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: Stmt -> Assignment .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: lastIt: `break`
+[info] SyntaxParser: lastIt: `continue`
+[info] SyntaxParser: lastIt: `print`
+[info] SyntaxParser: lastIt: `return`
+[info] SyntaxParser: Segmenting product: Stmt -> Expr .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: lastIt: [
+[info] SyntaxParser: Segmenting product: Stmt -> Expr .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: lastIt: Block
+[info] SyntaxParser: Segmented product:
+Stmt -> Assignment `;` SEMANTIC
+Stmt -> VarDeclStmt SEMANTIC
+Stmt -> `if` `(` BoolExpr `)` Stmt Stmt_opti_1 SEMANTIC
+Stmt -> `while` `(` BoolExpr `)` Stmt SEMANTIC
+Stmt -> `for` `(` Stmt_opti_2 `;` Stmt_opti_3 `;` Stmt_opti_4 `)` Stmt SEMANTIC
+Stmt -> `break` `;` SEMANTIC
+Stmt -> `continue` `;` SEMANTIC
+Stmt -> `print` Expr `;` SEMANTIC
+Stmt -> `return` Stmt_opti_5 `;` SEMANTIC
+Stmt -> Stmt_opti_6 `;` SEMANTIC
+Stmt -> Block SEMANTIC
+[info] SyntaxParser: Segmenting product: Assignment -> LVal `=` Expr SEMANTIC .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: Block -> `{` { Stmt } `}` SEMANTIC .
+[info] SyntaxParser: Segmenting product: Block -> Stmt .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+Block -> `{` Block_star_1 `}` SEMANTIC
+[info] SyntaxParser: Segmenting product: UnaryExpr -> ( `+` | `-` | `!` ) UnaryExpr SEMANTIC | Factor SEMANTIC .
+[info] SyntaxParser: Segmenting product: UnaryExpr -> `+` | `-` | `!` .
+[info] SyntaxParser: lastIt: `-`
+[info] SyntaxParser: lastIt: `!`
+[info] SyntaxParser: Segmented product:
+UnaryExpr -> `+`
+UnaryExpr -> `-`
+UnaryExpr -> `!`
+[info] SyntaxParser: lastIt: Factor
+[info] SyntaxParser: Segmented product:
+UnaryExpr -> `+` UnaryExpr SEMANTIC
+UnaryExpr -> `-` UnaryExpr SEMANTIC
+UnaryExpr -> `!` UnaryExpr SEMANTIC
+UnaryExpr -> Factor SEMANTIC
+[info] SyntaxParser: Segmenting product: MulExpr -> MulExpr ( `*` | `/` | `%` ) UnaryExpr SEMANTIC | UnaryExpr SEMANTIC .
+[info] SyntaxParser: Segmenting product: MulExpr -> `*` | `/` | `%` .
+[info] SyntaxParser: lastIt: `/`
+[info] SyntaxParser: lastIt: `%`
+[info] SyntaxParser: Segmented product:
+MulExpr -> `*`
+MulExpr -> `/`
+MulExpr -> `%`
+[info] SyntaxParser: lastIt: UnaryExpr
+[info] SyntaxParser: Segmented product:
+MulExpr -> MulExpr `*` UnaryExpr SEMANTIC
+MulExpr -> MulExpr `/` UnaryExpr SEMANTIC
+MulExpr -> MulExpr `%` UnaryExpr SEMANTIC
+MulExpr -> UnaryExpr SEMANTIC
+[info] SyntaxParser: Segmenting product: Expr -> Expr ( `+` | `-` ) MulExpr SEMANTIC | MulExpr SEMANTIC .
+[info] SyntaxParser: Segmenting product: Expr -> `+` | `-` .
+[info] SyntaxParser: lastIt: `-`
+[info] SyntaxParser: Segmented product:
+Expr -> `+`
+Expr -> `-`
+[info] SyntaxParser: lastIt: MulExpr
+[info] SyntaxParser: Segmented product:
+Expr -> Expr `+` MulExpr SEMANTIC
+Expr -> Expr `-` MulExpr SEMANTIC
+Expr -> MulExpr SEMANTIC
+[info] SyntaxParser: Segmenting product: RelExpr -> Expr ( `<` | `<=` | `>` | `>=` | `==` | `!=` ) Expr SEMANTIC | Expr SEMANTIC .
+[info] SyntaxParser: Segmenting product: RelExpr -> `<` | `<=` | `>` | `>=` | `==` | `!=` .
+[info] SyntaxParser: lastIt: `<=`
+[info] SyntaxParser: lastIt: `>`
+[info] SyntaxParser: lastIt: `>=`
+[info] SyntaxParser: lastIt: `==`
+[info] SyntaxParser: lastIt: `!=`
+[info] SyntaxParser: Segmented product:
+RelExpr -> `<`
+RelExpr -> `<=`
+RelExpr -> `>`
+RelExpr -> `>=`
+RelExpr -> `==`
+RelExpr -> `!=`
+[info] SyntaxParser: lastIt: Expr
+[info] SyntaxParser: Segmented product:
+RelExpr -> Expr `<` Expr SEMANTIC
+RelExpr -> Expr `<=` Expr SEMANTIC
+RelExpr -> Expr `>` Expr SEMANTIC
+RelExpr -> Expr `>=` Expr SEMANTIC
+RelExpr -> Expr `==` Expr SEMANTIC
+RelExpr -> Expr `!=` Expr SEMANTIC
+RelExpr -> Expr SEMANTIC
+[info] SyntaxParser: Segmenting product: AndExpr -> AndExpr `&&` RelExpr SEMANTIC | RelExpr SEMANTIC .
+[info] SyntaxParser: lastIt: RelExpr
+[info] SyntaxParser: Segmented product:
+AndExpr -> AndExpr `&&` RelExpr SEMANTIC
+AndExpr -> RelExpr SEMANTIC
+[info] SyntaxParser: Segmenting product: OrExpr -> OrExpr `||` AndExpr SEMANTIC | AndExpr SEMANTIC .
+[info] SyntaxParser: lastIt: AndExpr
+[info] SyntaxParser: Segmented product:
+OrExpr -> OrExpr `||` AndExpr SEMANTIC
+OrExpr -> AndExpr SEMANTIC
+[info] SyntaxParser: Segmenting product: BoolExpr -> OrExpr SEMANTIC .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: Factor -> LVal SEMANTIC | FuncCall SEMANTIC | `(` Expr `)` SEMANTIC | IntLiteral SEMANTIC | RealLiteral SEMANTIC | $String SEMANTIC | $Char SEMANTIC | `true` SEMANTIC | `false` SEMANTIC .
+[info] SyntaxParser: lastIt: FuncCall
+[info] SyntaxParser: lastIt: `(`
+[info] SyntaxParser: lastIt: IntLiteral
+[info] SyntaxParser: lastIt: RealLiteral
+[info] SyntaxParser: lastIt: $String
+[info] SyntaxParser: lastIt: $Char
+[info] SyntaxParser: lastIt: `true`
+[info] SyntaxParser: lastIt: `false`
+[info] SyntaxParser: Segmented product:
+Factor -> LVal SEMANTIC
+Factor -> FuncCall SEMANTIC
+Factor -> `(` Expr `)` SEMANTIC
+Factor -> IntLiteral SEMANTIC
+Factor -> RealLiteral SEMANTIC
+Factor -> $String SEMANTIC
+Factor -> $Char SEMANTIC
+Factor -> `true` SEMANTIC
+Factor -> `false` SEMANTIC
+[info] SyntaxParser: Segmenting product: IntLiteral -> $Integer SEMANTIC .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: RealLiteral -> $Real SEMANTIC .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: LVal -> $Ident { `[` Expr `]` } SEMANTIC .
+[info] SyntaxParser: Segmenting product: LVal -> `[` Expr `]` .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmented product:
+LVal -> $Ident LVal_star_1 SEMANTIC

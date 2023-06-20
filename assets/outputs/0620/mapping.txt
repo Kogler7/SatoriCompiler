@@ -1,0 +1,42 @@
+[info] Tokenizing...
+[info] SyntaxParser: MAPPING tokens:
+[info] Tokens:
+------------+------------
+       Type | Value
+------------+------------
+   MUL_TERM | $Ident
+MAPPING_DEF | -->
+   TOK_TYPE | @IDENTIFIER
+  SEPARATOR | ;
+   MUL_TERM | $Integer
+MAPPING_DEF | -->
+   TOK_TYPE | @INTEGER
+  SEPARATOR | ;
+   MUL_TERM | $Real
+MAPPING_DEF | -->
+   TOK_TYPE | @REAL
+  SEPARATOR | ;
+   MUL_TERM | $String
+MAPPING_DEF | -->
+   TOK_TYPE | @STRING
+  SEPARATOR | ;
+   MUL_TERM | $Char
+MAPPING_DEF | -->
+   TOK_TYPE | @CHAR
+  SEPARATOR | ;
+------------+------------
+[info] SyntaxParser: Segmenting product: $Ident -> @IDENTIFIER .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: $Integer -> @INTEGER .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: $Real -> @REAL .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: $String -> @STRING .
+[info] SyntaxParser: No delimiter found, return directly.
+[info] SyntaxParser: Segmenting product: $Char -> @CHAR .
+[info] SyntaxParser: No delimiter found, return directly.
+[warn] SyntaxParser: Mapping syntax warn: Undefined token type IDENTIFIER
+[warn] SyntaxParser: Mapping syntax warn: Undefined token type INTEGER
+[warn] SyntaxParser: Mapping syntax warn: Undefined token type REAL
+[warn] SyntaxParser: Mapping syntax warn: Undefined token type STRING
+[warn] SyntaxParser: Mapping syntax warn: Undefined token type CHAR

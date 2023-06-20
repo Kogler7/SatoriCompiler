@@ -1,0 +1,52 @@
+[info] Follow:
++------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
+|          NonTerm | Follow                                                                                                                                           |
++------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
+|          AndExpr | {&&, ), ;, ||}                                                                                                                                   |
+|          ArgList | {)}                                                                                                                                              |
+|   ArgList_star_1 | {)}                                                                                                                                              |
+|       Assignment | {), ;}                                                                                                                                           |
+|            Block | {!, #, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, decl, else, false, for, func, if, print, return, true, var, while, {, }} |
+|     Block_star_1 | {}}                                                                                                                                              |
+|         BoolExpr | {), ;}                                                                                                                                           |
+|             Expr | {!=, &&, ), +, ,, -, ;, <, <=, ==, >, >=, ], ||, }}                                                                                              |
+|           Factor | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, ==, >, >=, ], ||, }}                                                                                     |
+|         FuncCall | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, ==, >, >=, ], ||, }}                                                                                     |
+|  FuncCall_opti_1 | {)}                                                                                                                                              |
+|         FuncDecl | {;, {}                                                                                                                                           |
+|     FuncDeclStmt | {#, decl, func, var}                                                                                                                             |
+|  FuncDecl_opti_1 | {)}                                                                                                                                              |
+|  FuncDecl_opti_2 | {;, {}                                                                                                                                           |
+|          FuncDef | {#, decl, func, var}                                                                                                                             |
+|          InitVal | {,, ;, }}                                                                                                                                        |
+|   InitVal_opti_2 | {}}                                                                                                                                              |
+|   InitVal_star_1 | {}}                                                                                                                                              |
+|       IntLiteral | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, ==, >, >=, ], ||, }}                                                                                     |
+|             LVal | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, =, ==, >, >=, ], ||, }}                                                                                  |
+|      LVal_star_1 | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, =, ==, >, >=, ], ||, }}                                                                                  |
+|          MulExpr | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, ==, >, >=, ], ||, }}                                                                                     |
+|           OrExpr | {), ;, ||}                                                                                                                                       |
+|            Param | {), ,}                                                                                                                                           |
+|        ParamList | {)}                                                                                                                                              |
+| ParamList_star_1 | {)}                                                                                                                                              |
+|     Param_star_1 | {), ,}                                                                                                                                           |
+|          Program | {#}                                                                                                                                              |
+|   Program_star_1 | {#}                                                                                                                                              |
+|      RealLiteral | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, ==, >, >=, ], ||, }}                                                                                     |
+|          RelExpr | {&&, ), ;, ||}                                                                                                                                   |
+|             Stmt | {!, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, else, false, for, if, print, return, true, var, while, {, }}                |
+|      Stmt_opti_1 | {!, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, else, false, for, if, print, return, true, var, while, {, }}                |
+|      Stmt_opti_2 | {;}                                                                                                                                              |
+|      Stmt_opti_3 | {;}                                                                                                                                              |
+|      Stmt_opti_4 | {)}                                                                                                                                              |
+|      Stmt_opti_5 | {;}                                                                                                                                              |
+|      Stmt_opti_6 | {;}                                                                                                                                              |
+|        UnaryExpr | {!=, %, &&, ), *, +, ,, -, /, ;, <, <=, ==, >, >=, ], ||, }}                                                                                     |
+|          VarDecl | {;}                                                                                                                                              |
+|      VarDeclStmt | {!, #, (, +, -, ;, Char, Ident, Integer, Real, String, break, continue, decl, else, false, for, func, if, print, return, true, var, while, {, }} |
+|   VarDecl_star_1 | {;}                                                                                                                                              |
+|           VarDef | {,, ;}                                                                                                                                           |
+|    VarDef_opti_2 | {,, ;}                                                                                                                                           |
+|    VarDef_star_1 | {,, ;, =}                                                                                                                                        |
+|          VarType | {), ,, ;, =, [, {}                                                                                                                               |
++------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+

@@ -27,9 +27,11 @@ void irgenTest()
     g.printNonTerms();
     g.printSemanticMarks();
     SLR1Grammar G = SLR1Grammar(g);
+    G.printFirst();
+    G.printFirstS();
     G.printFollow();
     G.printItems();
-    // G.printClusters();
+    G.printClusters();
     // G.printGoTrans();
     // G.printSLR1Table();
     // assert(G.checkSLR1(), "Not SLR(1) grammar!");

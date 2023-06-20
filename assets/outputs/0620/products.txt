@@ -1,0 +1,114 @@
+[info] SyntaxParser::geneMapProducts: 109 productions generated.
++----------------------------------------------------------------------------------------------+
+|                                    Generated Productions                                     |
++----------------------------------------------------------------------------------------------+
+|   Program_star_1 -> VarDeclStmt Program_star_1                                               |
+|   Program_star_1 -> FuncDeclStmt Program_star_1                                              |
+|   Program_star_1 -> FuncDef Program_star_1                                                   |
+|   Program_star_1 ->                                                                          |
+|          Program -> Program_star_1 SEMANTIC                                                  |
+|      VarDeclStmt -> VarDecl `;` SEMANTIC                                                     |
+|   VarDecl_star_1 -> `,` VarDef VarDecl_star_1                                                |
+|   VarDecl_star_1 ->                                                                          |
+|          VarDecl -> `var` VarDef VarDecl_star_1 SEMANTIC                                     |
+|          VarType -> `int`                                                                    |
+|          VarType -> `real`                                                                   |
+|          VarType -> `bool`                                                                   |
+|          VarType -> `char`                                                                   |
+|          VarType -> `str` SEMANTIC                                                           |
+|    VarDef_star_1 -> `[` $Integer `]` VarDef_star_1                                           |
+|    VarDef_star_1 ->                                                                          |
+|    VarDef_opti_2 -> `=` InitVal                                                              |
+|    VarDef_opti_2 ->                                                                          |
+|           VarDef -> $Ident `:` VarType VarDef_star_1 VarDef_opti_2 SEMANTIC                  |
+|   InitVal_star_1 -> `,` InitVal InitVal_star_1                                               |
+|   InitVal_star_1 ->                                                                          |
+|   InitVal_opti_2 -> InitVal InitVal_star_1                                                   |
+|   InitVal_opti_2 ->                                                                          |
+|          InitVal -> Expr                                                                     |
+|          InitVal -> `{` InitVal_opti_2 `}` SEMANTIC                                          |
+|     FuncDeclStmt -> `decl` FuncDecl `;` SEMANTIC                                             |
+|  FuncDecl_opti_1 -> ParamList                                                                |
+|  FuncDecl_opti_1 ->                                                                          |
+|  FuncDecl_opti_2 -> `:` VarType                                                              |
+|  FuncDecl_opti_2 ->                                                                          |
+|         FuncDecl -> `func` $Ident `(` FuncDecl_opti_1 `)` FuncDecl_opti_2 SEMANTIC           |
+|          FuncDef -> FuncDecl Block SEMANTIC                                                  |
+|  FuncCall_opti_1 -> ArgList                                                                  |
+|  FuncCall_opti_1 ->                                                                          |
+|         FuncCall -> $Ident `(` FuncCall_opti_1 `)` SEMANTIC                                  |
+|   ArgList_star_1 -> `,` Expr ArgList_star_1                                                  |
+|   ArgList_star_1 ->                                                                          |
+|          ArgList -> Expr ArgList_star_1 SEMANTIC                                             |
+| ParamList_star_1 -> `,` Param ParamList_star_1                                               |
+| ParamList_star_1 ->                                                                          |
+|        ParamList -> Param ParamList_star_1 SEMANTIC                                          |
+|     Param_star_1 -> `[` $Integer `]` Param_star_1                                            |
+|     Param_star_1 ->                                                                          |
+|            Param -> $Ident `:` VarType Param_star_1 SEMANTIC                                 |
+|      Stmt_opti_1 -> `else` Stmt                                                              |
+|      Stmt_opti_1 ->                                                                          |
+|      Stmt_opti_2 -> VarDecl                                                                  |
+|      Stmt_opti_2 -> Assignment                                                               |
+|      Stmt_opti_2 ->                                                                          |
+|      Stmt_opti_3 -> BoolExpr                                                                 |
+|      Stmt_opti_3 ->                                                                          |
+|      Stmt_opti_4 -> Assignment                                                               |
+|      Stmt_opti_4 ->                                                                          |
+|      Stmt_opti_5 -> Expr                                                                     |
+|      Stmt_opti_5 ->                                                                          |
+|      Stmt_opti_6 -> Expr                                                                     |
+|      Stmt_opti_6 ->                                                                          |
+|             Stmt -> Assignment `;` SEMANTIC                                                  |
+|             Stmt -> VarDeclStmt SEMANTIC                                                     |
+|             Stmt -> `if` `(` BoolExpr `)` Stmt Stmt_opti_1 SEMANTIC                          |
+|             Stmt -> `while` `(` BoolExpr `)` Stmt SEMANTIC                                   |
+|             Stmt -> `for` `(` Stmt_opti_2 `;` Stmt_opti_3 `;` Stmt_opti_4 `)` Stmt SEMANTIC  |
+|             Stmt -> `break` `;` SEMANTIC                                                     |
+|             Stmt -> `continue` `;` SEMANTIC                                                  |
+|             Stmt -> `print` Expr `;` SEMANTIC                                                |
+|             Stmt -> `return` Stmt_opti_5 `;` SEMANTIC                                        |
+|             Stmt -> Stmt_opti_6 `;` SEMANTIC                                                 |
+|             Stmt -> Block SEMANTIC                                                           |
+|       Assignment -> LVal `=` Expr SEMANTIC                                                   |
+|     Block_star_1 -> Stmt Block_star_1                                                        |
+|     Block_star_1 ->                                                                          |
+|            Block -> `{` Block_star_1 `}` SEMANTIC                                            |
+|        UnaryExpr -> `+` UnaryExpr SEMANTIC                                                   |
+|        UnaryExpr -> `-` UnaryExpr SEMANTIC                                                   |
+|        UnaryExpr -> `!` UnaryExpr SEMANTIC                                                   |
+|        UnaryExpr -> Factor SEMANTIC                                                          |
+|          MulExpr -> MulExpr `*` UnaryExpr SEMANTIC                                           |
+|          MulExpr -> MulExpr `/` UnaryExpr SEMANTIC                                           |
+|          MulExpr -> MulExpr `%` UnaryExpr SEMANTIC                                           |
+|          MulExpr -> UnaryExpr SEMANTIC                                                       |
+|             Expr -> Expr `+` MulExpr SEMANTIC                                                |
+|             Expr -> Expr `-` MulExpr SEMANTIC                                                |
+|             Expr -> MulExpr SEMANTIC                                                         |
+|          RelExpr -> Expr `<` Expr SEMANTIC                                                   |
+|          RelExpr -> Expr `<=` Expr SEMANTIC                                                  |
+|          RelExpr -> Expr `>` Expr SEMANTIC                                                   |
+|          RelExpr -> Expr `>=` Expr SEMANTIC                                                  |
+|          RelExpr -> Expr `==` Expr SEMANTIC                                                  |
+|          RelExpr -> Expr `!=` Expr SEMANTIC                                                  |
+|          RelExpr -> Expr SEMANTIC                                                            |
+|          AndExpr -> AndExpr `&&` RelExpr SEMANTIC                                            |
+|          AndExpr -> RelExpr SEMANTIC                                                         |
+|           OrExpr -> OrExpr `||` AndExpr SEMANTIC                                             |
+|           OrExpr -> AndExpr SEMANTIC                                                         |
+|         BoolExpr -> OrExpr SEMANTIC                                                          |
+|           Factor -> LVal SEMANTIC                                                            |
+|           Factor -> FuncCall SEMANTIC                                                        |
+|           Factor -> `(` Expr `)` SEMANTIC                                                    |
+|           Factor -> IntLiteral SEMANTIC                                                      |
+|           Factor -> RealLiteral SEMANTIC                                                     |
+|           Factor -> $String SEMANTIC                                                         |
+|           Factor -> $Char SEMANTIC                                                           |
+|           Factor -> `true` SEMANTIC                                                          |
+|           Factor -> `false` SEMANTIC                                                         |
+|       IntLiteral -> $Integer SEMANTIC                                                        |
+|      RealLiteral -> $Real SEMANTIC                                                           |
+|      LVal_star_1 -> `[` Expr `]` LVal_star_1                                                 |
+|      LVal_star_1 ->                                                                          |
+|             LVal -> $Ident LVal_star_1 SEMANTIC                                              |
++----------------------------------------------------------------------------------------------+
