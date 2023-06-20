@@ -56,15 +56,6 @@ program_ptr_t RSCVisitor::visitProgram(pst_node_ptr_t node)
         else if (child->data.symbol == "FuncDef")
         {
             ret_info_t funcInfo = visitFuncDef(child);
-            try
-            {
-                info << "RSCVisitor: function \n"
-                     << funcInfo.getValue()->dump() << std::endl;
-            }
-            catch (const std::exception &e)
-            {
-                error << e.what() << std::endl;
-            }
             program->addFunc(funcInfo.getValue());
         }
         else
@@ -148,7 +139,7 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
         retInfo.addInstr(value);
         if (initVal != nullptr)
         {
-            store_ptr_t storeInstr = make_store(initVal, value);
+            store_ptr_t storeInstr = make_store(initVal, cast_alloca(value));
             retInfo.addInstr(storeInstr);
         }
     }
@@ -549,7 +540,7 @@ ret_info_t RSCVisitor::visitAssignment(pst_node_ptr_t node)
     ret_info_t exprInfo = visitExpr(node->getChildAt(1));
 
     // 获取ident对应的内存分配指令
-    user_ptr_t alloc = context.symbolTable.find(identStr);
+    alloca_ptr_t alloc = cast_alloca(context.symbolTable.find(identStr));
     assert(
         alloc != nullptr,
         format("variable $ has not been declared", identStr));

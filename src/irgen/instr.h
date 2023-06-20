@@ -202,9 +202,16 @@ public:
 
 class AllocaInstr : public User
 {
+    type_ptr_t ptrType;
+
 public:
-    AllocaInstr(std::string name, type_ptr_t type) : User(type, name) {}
+    AllocaInstr(std::string name, type_ptr_t type) : User(type, name)
+    {
+        ptrType = make_ptr_type(type);
+    }
     ~AllocaInstr() = default;
+
+    type_ptr_t getPtrType() const { return ptrType; }
 
     std::string dump() const override;
 };
@@ -226,7 +233,7 @@ class LoadInstr : public User
     Use from;
 
 public:
-    LoadInstr(value_ptr_t from)
+    LoadInstr(alloca_ptr_t from)
         : User(from->getType(), "load"), from(from, this) {}
     ~LoadInstr() = default;
 
@@ -239,7 +246,7 @@ class StoreInstr : public User
     Use to;
 
 public:
-    StoreInstr(value_ptr_t from, value_ptr_t to)
+    StoreInstr(value_ptr_t from, alloca_ptr_t to)
         : User(nullptr, "store"), from(from, this), to(to, this) {}
     ~StoreInstr() = default;
 
@@ -377,7 +384,7 @@ class RetInstr : public User
     use_ptr_t retval;
 
 public:
-    RetInstr() : retval(make_use(nullptr, this)), User(nullptr, "return") {}
+    RetInstr() : retval(nullptr), User(nullptr, "return") {}
     explicit RetInstr(value_ptr_t retval) : retval(make_use(std::move(retval), this)) {}
     ~RetInstr() = default;
 

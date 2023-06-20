@@ -78,7 +78,7 @@ std::string LoadInstr::dump() const
         "\t$ = load $, $ $\n",
         getValueTag(this),
         type->dump(),
-        from.getValue()->getType()->dump(),
+        cast_alloca(from.getValue())->getPtrType()->dump(),
         getValueTag(from.getValue().get()));
 }
 
@@ -87,8 +87,8 @@ std::string StoreInstr::dump() const
     return format(
         "\tstore $ $, $ $\n",
         from.getValue()->getType()->dump(),
-        getValueTag(from.getValue().get()),
-        to.getValue()->getType()->dump(),
+        from.getValue()->dump(),
+        cast_alloca(to.getValue())->getPtrType()->dump(),
         getValueTag(to.getValue().get()));
 }
 
@@ -138,7 +138,7 @@ std::string RetInstr::dump() const
 
 std::string BrInstr::dump() const
 {
-    return "\tbr\n";
+    return "\tbr tmp\n";
     assert(tc->target != nullptr, "BrInstr: true target is nullptr");
     assert(fc->target != nullptr, "BrInstr: false target is nullptr");
     return format(
@@ -150,6 +150,7 @@ std::string BrInstr::dump() const
 
 std::string JmpInstr::dump() const
 {
+    return "\tjmp tmp\n";
     assert(target != nullptr, "JmpInstr: target is nullptr");
     return format("\tbr label $\n", getLabelTag(target->target.get()));
 }
