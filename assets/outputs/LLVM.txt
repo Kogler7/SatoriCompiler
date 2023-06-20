@@ -3,14 +3,9 @@
 
 define void @sub() {
 entry.1:
-    %retval = alloca void
 
 body.1:
     ret void
-
-exit.1:
-    %load.1 = load void, void* %retval
-    ret void %load.1
 
 }
 
@@ -25,7 +20,6 @@ entry.2:
     %o = alloca float
     %p = alloca float
     %result = alloca i32
-    %retval = alloca i32
 
 body.2:
     store i32 10, i32* %a
@@ -54,7 +48,7 @@ expr.rel.4:
 or.rhs.1:
 expr.rel.5:
     %neg.1 = sneg %b
-    %call.1 = call add(%a, %d)
+    %call.1 = call i32 @add(%a, %d)
     %cmp.5 = scmp eq i32 %neg.1, %call.1
     br i1 %cmp.5, label if.then.1, label or.rhs.2
 
@@ -132,24 +126,15 @@ for.last.1:
 fall.2:
     ret i32 0
 
-exit.2:
-    %load.2 = load i32, i32* %retval
-    ret i32 %load.2
-
 }
 
-define i32 @add(i32 x, i32 y) {
+define i32 @add(i32 %x, i32 %y) {
 entry.3:
     %x = alloca i32
     %y = alloca i32
-    %retval = alloca i32
 
 body.3:
     %add.3 = sadd i32 %x, %y
     ret i32 %add.3
-
-exit.3:
-    %load.3 = load i32, i32* %retval
-    ret i32 %load.3
 
 }

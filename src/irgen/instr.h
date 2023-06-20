@@ -429,7 +429,6 @@ public:
     JmpInstr() : target(make_target()), User(nullptr, "jump") {}
     JmpInstr(user_ptr_t targetInstr) : target(make_target())
     {
-        error << targetInstr->dump();
         target->patch(targetInstr);
     }
     ~JmpInstr() = default;

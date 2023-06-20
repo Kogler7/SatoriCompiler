@@ -125,7 +125,7 @@ std::string FuncInstr::dump() const
     for (auto it = params.begin(); it != params.end(); ++it)
     {
         user_ptr_t param = it->second;
-        s += param->getType()->dump() + " " + param->getName();
+        s += param->getType()->dump() + " " + getValueTag(param.get());
         if (it != std::prev(params.end()))
             s += ", ";
     }
@@ -140,7 +140,11 @@ std::string FuncInstr::dump() const
 
 std::string CallInstr::dump() const
 {
-    std::string s = format("    $ = call $(", getValueTag(this), func->getName());
+    std::string s = format(
+        "    $ = call $ @$(", 
+        getValueTag(this),
+        func->getRetType()->dump(),
+        func->getName());
     for (auto it = args.begin(); it != args.end(); ++it)
     {
         s += getValueTag(it->get());

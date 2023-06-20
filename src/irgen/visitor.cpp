@@ -72,7 +72,7 @@ program_ptr_t RSCVisitor::visitProgram(pst_node_ptr_t node)
 // VarDeclStmt -> VarDecl ;
 ret_info_t RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node, bool global)
 {
-    info << "RSCVisitor: visiting var decl stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting var decl stmt..." << std::endl;
     assert(
         node->data.symbol == "VarDeclStmt",
         format("Expected node VarDeclStmt, but got $ instead.", node->data.symbol));
@@ -82,7 +82,7 @@ ret_info_t RSCVisitor::visitVarDeclStmt(pst_node_ptr_t node, bool global)
 // VarDecl -> { VarDef }
 ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node, bool global)
 {
-    info << "RSCVisitor: visiting var decl..." << std::endl;
+    debug(0) << "RSCVisitor: visiting var decl..." << std::endl;
     assert(
         node->data.symbol == "VarDecl",
         format("Expected node a, but got $ instead.", node->data.symbol));
@@ -103,7 +103,7 @@ ret_info_t RSCVisitor::visitVarDecl(pst_node_ptr_t node, bool global)
 // VarDef -> ident : Type [ InitVal ]
 ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
 {
-    info << "RSCVisitor: visiting var def..." << std::endl;
+    debug(0) << "RSCVisitor: visiting var def..." << std::endl;
     assert(
         node->data.symbol == "VarDef",
         format("Expected node VarDef, but got $ instead.", node->data.symbol));
@@ -151,7 +151,7 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
 // InitVal -> Expr | { Expr }
 ret_info_t RSCVisitor::visitInitVal(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting init val..." << std::endl;
+    debug(0) << "RSCVisitor: visiting init val..." << std::endl;
     assert(
         node->data.symbol == "InitVal",
         format("Expected node InitVal, but got $ instead.", node->data.symbol));
@@ -173,7 +173,7 @@ ret_info_t RSCVisitor::visitInitVal(pst_node_ptr_t node)
 // FuncDeclStmt -> FuncDecl ;
 ret_info_t RSCVisitor::visitFuncDeclStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func decl stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting func decl stmt..." << std::endl;
     assert(
         node->data.symbol == "FuncDeclStmt",
         format("Expected node FuncDeclStmt, but got $ instead.", node->data.symbol));
@@ -183,7 +183,7 @@ ret_info_t RSCVisitor::visitFuncDeclStmt(pst_node_ptr_t node)
 // FuncDecl -> ident ( [ParamList] ) [: Type] ;
 ret_info_t RSCVisitor::visitFuncDecl(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func decl..." << std::endl;
+    debug(0) << "RSCVisitor: visiting func decl..." << std::endl;
     assert(
         node->data.symbol == "FuncDecl",
         format("Expected node FuncDecl, but got $ instead.", node->data.symbol));
@@ -289,16 +289,16 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     std::list<user_ptr_t> allocas = context.symbolTable.popScope();
     entryBB->addInstrList(allocas);
     // 为函数返回值分配内存
-    alloca_ptr_t retAlloc = make_alloca("retval", func->getRetType());
-    entryBB->addInstr(retAlloc);
+    // alloca_ptr_t retAlloc = make_alloca("retval", func->getRetType());
+    // entryBB->addInstr(retAlloc);
 
     // 构建函数的出口基本块 exit basic block
-    block_ptr_t exitBB = make_block("exit");
+    // block_ptr_t exitBB = make_block("exit");
     // 为函数返回值赋值
-    load_ptr_t loadInstr = make_load(retAlloc);
-    ret_ptr_t retInstr = make_ret(loadInstr);
-    exitBB->addInstr(loadInstr);
-    exitBB->addInstr(retInstr);
+    // load_ptr_t loadInstr = make_load(retAlloc);
+    // ret_ptr_t retInstr = make_ret(loadInstr);
+    // exitBB->addInstr(loadInstr);
+    // exitBB->addInstr(retInstr);
 
     // 构建函数的主体基本块 main basic block
     block_ptr_t mainBB = make_block("body");
@@ -307,7 +307,7 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
     // 将entry, main, exit基本块追加到函数中
     func->addBlock(entryBB);
     func->addBlock(mainBB);
-    func->addBlock(exitBB);
+    // func->addBlock(exitBB); // 意义不明，暂时不添加
 
     return ret_info_t{std::list<user_ptr_t>{func}}.setValue(func);
 }
@@ -315,7 +315,7 @@ ret_info_t RSCVisitor::visitFuncDef(pst_node_ptr_t node)
 // FuncCall -> ident ( [ArgList] )
 ret_info_t RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting func call..." << std::endl;
+    debug(0) << "RSCVisitor: visiting func call..." << std::endl;
     assert(
         node->data.symbol == "FuncCall",
         format("Expected node FuncCall, but got $ instead.", node->data.symbol));
@@ -359,7 +359,7 @@ ret_info_t RSCVisitor::visitFuncCall(pst_node_ptr_t node)
 // ArgList -> { Expr }
 ret_info_t RSCVisitor::visitArgList(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting arg list..." << std::endl;
+    debug(0) << "RSCVisitor: visiting arg list..." << std::endl;
     assert(
         node->data.symbol == "ArgList",
         format("Expected node ArgList, but got $ instead.", node->data.symbol));
@@ -382,7 +382,7 @@ ret_info_t RSCVisitor::visitArgList(pst_node_ptr_t node)
 // ParamList -> { Param }
 ret_info_t RSCVisitor::visitParamList(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting param list..." << std::endl;
+    debug(0) << "RSCVisitor: visiting param list..." << std::endl;
     assert(
         node->data.symbol == "ParamList",
         format("Expected node ParamList, but got $ instead.", node->data.symbol));
@@ -403,7 +403,7 @@ ret_info_t RSCVisitor::visitParamList(pst_node_ptr_t node)
 // Param -> ident : Type
 ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting param..." << std::endl;
+    debug(0) << "RSCVisitor: visiting param..." << std::endl;
     assert(
         node->data.symbol == "Param",
         format("Expected node Param, but got $ instead.", node->data.symbol));
@@ -434,7 +434,7 @@ ret_info_t RSCVisitor::visitParam(pst_node_ptr_t node)
  */
 ret_info_t RSCVisitor::visitStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -498,7 +498,7 @@ ret_info_t RSCVisitor::visitStmt(pst_node_ptr_t node)
 // Block -> { Stmt }
 ret_info_t RSCVisitor::visitBlock(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting block..." << std::endl;
+    debug(0) << "RSCVisitor: visiting block..." << std::endl;
     assert(
         node->data.symbol == "Block",
         format("Expected node Block, but got $ instead.", node->data.symbol));
@@ -525,7 +525,7 @@ ret_info_t RSCVisitor::visitBlock(pst_node_ptr_t node)
 // Assignment -> ident = Expr ;
 ret_info_t RSCVisitor::visitAssignment(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting assignment..." << std::endl;
+    debug(0) << "RSCVisitor: visiting assignment..." << std::endl;
     assert(
         node->data.symbol == "Assignment",
         format("Expected node Assignment, but got $ instead.", node->data.symbol));
@@ -550,7 +550,7 @@ ret_info_t RSCVisitor::visitAssignment(pst_node_ptr_t node)
 // IfStmt -> if ( BoolExpr ) Stmt [else Stmt]
 ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting if stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting if stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -614,7 +614,7 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
 // WhileStmt -> while ( BoolExpr ) Stmt
 ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting while stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting while stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -659,7 +659,7 @@ ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
 // ForStmt -> for ( [VarDecl|Assignment] ; [BoolExpr] ; [Assignment] ) Stmt
 ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting for stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting for stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt" || node->data.symbol == "Assignment",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -738,7 +738,7 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
 // Stmt -> break ;
 ret_info_t RSCVisitor::visitBreakStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting break stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting break stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -751,7 +751,7 @@ ret_info_t RSCVisitor::visitBreakStmt(pst_node_ptr_t node)
 // Stmt -> continue ;
 ret_info_t RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting continue stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting continue stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -764,7 +764,7 @@ ret_info_t RSCVisitor::visitContinueStmt(pst_node_ptr_t node)
 // Stmt -> return [Expr] ;
 ret_info_t RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting return stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting return stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -792,7 +792,7 @@ ret_info_t RSCVisitor::visitReturnStmt(pst_node_ptr_t node)
 // Stmt -> Expr ;
 ret_info_t RSCVisitor::visitExprStmt(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting expr stmt..." << std::endl;
+    debug(0) << "RSCVisitor: visiting expr stmt..." << std::endl;
     assert(
         node->data.symbol == "Stmt",
         format("Expected node Stmt, but got $ instead.", node->data.symbol));
@@ -812,7 +812,7 @@ ret_info_t RSCVisitor::visitExprStmt(pst_node_ptr_t node)
 // UnaryExpr -> ( `+` | `-` | `!` ) UnaryExpr | Factor
 ret_info_t RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting unary expr..." << std::endl;
+    debug(0) << "RSCVisitor: visiting unary expr..." << std::endl;
     assert(
         node->data.symbol == "UnaryExpr",
         format("Expected node UnaryExpr, but got $ instead.", node->data.symbol));
@@ -841,7 +841,7 @@ ret_info_t RSCVisitor::visitUnaryExpr(pst_node_ptr_t node)
 // MulExpr -> MulExpr ( `*` | `/` | `%` ) UnaryExpr | UnaryExpr
 ret_info_t RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting mul expr..." << std::endl;
+    debug(0) << "RSCVisitor: visiting mul expr..." << std::endl;
     assert(
         node->data.symbol == "MulExpr",
         format("Expected node MulExpr, but got $ instead.", node->data.symbol));
@@ -901,7 +901,7 @@ ret_info_t RSCVisitor::visitMulExpr(pst_node_ptr_t node)
 // Expr -> Expr ( `+` | `-` ) MulExpr | MulExpr
 ret_info_t RSCVisitor::visitExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting expr..." << std::endl;
+    debug(0) << "RSCVisitor: visiting expr..." << std::endl;
     assert(
         node->data.symbol == "Expr",
         format("Expected node Expr, but got $ instead.", node->data.symbol));
@@ -959,7 +959,7 @@ ret_info_t RSCVisitor::visitExpr(pst_node_ptr_t node)
 // RelExpr -> Expr ( `<` | `<=` | `>` | `>=` | `==` | `!=` ) Expr | Expr
 ret_info_t RSCVisitor::visitRelExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting rel expr..." << std::endl;
+    debug(0) << "RSCVisitor: visiting rel expr..." << std::endl;
     assert(
         node->data.symbol == "RelExpr",
         format("Expected node RelExpr, but got $ instead.", node->data.symbol));
@@ -1047,7 +1047,7 @@ ret_info_t RSCVisitor::visitRelExpr(pst_node_ptr_t node)
 // AndExpr -> AndExpr `&&` RelExpr | RelExpr
 ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting and expr..." << std::endl;
+    debug(0) << "RSCVisitor: visiting and expr..." << std::endl;
     assert(
         node->data.symbol == "AndExpr",
         format("Expected node AndExpr, but got $ instead.", node->data.symbol));
@@ -1096,7 +1096,7 @@ ret_info_t RSCVisitor::visitAndExpr(pst_node_ptr_t node)
 // OrExpr -> OrExpr `||` AndExpr | AndExpr
 ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting or expr..." << std::endl;
+    debug(0) << "RSCVisitor: visiting or expr..." << std::endl;
     assert(
         node->data.symbol == "OrExpr",
         format("Expected node OrExpr, but got $ instead.", node->data.symbol));
@@ -1141,7 +1141,7 @@ ret_info_t RSCVisitor::visitOrExpr(pst_node_ptr_t node)
 // BoolExpr -> OrExpr
 ret_info_t RSCVisitor::visitBoolExpr(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting bool expr..." << std::endl;
+    debug(0) << "RSCVisitor: visiting bool expr..." << std::endl;
     assert(
         node->data.symbol == "BoolExpr",
         format("Expected node BoolExpr, but got $ instead.", node->data.symbol));
@@ -1152,7 +1152,7 @@ ret_info_t RSCVisitor::visitBoolExpr(pst_node_ptr_t node)
 // Factor -> (Expr), LVal, Literal, FuncCall
 ret_info_t RSCVisitor::visitFactor(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting factor..." << std::endl;
+    debug(0) << "RSCVisitor: visiting factor..." << std::endl;
     assert(
         node->data.symbol == "Factor",
         format("Expected node Factor, but got $ instead.", node->data.symbol));
@@ -1189,7 +1189,7 @@ ret_info_t RSCVisitor::visitFactor(pst_node_ptr_t node)
 
 ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting lval..." << std::endl;
+    debug(0) << "RSCVisitor: visiting lval..." << std::endl;
     assert(
         node->data.symbol == "LVal",
         format("Expected node LVal, but got $ instead.", node->data.symbol));
@@ -1205,7 +1205,7 @@ ret_info_t RSCVisitor::visitLVal(pst_node_ptr_t node)
 // Factor -> int, real, char, string, true, false
 ret_info_t RSCVisitor::visitLiteral(pst_node_ptr_t node)
 {
-    info << "RSCVisitor: visiting literal..." << std::endl;
+    debug(0) << "RSCVisitor: visiting literal..." << std::endl;
     // 如果node自身是终结符节点，则可能是char, string, true, false
     // 先处理true, false，剩下的就是char, string
     if (_is_term_node(node))
