@@ -557,11 +557,11 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
     // 获取BoolExpr返回值
     ret_info_t retInfo;
     ret_info_t boolInfo = visitBoolExpr(node->getChildAt(0));
+    retInfo.unionGoTo(boolInfo);
     // 构造条件基本块
     block_ptr_t condBB = make_block("if.cond");
     condBB->addInstrList(boolInfo.instrList);
     retInfo.addInstr(condBB);
-    retInfo.appendFalseList(boolInfo.getTargetsOf(JR_FALSE_EXIT));
 
     // 构造条件为真时的作用域
     context.symbolTable.newScope();
@@ -573,9 +573,10 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
     block_ptr_t stmtBB = make_block("if.then");
     stmtBB->addInstrList(stmtInfo.instrList);
     retInfo.addInstr(stmtBB);
+    retInfo.unionGoTo(stmtInfo);
 
     // 绑定条件的真出口
-    boolInfo.backpatch(JR_TRUE_EXIT, stmtBB);
+    retInfo.backpatch(JR_TRUE_EXIT, stmtBB);
 
     auto trueAllocas = context.symbolTable.popScope();
     stmtBB->addInstrListFromFront(trueAllocas);
@@ -593,6 +594,7 @@ ret_info_t RSCVisitor::visitIfStmt(pst_node_ptr_t node)
         block_ptr_t elseStmtBB = make_block("if.else");
         elseStmtBB->addInstrList(elseStmtInfo.instrList);
         retInfo.addInstr(elseStmtBB);
+        retInfo.unionGoTo(elseStmtInfo);
 
         // 绑定条件的假出口
         retInfo.backpatch(JR_FALSE_EXIT, elseStmtBB);
@@ -624,24 +626,26 @@ ret_info_t RSCVisitor::visitWhileStmt(pst_node_ptr_t node)
     block_ptr_t condBB = make_block("while.cond");
     condBB->addInstrList(boolExprInfo.instrList);
     retInfo.addInstr(condBB);
+    retInfo.unionGoTo(boolExprInfo);
 
     // 获取Stmt，构造stmt基本块
     ret_info_t stmtInfo = visitStmt(node->getChildAt(1));
     block_ptr_t stmtBB = make_block("while.body");
     stmtBB->addInstrList(stmtInfo.instrList);
     retInfo.addInstr(stmtBB);
+    retInfo.unionGoTo(stmtInfo);
 
     // 回填BoolExpr的真出口，指向stmtBB
-    boolExprInfo.backpatch(JR_TRUE_EXIT, stmtBB);
+    retInfo.backpatch(JR_TRUE_EXIT, stmtBB);
 
     // BoolExpr的假出口，指向while循环的出口（Fall through）
-    retInfo.appendJmpList(boolExprInfo.getTargetsOf(JR_FALSE_EXIT), JR_FALL_THROUGH);
+    retInfo.appendJmpList(retInfo.getTargetsOf(JR_FALSE_EXIT), JR_FALL_THROUGH);
 
     // 回填Stmt中的break，指向while循环的出口（Fall through）
-    retInfo.appendJmpList(stmtInfo.getTargetsOf(JR_BREAK_OUT), JR_FALL_THROUGH);
+    retInfo.appendJmpList(retInfo.getTargetsOf(JR_BREAK_OUT), JR_FALL_THROUGH);
 
     // 回填Stmt中的continue，指向entryBB
-    stmtInfo.backpatch(JR_CONTINUE, condBB);
+    retInfo.backpatch(JR_CONTINUE, condBB);
 
     // while最后跳转到condBB
     retInfo.addInstr(make_jmp(condBB));
@@ -707,6 +711,7 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
     ret_info_t stmtInfo = visitStmt(stmtNode);
     stmtBB->addInstrList(stmtInfo.instrList);
     retInfo.addInstr(stmtBB);
+    retInfo.unionGoTo(stmtInfo);
 
     // 解析Assignment
     pst_node_ptr_t assignNode = node->getChildAt(2);
@@ -719,10 +724,10 @@ ret_info_t RSCVisitor::visitForStmt(pst_node_ptr_t node)
     retInfo.addInstr(lastBB);
 
     // 处理Stmt中的break，指向for循环的出口（Fall through）
-    retInfo.appendJmpList(stmtInfo.getTargetsOf(JR_BREAK_OUT), JR_FALL_THROUGH);
+    retInfo.appendJmpList(retInfo.getTargetsOf(JR_BREAK_OUT), JR_FALL_THROUGH);
 
     // 回填Stmt中的continue，指向lastBB
-    stmtInfo.backpatch(JR_CONTINUE, lastBB);
+    retInfo.backpatch(JR_CONTINUE, lastBB);
 
     auto allocas = context.symbolTable.popScope();
     initBB->addInstrListFromFront(allocas);

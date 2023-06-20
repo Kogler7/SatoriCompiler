@@ -101,6 +101,13 @@ bool VisitorRetInfo::hasFallThrough() const
     return false;
 }
 
+VisitorRetInfo &VisitorRetInfo::unionGoTo(VisitorRetInfo &another)
+{
+    for (auto &p : another.gotoListMap)
+        gotoListMap[p.first].splice(gotoListMap[p.first].end(), p.second);
+    return *this;
+}
+
 VisitorRetInfo &VisitorRetInfo::unionInfo(VisitorRetInfo &another)
 {
     instrList.splice(instrList.end(), another.instrList);

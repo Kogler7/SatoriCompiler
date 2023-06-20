@@ -113,12 +113,12 @@ expr.rel.8:
 if.then.3:
     %n = alloca i32
     store i32 1, i32* %n
-*   br nullptr
+    br label while.cond.1
 
 if.else.1:
     %sub.2 = ssub i32 %x, 1
     store i32 %sub.2, i32* %b
-*   br nullptr
+    br label fall.3
 
 
     br label while.cond.1

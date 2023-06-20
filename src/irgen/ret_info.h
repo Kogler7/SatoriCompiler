@@ -40,6 +40,8 @@ public:
 	VisitorRetInfo &appendFalseList(target_list_t &list);
 	VisitorRetInfo &appendJmpList(target_list_t &list, JumpReason reason);
 
+	VisitorRetInfo &unionGoTo(VisitorRetInfo &another);
+
 	VisitorRetInfo &unionInfo(VisitorRetInfo &another);
 
 	target_list_t &getTargetsOf(JumpReason reason);
