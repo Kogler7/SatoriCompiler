@@ -36,21 +36,23 @@ std::string cmpType2Str(CompareType cmp)
 
 std::string getIdOf(const Value *v)
 {
-    static size_t id = 0;
+    static std::map<std::string, size_t> nameMap;
     static std::map<const Value *, size_t> valueIdMap;
     if (!valueIdMap.count(v))
-        valueIdMap[v] = ++id;
+    {
+        valueIdMap[v] = ++nameMap[v->getName()];
+    }
     return std::to_string(valueIdMap[v]);
 }
 
 inline std::string getLabelTag(const Value *b)
 {
-    return format("l_$_$", b->getName(), getIdOf(b));
+    return format("$_$", b->getName(), getIdOf(b));
 }
 
 inline std::string getValueTag(const Value *v)
 {
-    return format("%v_$_$", v->getName(), getIdOf(v));
+    return format("%$_$", v->getName(), getIdOf(v));
 }
 
 std::string LabelInstr::dump() const
@@ -84,10 +86,20 @@ std::string LoadInstr::dump() const
 
 std::string StoreInstr::dump() const
 {
+    value_ptr_t fromValue = from.getValue();
+    std::string fromTag;
+    if (fromValue->isConstant())
+    {
+        fromTag = fromValue->dump();
+    }
+    else
+    {
+        fromTag = getValueTag(fromValue.get());
+    }
     return format(
         "\tstore $ $, $ $\n",
         from.getValue()->getType()->dump(),
-        from.getValue()->dump(),
+        fromTag,
         cast_alloca(to.getValue())->getPtrType()->dump(),
         getValueTag(to.getValue().get()));
 }

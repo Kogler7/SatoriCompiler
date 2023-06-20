@@ -122,6 +122,7 @@ ret_info_t RSCVisitor::visitVarDef(pst_node_ptr_t node, bool global)
     {
         ret_info_t initValInfo = visitInitVal(initValNode->firstChild());
         initVal = initValInfo.getValue();
+        retInfo.appendInstrList(initValInfo.instrList);
     }
 
     if (global)
@@ -1193,25 +1194,25 @@ ret_info_t RSCVisitor::visitLiteral(pst_node_ptr_t node)
         {
             // true
             auto instr = make_const_bool(true);
-            return ret_info_t{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t().setValue(instr);
         }
         else if (node->data.symbol == "false")
         {
             // false
             auto instr = make_const_bool(false);
-            return ret_info_t{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t().setValue(instr);
         }
         else if (node->data.symbol[0] == '\'')
         {
             // char
             auto instr = make_const_char(node->data.symbol[1]);
-            return ret_info_t{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t().setValue(instr);
         }
         else if (node->data.symbol[0] == '\"')
         {
             // string
             auto instr = make_const_str(node->data.symbol.substr(1, node->data.symbol.size() - 2));
-            return ret_info_t{instr_list_t{instr}}.setValue(instr);
+            return ret_info_t().setValue(instr);
         }
         else
         {
@@ -1227,13 +1228,13 @@ ret_info_t RSCVisitor::visitLiteral(pst_node_ptr_t node)
         {
             // int
             auto instr = make_const_int(std::stoi(node->firstChild()->data.symbol));
-            return VisitorRetInfo{instr_list_t{instr}}.setValue(instr);
+            return VisitorRetInfo().setValue(instr);
         }
         else if (node->data.symbol == "RealLiteral")
         {
             // real
             auto instr = make_const_real(std::stod(node->firstChild()->data.symbol));
-            return VisitorRetInfo{instr_list_t{instr}}.setValue(instr);
+            return VisitorRetInfo().setValue(instr);
         }
         else
         {
