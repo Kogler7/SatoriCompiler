@@ -68,6 +68,12 @@ public:
         return dynamic_pointer_cast<ParseSyntaxTreeNode>(child);
     }
 
+    pst_node_ptr_t lastChild() const
+    {
+        auto child = this->back();
+        return dynamic_pointer_cast<ParseSyntaxTreeNode>(child);
+    }
+
     size_t hasChild() const
     {
         return this->size() > 0;

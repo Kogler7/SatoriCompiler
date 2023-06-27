@@ -1,0 +1,56 @@
+/**
+ * @file lab5_test.cpp
+ * @author Zhenjie Wei (2024108@bjtu.edu.cn)
+ * @brief Test Lab5
+ * @date 2023-06-27
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
+#include "test.h"
+#include "lexer/lexer.h"
+#include "parser/syntax.h"
+#include "parser/eslr/parser.h"
+#include "utils/log.h"
+#include "irgen/lab/lab5.h"
+
+using namespace std;
+
+void lab5Test()
+{
+    SyntaxParser syntax("./assets/lex/syntax.lex");
+    // Grammar g = syntax.parse("./assets/stx/func.stx");
+    Grammar g = syntax.parse("./assets/stx/lab5 new.stx");
+    g.printRules();
+    g.printTerminals();
+    g.printNonTerms();
+    SLR1Grammar G = SLR1Grammar(g);
+    G.printFollow();
+    G.printItems();
+    G.printClusters();
+    G.printGoTrans();
+    G.printSLR1Table();
+    assert(G.checkSLR1(), "Not SLR(1) grammar!");
+    G.checkSLR1();
+    G.printSLR1TableField({152, "else"});
+    G.printSLR1TableOfState(152);
+    ESLR1Parser eslr1(G);
+    // Lexer lexer("./assets/lex/func.lex");
+    // Viewer code = Viewer::fromFile("./assets/src/func.txt");
+    Lexer lexer("./assets/lex/lab5.lex");
+    Viewer code = Viewer::fromFile("./assets/src/lab5 new.txt");
+    auto tokens = lexer.tokenize(code);
+    Lexer::printTokens(tokens);
+    tokens = G.transferTokens(tokens);
+    Lexer::printTokens(tokens);
+    info << "result: \n"
+         << eslr1.parse(tokens, code) << endl;
+    eslr1.getCST()->print();
+    eslr1.reduceCST()->print();
+    eslr1.refactorRST()->print();
+
+    LAB5Visitor visitor;
+    visitor.visitS(eslr1.getAST());
+    visitor.printQuads();
+}

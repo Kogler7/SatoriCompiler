@@ -1,1 +1,0 @@
-错误定位处理？tokenize接受共享viewer作为参数

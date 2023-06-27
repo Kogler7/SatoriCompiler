@@ -1,0 +1,7 @@
+//f[x]=x
+//f[i]=i+i*i-i/i
+f[x,y,z]=x*y+z-x/(z+x)
+//f[x]=y
+//f[x,y]=x++y
+//f[x,y]=xy
+//f[A]=A

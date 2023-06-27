@@ -24,3 +24,4 @@ void semTest();
 void metaTest();
 void eslrTest();
 void irgenTest();
+void lab5Test();

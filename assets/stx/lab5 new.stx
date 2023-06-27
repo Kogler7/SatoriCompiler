@@ -1,0 +1,15 @@
+#meta GRAMMAR ${ $}
+#meta MAPPING ${ $}
+
+GRAMMAR ${
+    S*  ::= `f` `[` A `]` `=` E ;
+    A  ::= P { `,` P } ;
+    E  ::= E `+` T | E `-` T | T ;
+    T  ::= T `*` F | T `/` F | F ;
+    F  ::= `(` E `)` | P ;
+    P  ::= $V ;
+  $}
+
+MAPPING ${
+    $V     -->     @IDENTIFIER ;
+$}
