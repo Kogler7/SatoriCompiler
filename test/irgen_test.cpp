@@ -16,6 +16,7 @@
 
 #include "irgen/instr.h"
 #include "irgen/visitor.h"
+#include "irgen/ir_dump.h"
 
 void irgenTest()
 {
@@ -56,5 +57,7 @@ void irgenTest()
     RSCVisitor visitor;
     program_ptr_t program = visitor.visitProgram(eslr1.getAST());
     info << "LLVM IR: \n";
-    std::cout << program->dump();
+
+    LLVMDumper dumper;
+    std::cout << program->dump(&dumper);
 }

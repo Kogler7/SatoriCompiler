@@ -11,311 +11,124 @@
 #include "instr.h"
 #include "utils/str.h"
 
-#include <map>
-#include <string>
-#include <sstream>
-#include <iomanip>
-
-std::string opType2Str(OperandType op)
+std::string LabelInstr::dump(dumper_ptr_t dumper) const
 {
-    switch (op)
-    {
-    case OT_UNSIGNED:
-        return "u";
-    case OT_SIGNED:
-        return "s";
-    case OT_FLOAT:
-        return "f";
-    default:
-        assert(false, "opType2Str: unknown operand type");
-    }
+    return dumper->dumpLabel(this);
 }
 
-std::string cmpType2Str(CompareType cmp)
+std::string AllocaInstr::dump(dumper_ptr_t dumper) const
 {
-    switch (cmp)
-    {
-    case CT_EQ:
-        return "eq";
-    case CT_NE:
-        return "ne";
-    case CT_GT:
-        return "gt";
-    case CT_GE:
-        return "ge";
-    case CT_LT:
-        return "lt";
-    case CT_LE:
-        return "le";
-    default:
-        assert(false, "cmpType2Str: unknown compare type");
-    }
+    return dumper->dumpAlloca(this);
 }
 
-std::string getIdOf(const Value *v)
+std::string GlobalInstr::dump(dumper_ptr_t dumper) const
 {
-    static std::map<std::string, size_t> nameMap;
-    static std::map<const Value *, size_t> valueIdMap;
-    if (!valueIdMap.count(v))
-    {
-        valueIdMap[v] = ++nameMap[v->getName()];
-    }
-    return std::to_string(valueIdMap[v]);
+    return dumper->dumpGlobal(this);
 }
 
-inline std::string getLabelTag(const Value *b)
+std::string LoadInstr::dump(dumper_ptr_t dumper) const
 {
-    return format("$.$", b->getName(), getIdOf(b));
+    return dumper->dumpLoad(this);
 }
 
-inline std::string getValueTag(const Value *v, bool global = false)
+std::string StoreInstr::dump(dumper_ptr_t dumper) const
 {
-    if (v->isConstant())
-        return v->dump();
-    std::string lead = global ? "@" : "%";
-    std::string name = v->getName();
-    std::string id = v->nameIsUnique() ? "" : "." + getIdOf(v);
-    return lead + name + id;
+    return dumper->dumpStore(this);
 }
 
-std::string LabelInstr::dump() const
+std::string GEPInstr::dump(dumper_ptr_t dumper) const { return "not implemented."; }
+
+std::string FuncInstr::dump(dumper_ptr_t dumper) const
 {
-    return format("$:\n", getLabelTag(this));
+    return dumper->dumpFunc(this);
 }
 
-std::string AllocaInstr::dump() const
+std::string CallInstr::dump(dumper_ptr_t dumper) const
 {
-    return format("    $ = alloca $\n", getValueTag(this), type->dump());
+    return dumper->dumpCall(this);
 }
 
-std::string GlobalInstr::dump() const
+std::string RetInstr::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "$ = global $ $\n",
-        getValueTag(this, true),
-        type->dump(),
-        initValue->dump());
+    return dumper->dumpRet(this);
 }
 
-std::string LoadInstr::dump() const
+std::string BrInstr::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    $ = load $, $ $\n",
-        getValueTag(this),
-        type->dump(),
-        cast_alloca(from.getValue())->getPtrType()->dump(),
-        getValueTag(from.getValue().get()));
+    return dumper->dumpBr(this);
 }
 
-std::string StoreInstr::dump() const
+std::string JmpInstr::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    store $ $, $ $\n",
-        from.getValue()->getType()->dump(),
-        getValueTag(from.getValue().get()),
-        cast_alloca(to.getValue())->getPtrType()->dump(),
-        getValueTag(to.getValue().get()));
+    return dumper->dumpJmp(this);
 }
 
-std::string GEPInstr::dump() const { return "not implemented."; }
-
-std::string FuncInstr::dump() const
+std::string NegInstr::dump(dumper_ptr_t dumper) const
 {
-    std::string s = format("define $ @$(", retType->dump(), name);
-    for (auto it = params.begin(); it != params.end(); ++it)
-    {
-        user_ptr_t param = it->second;
-        s += param->getType()->dump() + " " + getValueTag(param.get());
-        if (it != std::prev(params.end()))
-            s += ", ";
-    }
-    s += ") {\n";
-    for (auto &block : blocks)
-    {
-        s += block->getValue()->dump();
-    }
-    s += "}\n\n";
-    return s;
+    return dumper->dumpNeg(this);
 }
 
-std::string CallInstr::dump() const
+std::string AddInstr::dump(dumper_ptr_t dumper) const
 {
-    std::string s = format(
-        "    $ = call $ @$(", 
-        getValueTag(this),
-        func->getRetType()->dump(),
-        func->getName());
-    for (auto it = args.begin(); it != args.end(); ++it)
-    {
-        s += getValueTag(it->get());
-        if (it != std::prev(args.end()))
-            s += ", ";
-    }
-    s += ")\n";
-    return s;
+    return dumper->dumpAdd(this);
 }
 
-std::string RetInstr::dump() const
+std::string SubInstr::dump(dumper_ptr_t dumper) const
 {
-    if (retval == nullptr)
-        return "    ret void\n";
-    return format(
-        "    ret $ $\n",
-        retval->getValue()->getType()->dump(),
-        getValueTag(retval->getValue().get()));
+    return dumper->dumpSub(this);
 }
 
-std::string BrInstr::dump() const
+std::string MulInstr::dump(dumper_ptr_t dumper) const
 {
-    bool lf = tc->target == nullptr;
-    bool rf = fc->target == nullptr;
-    if (lf || rf)
-        return format("*   br nullptr $ $\n", lf ? "true" : "false", rf ? "true" : "false");
-    assert(tc->target != nullptr, "BrInstr: true target is nullptr");
-    assert(fc->target != nullptr, "BrInstr: false target is nullptr");
-    return format(
-        "    br i1 $, label $, label $\n",
-        getValueTag(cond->getValue().get()),
-        getLabelTag(tc->target.get()),
-        getLabelTag(fc->target.get()));
+    return dumper->dumpMul(this);
 }
 
-std::string JmpInstr::dump() const
+std::string DivInstr::dump(dumper_ptr_t dumper) const
 {
-    if (target->target == nullptr)
-        return "*   br nullptr\n";
-    assert(target->target != nullptr, "JmpInstr: target is nullptr");
-    return format("    br label $\n", getLabelTag(target->target.get()));
+    return dumper->dumpDiv(this);
 }
 
-std::string NegInstr::dump() const
+std::string RemInstr::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    $ = $neg $ $\n",
-        getValueTag(this),
-        opType2Str(opType),
-        getValueTag(from->getValue().get()));
+    return dumper->dumpRem(this);
 }
 
-std::string AddInstr::dump() const
+std::string CmpInstr::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    $ = $add $ $, $\n",
-        getValueTag(this),
-        opType2Str(opType),
-        lhs->getValue()->getType()->dump(),
-        getValueTag(lhs->getValue().get()),
-        getValueTag(rhs->getValue().get()));
+    return dumper->dumpCmp(this);
 }
 
-std::string SubInstr::dump() const
+std::string InstrBlock::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    $ = $sub $ $, $\n",
-        getValueTag(this),
-        opType2Str(opType),
-        lhs->getValue()->getType()->dump(),
-        getValueTag(lhs->getValue().get()),
-        getValueTag(rhs->getValue().get()));
+    return dumper->dumpBlock(this);
 }
 
-std::string MulInstr::dump() const
+std::string Program::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    $ = $mul $ $, $\n",
-        getValueTag(this),
-        opType2Str(opType),
-        lhs->getValue()->getType()->dump(),
-        getValueTag(lhs->getValue().get()),
-        getValueTag(rhs->getValue().get()));
+    return dumper->dumpProgram(this);
 }
 
-std::string DivInstr::dump() const
+std::string ConstantInt::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    $ = $div $ $, $\n",
-        getValueTag(this),
-        opType2Str(opType),
-        lhs->getValue()->getType()->dump(),
-        getValueTag(lhs->getValue().get()),
-        getValueTag(rhs->getValue().get()));
+    return dumper->dumpConstInt(this);
 }
 
-std::string RemInstr::dump() const
+std::string ConstantReal::dump(dumper_ptr_t dumper) const
 {
-    return format(
-        "    $ = $rem $ $, $\n",
-        getValueTag(this),
-        opType2Str(opType),
-        lhs->getValue()->getType()->dump(),
-        getValueTag(lhs->getValue().get()),
-        getValueTag(rhs->getValue().get()));
+    return dumper->dumpConstReal(this);
 }
 
-std::string CmpInstr::dump() const
+std::string ConstantBool::dump(dumper_ptr_t dumper) const
 {
-    std::string s = format(
-        "    $ = $cmp $ $ $, $\n",
-        getValueTag(this),
-        opType2Str(opType),
-        cmpType2Str(cmpType),
-        lhs->getValue()->getType()->dump(),
-        getValueTag(lhs->getValue().get()),
-        getValueTag(rhs->getValue().get()));
-    return s;
+    return dumper->dumpConstBool(this);
 }
 
-std::string InstrBlock::dump() const
+std::string ConstantChar::dump(dumper_ptr_t dumper) const
 {
-    std::string s = format("$:\n", getLabelTag(this));
-    for (auto &instr : instrs)
-    {
-        s += instr->getValue()->dump();
-    }
-    return s + "\n";
+    return dumper->dumpConstChar(this);
 }
 
-std::string Program::dump() const
+std::string ConstantString::dump(dumper_ptr_t dumper) const
 {
-    std::string s;
-
-    for (auto &global : globals)
-    {
-        s += global->getValue()->dump();
-    }
-    s += "\n";
-    for (auto &func : funcs)
-    {
-        s += func->getValue()->dump();
-    }
-
-    return s;
-}
-
-std::string ConstantInt::dump() const
-{
-    return std::to_string(constVal);
-}
-
-std::string ConstantReal::dump() const
-{
-    std::stringstream ss;
-    std::string realStr = std::to_string(constVal);
-    ss << std::fixed << std::setprecision(2) << constVal;
-    return ss.str();
-}
-
-std::string ConstantBool::dump() const
-{
-    return constVal ? "true" : "false";
-}
-
-std::string ConstantChar::dump() const
-{
-    return "'" + std::string(1, constVal) + "'";
-}
-
-std::string ConstantString::dump() const
-{
-    return "\"" + constVal + "\"";
+    return dumper->dumpConstString(this);
 }

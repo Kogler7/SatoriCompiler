@@ -197,7 +197,7 @@ public:
     explicit LabelInstr(const std::string &name) : User(nullptr, name) {}
     ~LabelInstr() = default;
 
-    std::string dump() const override;
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class AllocaInstr : public User
@@ -214,7 +214,7 @@ public:
     type_ptr_t getPtrType() const { return ptrType; }
     bool nameIsUnique() const override { return true; }
 
-    std::string dump() const override;
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class GlobalInstr : public User
@@ -226,7 +226,9 @@ public:
         : User(type, name), initValue(value) {}
     ~GlobalInstr() = default;
 
-    std::string dump() const override;
+    const_val_ptr_t getInitValue() const { return initValue; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class LoadInstr : public User
@@ -238,7 +240,9 @@ public:
         : User(from->getType(), "load"), from(from, this) {}
     ~LoadInstr() = default;
 
-    std::string dump() const override;
+    const Use &getFromUse() const { return from; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class StoreInstr : public User
@@ -251,7 +255,10 @@ public:
         : User(nullptr, "store"), from(from, this), to(to, this) {}
     ~StoreInstr() = default;
 
-    std::string dump() const override;
+    const Use &getFromUse() const { return from; }
+    const Use &getToUse() const { return to; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class GEPInstr : public User
@@ -269,7 +276,7 @@ public:
     }
     ~GEPInstr() = default;
 
-    std::string dump() const override;
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class FuncInstr : public User
@@ -283,7 +290,7 @@ public:
         : User(nullptr, std::move(name)), retType(std::move(retType)) {}
     ~FuncInstr() = default;
 
-    prim_ptr_t getRetType() { return retType; }
+    prim_ptr_t getRetType() const { return retType; }
 
     bool addParam(prim_ptr_t type, std::string name)
     {
@@ -312,7 +319,7 @@ public:
         return params[name];
     }
 
-    std::vector<user_ptr_t> getParams()
+    std::vector<user_ptr_t> getParams() const
     {
         std::vector<user_ptr_t> r;
         for (auto &[_, param] : params)
@@ -360,7 +367,9 @@ public:
         return block;
     }
 
-    std::string dump() const override;
+    const std::list<use_ptr_t> &getBlocks() const { return blocks; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class CallInstr : public User
@@ -377,7 +386,11 @@ public:
         args.splice(args.end(), argList);
     }
 
-    std::string dump() const override;
+    func_ptr_t getFunc() const { return func; }
+
+    const std::list<user_ptr_t> &getArgs() const { return args; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class RetInstr : public User
@@ -389,7 +402,9 @@ public:
     explicit RetInstr(value_ptr_t retval) : retval(make_use(std::move(retval), this)) {}
     ~RetInstr() = default;
 
-    std::string dump() const override;
+    use_ptr_t getRetval() const { return retval; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class JumpTarget
@@ -414,11 +429,13 @@ public:
         : cond(make_use(std::move(cond), this)), tc(make_target()), fc(make_target()), User(nullptr, "branch") {}
     ~BrInstr() = default;
 
-    std::pair<target_ptr_t, target_ptr_t> getTargets() { return {tc, fc}; }
+    std::pair<target_ptr_t, target_ptr_t> getTargets() const { return {tc, fc}; }
+
+    use_ptr_t getCond() const { return cond; }
 
     bool isTerminator() override { return true; }
 
-    std::string dump() const override;
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class JmpInstr : public User
@@ -433,11 +450,11 @@ public:
     }
     ~JmpInstr() = default;
 
-    target_ptr_t getTarget() { return target; }
+    target_ptr_t getTarget() const { return target; }
 
     bool isTerminator() override { return true; }
 
-    std::string dump() const override;
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class NegInstr : public User
@@ -450,7 +467,11 @@ public:
         : from(make_use(std::move(from), this)), opType(opType), User(from->getType(), "neg") {}
     ~NegInstr() = default;
 
-    std::string dump() const override;
+    const OperandType &getOpType() const { return opType; }
+
+    use_ptr_t getFromUse() const { return from; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class AddInstr : public User
@@ -474,7 +495,12 @@ public:
     }
     ~AddInstr() = default;
 
-    std::string dump() const override;
+    use_ptr_t getLhsUse() const { return lhs; }
+    use_ptr_t getRhsUse() const { return rhs; }
+
+    const OperandType &getOpType() const { return opType; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class SubInstr : public User
@@ -498,7 +524,12 @@ public:
     }
     ~SubInstr() = default;
 
-    std::string dump() const override;
+    use_ptr_t getLhsUse() const { return lhs; }
+    use_ptr_t getRhsUse() const { return rhs; }
+
+    const OperandType &getOpType() const { return opType; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class MulInstr : public User
@@ -522,7 +553,12 @@ public:
     }
     ~MulInstr() = default;
 
-    std::string dump() const override;
+    use_ptr_t getLhsUse() const { return lhs; }
+    use_ptr_t getRhsUse() const { return rhs; }
+
+    const OperandType &getOpType() const { return opType; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class DivInstr : public User
@@ -546,7 +582,12 @@ public:
     }
     ~DivInstr() = default;
 
-    std::string dump() const override;
+    use_ptr_t getLhsUse() const { return lhs; }
+    use_ptr_t getRhsUse() const { return rhs; }
+
+    const OperandType &getOpType() const { return opType; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class RemInstr : public User
@@ -570,7 +611,12 @@ public:
     }
     ~RemInstr() = default;
 
-    std::string dump() const override;
+    use_ptr_t getLhsUse() const { return lhs; }
+    use_ptr_t getRhsUse() const { return rhs; }
+
+    const OperandType &getOpType() const { return opType; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class CmpInstr : public User
@@ -595,7 +641,13 @@ public:
     }
     ~CmpInstr() = default;
 
-    std::string dump() const override;
+    use_ptr_t getLhsUse() const { return lhs; }
+    use_ptr_t getRhsUse() const { return rhs; }
+
+    const OperandType &getOpType() const { return opType; }
+    const CompareType &getCmpType() const { return cmpType; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class InstrBlock : public User
@@ -623,7 +675,9 @@ public:
         }
     }
 
-    std::string dump() const override;
+    const std::list<use_ptr_t> &getInstrs() const { return instrs; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class Program : public User
@@ -638,7 +692,10 @@ public:
     void addGlobal(user_ptr_t global) { globals.push_back(make_use(std::move(global), this)); }
     void addFunc(user_ptr_t func) { funcs.push_back(make_use(std::move(func), this)); }
 
-    std::string dump() const override;
+    const std::list<use_ptr_t> &getGlobals() const { return globals; }
+    const std::list<use_ptr_t> &getFuncs() const { return funcs; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class Constant : public User
@@ -649,7 +706,7 @@ public:
 
     bool isConstant() const override { return true; }
 
-    virtual std::string dump() const = 0;
+    virtual std::string dump(dumper_ptr_t dumper = nullptr) const = 0;
 };
 
 class ConstantInt : public Constant
@@ -661,7 +718,9 @@ public:
         : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::INT), "const int") {}
     ~ConstantInt() = default;
 
-    std::string dump() const override;
+    int getConstVal() const { return constVal; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class ConstantReal : public Constant
@@ -673,7 +732,9 @@ public:
         : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::REAL), "const real") {}
     ~ConstantReal() = default;
 
-    std::string dump() const override;
+    double getConstVal() const { return constVal; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class ConstantBool : public Constant
@@ -685,7 +746,9 @@ public:
         : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::BOOL), "const bool") {}
     ~ConstantBool() = default;
 
-    std::string dump() const override;
+    bool getConstVal() const { return constVal; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class ConstantChar : public Constant
@@ -697,7 +760,9 @@ public:
         : constVal(constVal), Constant(make_prime_type(PrimitiveType::PrimType::CHAR), "const char") {}
     ~ConstantChar() = default;
 
-    std::string dump() const override;
+    char getConstVal() const { return constVal; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };
 
 class ConstantString : public Constant
@@ -709,5 +774,7 @@ public:
         : constVal(std::move(constVal)), Constant(make_prime_type(PrimitiveType::PrimType::STR), "const str") {}
     ~ConstantString() = default;
 
-    std::string dump() const override;
+    std::string getConstVal() const { return constVal; }
+
+    std::string dump(dumper_ptr_t dumper = nullptr) const override;
 };

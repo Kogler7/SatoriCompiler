@@ -19,6 +19,8 @@ class Value;
 class User;
 class Use;
 
+#include "common/dumper.h"
+
 using use_ptr_t = std::shared_ptr<Use>;
 #define make_use(value, user) std::make_shared<Use>(value, user)
 using user_ptr_t = std::shared_ptr<User>;
@@ -37,7 +39,7 @@ public:
     Value(type_ptr_t type, std::string name) : type(type), name(name) {}
     ~Value() = default;
 
-    type_ptr_t getType()
+    type_ptr_t getType() const
     {
         assert(
             type != nullptr,
@@ -53,7 +55,7 @@ public:
     virtual bool nameIsUnique() const { return false; }
 
     virtual bool isConstant() const { return false; }
-    virtual std::string dump() const { return name; }
+    virtual std::string dump(dumper_ptr_t dumper = nullptr) const { return name; }
 };
 
 class User : public Value
