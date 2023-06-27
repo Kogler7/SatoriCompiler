@@ -8,7 +8,7 @@
  *
  */
 
-#define TEST_UNIT lab5Test
+#define TEST_UNIT irgenTest
 
 #ifndef TEST_UNIT
 
