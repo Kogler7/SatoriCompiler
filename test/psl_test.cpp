@@ -33,8 +33,6 @@ void PSLTest()
     // G.printSLR1Table();
     // assert(G.checkSLR1(), "Not SLR(1) grammar!");
     G.checkSLR1();
-    G.printSLR1TableField({152, "else"});
-    G.printSLR1TableOfState(152);
     ESLR1Parser eslr1(G);
     // Lexer lexer("./assets/lex/func.lex");
     // Viewer code = Viewer::fromFile("./assets/src/func.txt");

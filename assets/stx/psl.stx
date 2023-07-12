@@ -3,35 +3,44 @@
 
 GRAMMAR ${
     Program*        ::=     StmtList ;
-    StmtList        ::=     Stmt { `;` Stmt } ;
-    KeyValExpr      ::=     $Ident `=` Expr ;
-    KeyValDecl      ::=     $Ident [ `?` ] `:` Type [ `=` Expr ] ;
-    FuncDef         ::=     FuncModifiers `func` $Ident [ SuperList ] `:` FuncTypeMark `=` StmtPack ;
+    StmtList        ::=     { Stmt } ;
+    KeyValExpr      ::=     Refer `=` Expr ;
+    KeyValDecl      ::=     Refer [ `?` ] `:` Type [ `=` Expr ] ;
+    FuncDef         ::=     FuncModifiers `func` Refer [ SuperDef ] `:` FuncTypeMark `=` StmtPack ;
     FuncTypeMark    ::=     FuncType [ `->` FuncType ] ;
     FuncType        ::=     Type | `null` | `any` ;
     ListPack        ::=     `[` [ Expr { `,` Expr } ] `]` ;
+    ListUnpack      ::=     `[` [ Refer { `,` Refer } ] `]` ;
     DictPack        ::=     `{` [ KeyValExpr { `,` KeyValExpr } ] `}` ;
+    DictUnpack      ::=     `{` [ Refer { `,` Refer } ] `}` ;
     TypePack        ::=     `{` [ KeyValDecl { `,` KeyValDecl } ] `}` ;
     StmtPack        ::=     `{` [ StmtList ] `}` ;
-    Stmt            ::=     LetStmt | UseStmt | FuncDef | TypeDef | Expr | StmtPack ;
-    SuperList       ::=     `<` [ Expr { `,` Expr } ] `>` ;
-    Type            ::=     PrimaryType | $Ident ;
+    Stmt            ::=     LetStmt | UseStmt | FuncDef | TypeDef | Expr `;` | StmtPack ;
+    SuperParam      ::=     Expr | KeyValExpr ;
+    SuperList       ::=     `<` SuperParam { `,` SuperParam } `>` ;
+    SuperDef        ::=     `<` [ KeyValDecl { `,` KeyValDecl } ] `>` ;
+    Type            ::=     PrimaryType | Refer ;
     PrimaryType     ::=     `number` | `string` | `bool` | `functor` | NumberType | StructType ;
     ScalarType      ::=     `int` | `real` | `complex` ;
     VectorType      ::=     `array` [ `[` $Int `]` ] | `matrix` { `[` $Int `]` } ;
     NumberType      ::=     ScalarType | VectorType ;
-    StructType      ::=     `list` [ `[` PrimaryType `]` ] | `dict` { `[` PrimaryType `]` } ;
-    FuncModifiers   ::=     { `atomic` | `async` | `global` } ;
-    FuncCall        ::=     FuncCall `.` Entity | Entity ;
+    StructType      ::=     `list` [ `[` Type `]` ] | `dict` { `[` Type `]` } ;
+    FuncModifiers   ::=     { `atomic` | `async` | `global` | `inner` } ;
+    FuncCall        ::=     FuncCall `.` Entity 
+                            | FunctorRefer `(` Expr `)`
+                            | Entity ;
     EntityChain     ::=     Entity { Entity } ;
-    Entity          ::=     ( $Ident [ SuperList ] | Literal | ListPack | DictPack ) [ ExplicitCheck ] ;
-    Carrier         ::=     $Ident | ListPack | DictPack ;
-    Expr            ::=     EntityChain | FuncCall ;
+    EntityRefer     ::=     Refer [ `[` ( $Int | Refer ) `]` ] ;
+    FunctorRefer    ::=     Refer [ SuperList ] ;
+    Entity          ::=     ( EntityRefer | FunctorRefer | Literal | ListPack | DictPack ) ;
+    Carrier         ::=     Refer | ListUnpack | DictUnpack ;
+    Expr            ::=     ( EntityChain | FuncCall ) [ ExplicitCheck ] ;
     Literal         ::=     $String | $Int | $Real | $Complex | `null` | `true` | `false` ;
     ExplicitCheck   ::=     `as` Type ;
-    LetStmt         ::=     [ `let` ] Carrier [ `:` Type ] `=` Entity ;
-    UseStmt         ::=     `use` Carrier [ `=` ] Entity ;
-    TypeDef         ::=     `type` $Ident `=` ( Type | TypePack ) ;
+    LetStmt         ::=     [ `let` ] Carrier [ `:` Type ] `=` Expr `;` ;
+    UseStmt         ::=     `use` Carrier [ `=` ] Expr `;` ;
+    TypeDef         ::=     `type` Refer `=` ( Type `;` | TypePack ) ;
+    Refer           ::=     $Ident ;
 $}
 
 MAPPING ${
