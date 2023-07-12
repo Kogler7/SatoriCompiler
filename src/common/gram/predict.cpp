@@ -15,6 +15,8 @@
 
 using namespace std;
 
+#define DEBUG_LEVEL 0
+
 #define insert_if_not_exist(A, s)               \
     {                                           \
         flag = false;                           \

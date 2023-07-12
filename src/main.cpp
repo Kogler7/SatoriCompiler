@@ -8,7 +8,7 @@
  *
  */
 
-#define TEST_UNIT irgenTest
+#define TEST_UNIT PSLTest
 
 #ifndef TEST_UNIT
 

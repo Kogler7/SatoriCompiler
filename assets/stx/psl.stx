@@ -1,0 +1,42 @@
+#meta GRAMMAR ${ $}
+#meta MAPPING ${ $}
+
+GRAMMAR ${
+    Program*        ::=     StmtList ;
+    StmtList        ::=     Stmt { `;` Stmt } ;
+    KeyValExpr      ::=     $Ident `=` Expr ;
+    KeyValDecl      ::=     $Ident [ `?` ] `:` Type [ `=` Expr ] ;
+    FuncDef         ::=     FuncModifiers `func` $Ident [ SuperList ] `:` FuncTypeMark `=` StmtPack ;
+    FuncTypeMark    ::=     FuncType [ `->` FuncType ] ;
+    FuncType        ::=     Type | `null` | `any` ;
+    ListPack        ::=     `[` [ Expr { `,` Expr } ] `]` ;
+    DictPack        ::=     `{` [ KeyValExpr { `,` KeyValExpr } ] `}` ;
+    TypePack        ::=     `{` [ KeyValDecl { `,` KeyValDecl } ] `}` ;
+    StmtPack        ::=     `{` [ StmtList ] `}` ;
+    Stmt            ::=     LetStmt | UseStmt | FuncDef | TypeDef | Expr | StmtPack ;
+    SuperList       ::=     `<` [ Expr { `,` Expr } ] `>` ;
+    Type            ::=     PrimaryType | $Ident ;
+    PrimaryType     ::=     `number` | `string` | `bool` | `functor` | NumberType | StructType ;
+    ScalarType      ::=     `int` | `real` | `complex` ;
+    VectorType      ::=     `array` [ `[` $Int `]` ] | `matrix` { `[` $Int `]` } ;
+    NumberType      ::=     ScalarType | VectorType ;
+    StructType      ::=     `list` [ `[` PrimaryType `]` ] | `dict` { `[` PrimaryType `]` } ;
+    FuncModifiers   ::=     { `atomic` | `async` | `global` } ;
+    FuncCall        ::=     FuncCall `.` Entity | Entity ;
+    EntityChain     ::=     Entity { Entity } ;
+    Entity          ::=     ( $Ident [ SuperList ] | Literal | ListPack | DictPack ) [ ExplicitCheck ] ;
+    Carrier         ::=     $Ident | ListPack | DictPack ;
+    Expr            ::=     EntityChain | FuncCall ;
+    Literal         ::=     $String | $Int | $Real | $Complex | `null` | `true` | `false` ;
+    ExplicitCheck   ::=     `as` Type ;
+    LetStmt         ::=     [ `let` ] Carrier [ `:` Type ] `=` Entity ;
+    UseStmt         ::=     `use` Carrier [ `=` ] Entity ;
+    TypeDef         ::=     `type` $Ident `=` ( Type | TypePack ) ;
+$}
+
+MAPPING ${
+    $Ident     -->     @IDENTIFIER ;
+    $Int       -->     @INTEGER ;
+    $Real      -->     @REAL ;
+    $String    -->     @STRING ;
+$}
