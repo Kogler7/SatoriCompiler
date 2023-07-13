@@ -2,45 +2,64 @@
 #meta MAPPING ${ $}
 
 GRAMMAR ${
-    Program*        ::=     StmtList ;
-    StmtList        ::=     { Stmt } ;
-    KeyValExpr      ::=     Refer `=` Expr ;
-    KeyValDecl      ::=     Refer [ `?` ] `:` Type [ `=` Expr ] ;
-    FuncDef         ::=     FuncModifiers `func` Refer [ SuperDef ] `:` FuncTypeMark `=` StmtPack ;
-    FuncTypeMark    ::=     FuncType [ `->` FuncType ] ;
-    FuncType        ::=     Type | `null` | `any` ;
-    ListPack        ::=     `[` [ Expr { `,` Expr } ] `]` ;
-    ListUnpack      ::=     `[` [ Refer { `,` Refer } ] `]` ;
-    DictPack        ::=     `{` [ KeyValExpr { `,` KeyValExpr } ] `}` ;
-    DictUnpack      ::=     `{` [ Refer { `,` Refer } ] `}` ;
-    TypePack        ::=     `{` [ KeyValDecl { `,` KeyValDecl } ] `}` ;
-    StmtPack        ::=     `{` [ StmtList ] `}` ;
-    Stmt            ::=     LetStmt | UseStmt | FuncDef | TypeDef | Expr `;` | StmtPack ;
-    SuperParam      ::=     Expr | KeyValExpr ;
-    SuperList       ::=     `<` SuperParam { `,` SuperParam } `>` ;
-    SuperDef        ::=     `<` [ KeyValDecl { `,` KeyValDecl } ] `>` ;
-    Type            ::=     PrimaryType | Refer ;
-    PrimaryType     ::=     `number` | `string` | `bool` | `functor` | NumberType | StructType ;
+    IdentRef        ::=     $Ident ;
+    Literal         ::=     $Int | $Real | $Complex | $String
+                            | `null` | `true` | `false` ;
+    SepMark         ::=     { $LineEnd } ;
+
+    Type            ::=     InnerType | IdentRef ;
+    InnerType       ::=     `number` | `string` | `bool` | `functor` | NumberType | StructType ;
     ScalarType      ::=     `int` | `real` | `complex` ;
     VectorType      ::=     `array` [ `[` $Int `]` ] | `matrix` { `[` $Int `]` } ;
     NumberType      ::=     ScalarType | VectorType ;
     StructType      ::=     `list` [ `[` Type `]` ] | `dict` { `[` Type `]` } ;
+    TypeDef         ::=     `type` IdentRef `=` ( Type | TypePack ) StmtEnd ;
+
+    FunctorRef      ::=     IdentRef [ SuperList ] ;
+    EntityRef       ::=     IdentRef [ `[` ( $Int | IdentRef ) `]` ] ;
+    Entity          ::=     ( EntityRef | FunctorRef | Literal | ListPack | DictPack ) ;
+    ChainUnit       ::=     Entity | FuncCall ;
+    EntityChain     ::=     ChainUnit { ChainUnit } ;
+    EntityExpr      ::=     EntityChain [ `as` Type ] ;
+
+    KeyValExpr      ::=     IdentRef `=` EntityExpr ;
+    KeyValDecl      ::=     IdentRef [ `?` ] `:` Type [ `=` EntityExpr ] ;
+    ListPack        ::=     `[` SepMark [ EntityExpr { `,` SepMark EntityExpr } ] SepMark `]` ;
+    ListUnpack      ::=     `[` SepMark [ IdentRef { `,` SepMark IdentRef } ] SepMark `]` ;
+    DictPack        ::=     `{` SepMark [ KeyValExpr { `,` SepMark KeyValExpr } ] SepMark `}` ;
+    DictUnpack      ::=     `{` SepMark [ IdentRef { `,` SepMark IdentRef } ] SepMark `}` ;
+    TypePack        ::=     `{` SepMark [ KeyValDecl { `,` SepMark KeyValDecl } ] SepMark `}` ;
+    StmtPack        ::=     `{` SepMark [ StmtList ] SepMark `}` ;
+
+    Annotations     ::=     { `@` EntityRef $LineEnd } ;
     FuncModifiers   ::=     { `atomic` | `async` | `global` | `inner` } ;
-    FuncCall        ::=     FuncCall `.` Entity 
-                            | FunctorRefer `(` Expr `)`
+    SuperParam      ::=     EntityExpr | KeyValExpr ;
+    SuperList       ::=     `<` SuperParam { `,` SuperParam } `>` ;
+    SuperDef        ::=     `<` KeyValDecl { `,` KeyValDecl } `>` ;
+    FuncType        ::=     Type | `null` | `any` ;
+    FuncTypeMark    ::=     FuncType [ `->` FuncType ] ;
+    FuncDef         ::=     Annotations
+                            FuncModifiers `func` IdentRef [ SuperDef ] [ $LineEnd ]
+                            `:` FuncTypeMark [ `=` ] [ $LineEnd ]
+                            StmtPack StmtEnd ;
+    FuncCall        ::=     FuncCall ( `.` | `->` ) Entity 
+                            | FunctorRef `(` EntityExpr `)`
                             | Entity ;
-    EntityChain     ::=     Entity { Entity } ;
-    EntityRefer     ::=     Refer [ `[` ( $Int | Refer ) `]` ] ;
-    FunctorRefer    ::=     Refer [ SuperList ] ;
-    Entity          ::=     ( EntityRefer | FunctorRefer | Literal | ListPack | DictPack ) ;
-    Carrier         ::=     Refer | ListUnpack | DictUnpack ;
-    Expr            ::=     ( EntityChain | FuncCall ) [ ExplicitCheck ] ;
-    Literal         ::=     $String | $Int | $Real | $Complex | `null` | `true` | `false` ;
-    ExplicitCheck   ::=     `as` Type ;
-    LetStmt         ::=     [ `let` ] Carrier [ `:` Type ] `=` Expr `;` ;
-    UseStmt         ::=     `use` Carrier [ `=` ] Expr `;` ;
-    TypeDef         ::=     `type` Refer `=` ( Type `;` | TypePack ) ;
-    Refer           ::=     $Ident ;
+
+    Carrier         ::=     EntityRef | ListUnpack | DictUnpack ;
+    StmtEnd         ::=     SepMark | `;` ;
+    UseStmt         ::=     `use` Carrier [ `=` ] EntityExpr StmtEnd ;
+    LetStmt         ::=     `let` Carrier [ `:` Type ] [ `=` ] EntityExpr StmtEnd ;
+    GetStmt         ::=     `get` IdentRef StmtEnd ;
+    RetStmt         ::=     `ret` [ EntityExpr ] StmtEnd ;
+    ExprStmt        ::=     EntityExpr StmtEnd ;
+    Stmt            ::=     LetStmt | UseStmt
+                            | FuncDef | TypeDef
+                            | GetStmt | RetStmt
+                            | ExprStmt ;
+    StmtList        ::=     { SepMark Stmt } ;
+
+    Program*        ::=     StmtList ;
 $}
 
 MAPPING ${
@@ -48,4 +67,6 @@ MAPPING ${
     $Int       -->     @INTEGER ;
     $Real      -->     @REAL ;
     $String    -->     @STRING ;
+    $Complex   -->     @COMPLEX ;
+    $LineEnd   -->     @LINE_END ;
 $}

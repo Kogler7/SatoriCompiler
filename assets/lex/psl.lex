@@ -2,6 +2,7 @@
 #meta IGNORED ${ $}
 
 PATTERN ${
+    LINE_END    \r?\n
     BLANK       \s+
     LIN_CMT     //[^\r\n]*
     BLK_CMT     /\*([^\*]|\*[^/])*\*/
@@ -15,7 +16,7 @@ PATTERN ${
     INTEGER     (\-|\+|\e)0[bB][01]+(e(\-|\+|\e)[\d]+)?
     INTEGER     (\-|\+|\e)0[oO][0-7]+(e(\-|\+|\e)[\d]+)?
     INTEGER     (\-|\+|\e)0[xX]([\da-fA-F]+|[\d]+)(e(\-|\+|\e)[\d]+)?
-    SEPARATOR   [\+\-\*\\\(\){}\[\]<>;,.\|&!=:\?]
+    SEPARATOR   [\+\-\*\\\(\){}\[\]<>;,.\|&!=:\?@]
     SEPARATOR   >=|<=|!=|==|\|\||&&|->
 $}
 

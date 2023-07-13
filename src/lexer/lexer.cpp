@@ -63,6 +63,36 @@ string &zTrim(string &s)
     return s;
 }
 
+string &visualize(string &s)
+{
+    // 将字符串中的不可见字符转换为可见字符
+    // 比如将换行符转换为\n，将制表符转换为\t
+    for (int i = 0; i < s.length(); i++)
+    {
+        if (s[i] == '\n')
+        {
+            s.replace(i, 1, "\\n");
+        }
+        else if (s[i] == '\t')
+        {
+            s.replace(i, 1, "\\t");
+        }
+        else if (s[i] == '\r')
+        {
+            s.replace(i, 1, "\\r");
+        }
+        else if (s[i] == '\v')
+        {
+            s.replace(i, 1, "\\v");
+        }
+        else if (s[i] == '\f')
+        {
+            s.replace(i, 1, "\\f");
+        }
+    }
+    return s;
+}
+
 vector<token> Lexer::tokenize(const Viewer &viewer) const
 {
     info << "Tokenizing... " << endl;
@@ -97,7 +127,8 @@ vector<token> Lexer::tokenize(const Viewer &viewer) const
         }
         if (matched)
         {
-            matchedToken = zTrim(matchedToken); // 补丁：去掉末尾的空字符，产生原因未知
+            matchedToken = zTrim(matchedToken);     // 补丁：去掉末尾的空字符，产生原因未知
+            matchedToken = visualize(matchedToken); // 补丁：可视化字符串
             vCode = matchedView;
             if (!_find(ignoredTypes, matchedType))
             {

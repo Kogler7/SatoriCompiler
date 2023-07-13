@@ -1,55 +1,61 @@
 // Import data entities from external JSON format files
-use vertices from<json> "./test data/example2.1/vertex_data.json" as list[Vertex];
-use edges from<json> "./test data/example2.1/edge_data.json" as list[Edge];
+use vertices from<json> "./test data/example2.1/vertex_data.json" as list[Vertex]
+use edges from<json> "./test data/example2.1/edge_data.json" as list[Edge]
 
 // Import commonly used type definitions from the PSL standard library
-use { GraphEntity, Task } from "lib.psl";
+use { GraphEntity, Task } from "lib.psl"
 
 // Create an entity that inherits default values from GraphEntity and modify the scrutiny property
 let ge: GraphEntity = {
     scrutiny = true
-};
+}
 
 // Use the for_each method on the imported list type data to perform a specified operation on each element
 // In this example, execute add_vertex or add_edge operation on each element and add them to the ge entity
-vertices.for_each<add_vertex<ge>>;
-edges.for_each<add_edge<ge>>;
+vertices.for_each<add_vertex<ge>>
+edges.for_each<add_edge<ge>>
 
 // Convert the ge entity to an entity of type Task and set the id and priority properties
-let task: Task = ge.to_task<id="test_project", priority="LOW">;
+let task: Task = ge.to_task<id="test_project", priority="LOW">
 
 // Print information of the task entity, can also be written as print<Task>(task) or task.print<Task>
-print<Task> task;
+print<Task> task
 
 // Execute the task entity and save the execution result to the result entity
-let result = task.execute;
+let result = task.execute
 
-print result;
+print result
 
 // Analyze the result entity using eye diagrams
-analyze<eye>(task.execute);
+analyze<eye>(task.execute)
 
-let r1 = QAM.SSMF;
-let r2 = QAM.fork.SSMF;
-[r1, r2].A;
+let r1 = QAM.SSMF
+let r2 = QAM.fork.SSMF
+[r1, r2].A
 
-let result = signal.process.run.print;
-result[0].analyze;
-result[1].print;
-[signal1, signal2].dispatch<cpu, 0>.run.analyze<eye>;
-save(signal1);
+a b c d.e f(g h i.j u<v> w<x> y(z))
 
-inner atomic func to_task<name : string, id : number> : any -> Task = {
+let result = signal.process.run.print
+result[0].analyze
+result[1].print
+[signal1, signal2].dispatch<cpu, 0>.run.analyze<eye>
+save(signal1)
+
+@hhhh
+@abc
+inner atomic func to_task<name : string, id : number>
+    : any -> Task
+{
     // inner function
 }
 
-let signal : array[4] = [0, 1, 2, 3];
+let signal : array[4] = [0, 1, 2, 3]
 let signal2D : matrix[4][4] = [
     [0, 1, 2, 3],
     [0, 1, 2, 3],
     [0, 1, 2, 3],
     [0, 1, 2, 3]
-];
+]
 
 type vertex = {
     name? : string,
