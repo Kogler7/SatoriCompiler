@@ -3,27 +3,34 @@
 
 GRAMMAR ${
     IdentRef        ::=     $Ident ;
-    Literal         ::=     $Int | $Real | $Complex | $String
+    Complex         ::=     $Int `+` $Int `i` | $Real `+` $Real `i` ;
+    Value           ::=     ( $Int | $Real | Complex ) [ $Unit ] ;
+    FormatStr       ::=     `f` $String ;
+    Literal         ::=     Value | $String | FormatStr
                             | `null` | `true` | `false` ;
     SepMark         ::=     { $LineEnd } ;
 
     Type            ::=     InnerType | IdentRef ;
-    InnerType       ::=     `number` | `string` | `bool` | `functor` | NumberType | StructType ;
+    NullableType    ::=     Type [ `?` ] ;
+    InnerType       ::=     `number` | `string` | `bool` | `functor` | `block`
+                            | NumberType | StructType ;
     ScalarType      ::=     `int` | `real` | `complex` ;
-    VectorType      ::=     `array` [ `[` $Int `]` ] | `matrix` { `[` $Int `]` } ;
+    VectorType      ::=     `array` [ `<` ScalarType `>` ] [ `[` $Int `]` ]
+                            | `matrix` [ `<` ScalarType `>` ] { `[` $Int `]` } ;
     NumberType      ::=     ScalarType | VectorType ;
-    StructType      ::=     `list` [ `[` Type `]` ] | `dict` { `[` Type `]` } ;
-    TypeDef         ::=     `type` IdentRef `=` ( Type | TypePack ) StmtEnd ;
+    StructType      ::=     `list` [ `<` NullableType { `,` NullableType } `>` ] [ `[` $Int `]` ]
+                            | `dict` [ `<` Type `,` NullableType `>` ] ;
+    TypeDef         ::=     `type` IdentRef [ `=` ] ( Type | TypePack ) StmtEnd ;
 
     FunctorRef      ::=     IdentRef [ SuperList ] ;
-    EntityRef       ::=     IdentRef [ `[` ( $Int | IdentRef ) `]` ] ;
+    EntityRef       ::=     IdentRef { `[` ( $Int | IdentRef ) `]` } ;
     Entity          ::=     ( EntityRef | FunctorRef | Literal | ListPack | DictPack ) ;
     ChainUnit       ::=     Entity | FuncCall ;
     EntityChain     ::=     ChainUnit { ChainUnit } ;
     EntityExpr      ::=     EntityChain [ `as` Type ] ;
 
     KeyValExpr      ::=     IdentRef `=` EntityExpr ;
-    KeyValDecl      ::=     IdentRef [ `?` ] `:` Type [ `=` EntityExpr ] ;
+    KeyValDecl      ::=     IdentRef `:` NullableType [ `=` EntityExpr ] ;
     ListPack        ::=     `[` SepMark [ EntityExpr { `,` SepMark EntityExpr } ] SepMark `]` ;
     ListUnpack      ::=     `[` SepMark [ IdentRef { `,` SepMark IdentRef } ] SepMark `]` ;
     DictPack        ::=     `{` SepMark [ KeyValExpr { `,` SepMark KeyValExpr } ] SepMark `}` ;
@@ -32,18 +39,18 @@ GRAMMAR ${
     StmtPack        ::=     `{` SepMark [ StmtList ] SepMark `}` ;
 
     Annotations     ::=     { `@` EntityRef $LineEnd } ;
-    FuncModifiers   ::=     { `atomic` | `async` | `global` | `inner` } ;
+    Modifiers       ::=     { `atomic` | `inner` } ;
     SuperParam      ::=     EntityExpr | KeyValExpr ;
-    SuperList       ::=     `<` SuperParam { `,` SuperParam } `>` ;
-    SuperDef        ::=     `<` KeyValDecl { `,` KeyValDecl } `>` ;
-    FuncType        ::=     Type | `null` | `any` ;
+    SuperList       ::=     `<` SepMark SuperParam { `,` SepMark SuperParam } SepMark `>` ;
+    SuperDef        ::=     `<` SepMark KeyValDecl { `,` SepMark KeyValDecl } SepMark `>` ;
+    FuncType        ::=     NullableType | `void` | `any` ;
     FuncTypeMark    ::=     FuncType [ `->` FuncType ] ;
     FuncDef         ::=     Annotations
-                            FuncModifiers `func` IdentRef [ SuperDef ] [ $LineEnd ]
+                            Modifiers `func` IdentRef [ SuperDef ]
                             `:` FuncTypeMark [ `=` ] [ $LineEnd ]
                             StmtPack StmtEnd ;
     FuncCall        ::=     FuncCall ( `.` | `->` ) Entity 
-                            | FunctorRef `(` EntityExpr `)`
+                            | FunctorRef `(` SepMark EntityExpr SepMark `)`
                             | Entity ;
 
     Carrier         ::=     EntityRef | ListUnpack | DictUnpack ;
@@ -64,9 +71,9 @@ $}
 
 MAPPING ${
     $Ident     -->     @IDENTIFIER ;
+    $Unit      -->     @UNIT ;
     $Int       -->     @INTEGER ;
     $Real      -->     @REAL ;
     $String    -->     @STRING ;
-    $Complex   -->     @COMPLEX ;
     $LineEnd   -->     @LINE_END ;
 $}

@@ -37,7 +37,8 @@ void PSLTest()
     // Lexer lexer("./assets/lex/func.lex");
     // Viewer code = Viewer::fromFile("./assets/src/func.txt");
     Lexer lexer("./assets/lex/psl.lex");
-    Viewer code = Viewer::fromFile("./assets/src/test.psl");
+    // Viewer code = Viewer::fromFile("./assets/src/test.psl");
+    Viewer code = Viewer::fromFile("./assets/src/roft.psl");
     auto tokens = lexer.tokenize(code);
     Lexer::printTokens(tokens);
     tokens = G.transferTokens(tokens);
