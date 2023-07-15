@@ -8,9 +8,8 @@ PATTERN ${
     LIN_CMT     //[^\r\n]*
     LIN_CMT     #\s[^\r\n]*
     BLK_CMT     /\*([^\*]|\*[^/])*\*/
-    BLK_CMT     '''[^']*'''
-    BLK_CMT     """[^"]*"""
-    BLK_CMT     ```[^`]*```
+    MULTI_STR   '''[^']*'''
+    MULTI_STR   """[^"]*"""
     IDENTIFIER  [\a_][\w]*
     UNIT        `[^`]*`
     STRING      "[^"]*" | '[^']*'

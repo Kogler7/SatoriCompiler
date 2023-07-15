@@ -6,11 +6,11 @@ GRAMMAR ${
     Complex         ::=     $Int `+` $Int `i` | $Real `+` $Real `i` ;
     Value           ::=     ( $Int | $Real | Complex ) [ $Unit ] ;
     FormatStr       ::=     `f` $String ;
-    Literal         ::=     Value | $String | FormatStr
+    Literal         ::=     Value | $String | $MultiStr | FormatStr
                             | `null` | `true` | `false` ;
     SepMark         ::=     { $LineEnd } ;
 
-    Type            ::=     InnerType | IdentRef ;
+    Type            ::=     InnerType | IdentRef | `any` ;
     NullableType    ::=     Type [ `?` ] ;
     InnerType       ::=     `number` | `string` | `bool` | `functor` | `block`
                             | NumberType | StructType ;
@@ -21,16 +21,17 @@ GRAMMAR ${
     StructType      ::=     `list` [ `<` NullableType { `,` NullableType } `>` ] [ `[` $Int `]` ]
                             | `dict` [ `<` Type `,` NullableType `>` ] ;
     TypeDef         ::=     `type` IdentRef [ `=` ] ( Type | TypePack ) StmtEnd ;
+    EnumDef         ::=     `enum` IdentRef [ `=` ] DictUnpack StmtEnd ;
 
     FunctorRef      ::=     IdentRef [ SuperList ] ;
     EntityRef       ::=     IdentRef { `[` ( $Int | IdentRef ) `]` } ;
-    Entity          ::=     ( EntityRef | FunctorRef | Literal | ListPack | DictPack ) ;
-    ChainUnit       ::=     Entity | FuncCall ;
+    Entity          ::=     ( EntityRef | FunctorRef | Literal | ListPack | DictPack ) [ Annotation ] ;
+    ChainUnit       ::=     Entity | LinkCall ;
     EntityChain     ::=     ChainUnit { ChainUnit } ;
     EntityExpr      ::=     EntityChain [ `as` Type ] ;
 
     KeyValExpr      ::=     IdentRef `=` EntityExpr ;
-    KeyValDecl      ::=     IdentRef `:` NullableType [ `=` EntityExpr ] ;
+    KeyValDecl      ::=     IdentRef [ Annotation ] `:` NullableType [ `=` EntityExpr ] ;
     ListPack        ::=     `[` SepMark [ EntityExpr { `,` SepMark EntityExpr } ] SepMark `]` ;
     ListUnpack      ::=     `[` SepMark [ IdentRef { `,` SepMark IdentRef } ] SepMark `]` ;
     DictPack        ::=     `{` SepMark [ KeyValExpr { `,` SepMark KeyValExpr } ] SepMark `}` ;
@@ -38,28 +39,28 @@ GRAMMAR ${
     TypePack        ::=     `{` SepMark [ KeyValDecl { `,` SepMark KeyValDecl } ] SepMark `}` ;
     StmtPack        ::=     `{` SepMark [ StmtList ] SepMark `}` ;
 
-    Annotations     ::=     { `@` EntityRef $LineEnd } ;
-    Modifiers       ::=     { `atomic` | `inner` } ;
-    SuperParam      ::=     EntityExpr | KeyValExpr ;
-    SuperList       ::=     `<` SepMark SuperParam { `,` SepMark SuperParam } SepMark `>` ;
+    Argument        ::=     EntityExpr | KeyValExpr ;
+    Annotation      ::=     `@` ( IdentRef | DictPack | `(` $Int `,` $Int `)` | `[` $Int `,` $Int `]` ) ;
+    Annotations     ::=     { Annotation $LineEnd } ;
+    Modifiers       ::=     { `atomic` | `inner` | `sync` } ;
+    SuperList       ::=     `<` SepMark Argument { `,` SepMark Argument } SepMark `>` ;
     SuperDef        ::=     `<` SepMark KeyValDecl { `,` SepMark KeyValDecl } SepMark `>` ;
-    FuncType        ::=     NullableType | `void` | `any` ;
-    FuncTypeMark    ::=     FuncType [ `->` FuncType ] ;
+    ParamDef        ::=     `(` SepMark [ KeyValDecl { `,` SepMark KeyValDecl } ] SepMark `)` ;
+    ArgsList        ::=     `(` SepMark [ Argument { `,` SepMark Argument } ] SepMark `)` ;
     FuncDef         ::=     Annotations
-                            Modifiers `func` IdentRef [ SuperDef ]
-                            `:` FuncTypeMark [ `=` ] [ $LineEnd ]
+                            Modifiers `func` IdentRef [ SuperDef ] ParamDef
+                            [ `->` Type ] [ `=` ] [ $LineEnd ]
                             StmtPack StmtEnd ;
-    FuncCall        ::=     FuncCall ( `.` | `->` ) Entity 
-                            | FunctorRef `(` SepMark EntityExpr SepMark `)`
+    LinkCall        ::=     LinkCall ( `.` | `->` ) Entity 
+                            | FunctorRef ArgsList
                             | Entity ;
 
     Carrier         ::=     EntityRef | ListUnpack | DictUnpack ;
     StmtEnd         ::=     SepMark | `;` ;
     UseStmt         ::=     `use` Carrier [ `=` ] EntityExpr StmtEnd ;
     LetStmt         ::=     `let` Carrier [ `:` Type ] [ `=` ] EntityExpr StmtEnd ;
-    GetStmt         ::=     `get` IdentRef StmtEnd ;
     RetStmt         ::=     `ret` [ EntityExpr ] StmtEnd ;
-    ExprStmt        ::=     EntityExpr StmtEnd ;
+    ExprStmt        ::=     [ Annotations ] EntityExpr StmtEnd ;
     Stmt            ::=     LetStmt | UseStmt
                             | FuncDef | TypeDef
                             | GetStmt | RetStmt
@@ -75,5 +76,6 @@ MAPPING ${
     $Int       -->     @INTEGER ;
     $Real      -->     @REAL ;
     $String    -->     @STRING ;
+    $MultiStr  -->     @MULTI_STR ;
     $LineEnd   -->     @LINE_END ;
 $}

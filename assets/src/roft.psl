@@ -1,8 +1,11 @@
-# Impact of System Noise and Nonlinearities on a 16-QAM Signal in a Radio-over-Fiber Transmission
+@{x=3, y=1, style="bold", color="red"}
+'''
+Impact of System Noise and Nonlinearities on a 16-QAM Signal in a Radio-over-Fiber Transmission
+'''
 
-```
+'''
 The relative constellation ...
-```
+'''@{x=2, y=3, style="alert-info"}
 
 use { Const, Ground, Sub } from "phot/units"
 use { AmpSysEl, DC_Source, Linearizer, Resample } from "phot/el"
@@ -18,9 +21,12 @@ let photodiodeSetting : PhotodiodeSettingTemplate = {
 # powerInput := Const<5`V`>
 let powerInput = Const<5`V`>
 
-func PowerControlEl \
-: ElSignal
+@[14, 7]
+@{boxed=true, color="blue"}
+func PowerControlEl(input : ElSignal) \
+-> ElSignal
 {
+    "Power control"@(6, 0)
     let [dcOutput, powerOutput] = input->PowerMeterEl
     dcOutput->Ground
     let param = [powerInput, powerOutput]->Sub
@@ -28,22 +34,28 @@ func PowerControlEl \
 }
 
 # Electrical domain
-func SignalGenEl : void -> ElSignal {
+@{boxed=true, color="blue"}
+func SignalGenEl() -> ElSignal {
+    "Electrical domain"@(10, 0)
     let linearSignal = Rx_El_mQAM_BER->PowerControlEl->Linearizer
     let dcSource = DC_Source<0.5`V`>
     ret [linearSignal, dcSource]->AddSignalsEl
 }
 
 # Optical domain
-func SignalProcOp : ElSignal {
+@{boxed=true, color="blue"}
+func SignalProcOp(input@(0, 0) : ElSignal) -> ElSignal {
+    "Optical domain"@(10, 0)
     let modulatedOpSig = [input, LaserCW<azimuth=0`deg`>]->ModulatorMZ<30`dB`>
-    modulatedOpSig->Resample<centerFrequency=192.1e12`Hz`>->SignalAnalyzer<eye>
-    let opSig = modulatedOpSig->FiberNLS<10`KM`>->WDM_MUX_N_1_Ideal<[NoiseWhiteGaussOpt]>
+    modulatedOpSig->Resample<centerFrequency=192.1e12`Hz`>@(2, 2)->SignalAnalyzer<eye>@(4, 5)
+    let opSig = modulatedOpSig->FiberNLS<10`KM`>->WDM_MUX_N_1_Ideal<NoiseWhiteGaussOpt>
     ret opSig->Photodiode<photodiodeSetting>
 }
 
 # Electrical domain
-func SignalRecvEl : ElSignal -> void {
+@{boxed=true, color="blue"}
+func SignalRecvEl(input : ElSignal) {
+    "Electrical domain"@(0, 0)
     let samples = input->Resample<centerFrequency=193.1e12`Hz`>
     let ber = samples->Rx_El_mQAM_BER
     [powerInput, ber]->NumericalAnalyzer2D
